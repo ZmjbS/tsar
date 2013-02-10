@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="is">
+<head>
+ <!-- <meta charset="iso-8859-1" />-->
+  <meta charset="windows-1252" />
+  <link rel="stylesheet" href="/~martin/css/html-5-reset.css" />
+  <link rel="stylesheet" href="/~martin/css/style.css" />
+<!--  <link rel="stylesheet" href="/~martin/css/layout.css" />-->
+  <link rel="stylesheet" href="/~martin/css/print.css" media="print" />
+  <link type="text/css" rel="stylesheet" href="/~martin/css/code.css"  />
+  <title>HSSR: Skráning viðburðar</title>
+	<style type="text/css">
+		h1 { color: white; background-color: #bb3333; padding: 4px; }
+		h2 { color: #993333; }
+	  section { border: thin solid gray; padding: .2em; margin: .2em .0em .4em .4em }
+		date { color: gray; font-size: smaller; }
+		article { margin: 1em; }
+	</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div id="header">
+	<h1><img src="/~martin/hssr/ninna/../HSSR_merki.png" alt="Merki HSSR" style="float:left; height: 1em" />
+	HSSR: Skráning viðburðar</h1>
+	<ul>
+		<li style="display: inline"><a href="/~martin/hssr/ninna/">Síðan mín</a></li>
+		<li style="display: inline"><a href="/~martin/hssr/ninna/hopar">Hópar</a></li>
+		<li style="display: inline"><a href="/~martin/hssr/ninna/vidburdir">Viðburðir</a></li>
+		<li style="display: inline"><a href="/~martin/hssr/ninna/felagar">Félagar</a></li>
+		<li style="display: inline"><a href="/~martin/hssr/ninna/utkoll">Útköll</a></li>
+	</ul>
+</div>
+
+<!-- MAIN -->
+<article id="article">
+
+<section id="Lýsing">
+<h2>Lýsing</h2>
+<textarea cols="80" rows="5">Lýsing viðburðar</textarea>
+</section>
+
+<section>
+<h2>Boðun</h2>
+
+<h3>Hlutverk</h3>
+<select>
+	<option>Skipuleggjandi/Ábyrgðarmaður</option>
+	<option>Leiðbeinandi</option>
+	<option>Sjúklingur</option>
+	<option>Björgunarmaður</option>
+	<option>Ökumaður</option>
+</select><input type="button" value="Bæta við" />
+
+<div id="hlutverk-1">
+<p style="background-color: #eee;">Skipuleggjendur: <span style="float: right">[lokað] [eyða]</span></p>
+	<ul>
+		<li>Helgi Þór Leifsson</li>
+		<li>Oddur Þórarinsson</li>
+		<li><input type="text" value="Nafn hóps eða einstaklings" /><input type="button" value="Bjóða" /></li>
+	</ul>
+</div>
+<div id="hlutverk-2">
+<p style="background-color: #eee;">Sjúklingar: <span style="float: right">[opið] [eyða]</span></p>
+	<ul>
+		<li>Nýliðar</li>
+		<li>Hlynur Skagfjörð Pálsson</li>
+		<li><input type="text" value="Nafn hóps eða einstaklings" /><input type="button" value="Bjóða" /></li>
+	</ul>
+</div>
+<div id=hlutverk-3">
+<p style="background-color: #eee;">Björgunarmenn: <span style="float: right">[opið] [eyða]</span></p>
+	<ul>
+		<li>Leitarhópur</li>
+		<li>Sjúkrahópur</li>
+		<li><input type="text" value="Nafn hóps eða einstaklings" /><input type="button" value="Bjóða" /></li>
+	</ul>
+</div>
+</section>
+
+<section id="stadsetningar">
+<h2>Staðsetning</h2>
+<img src="/~martin/hssr/ninna/vidburdur/39972-leitarhundaaefing/lmi_kortasja-leitarhundaaefing.png" width="400px" style="float:right" />
+<table>
+<tr><th>Lengd</th><th>Breidd</th><th>Lýsing</th></tr>
+<tr><td>N 64°34,392'</td><td>V 21°39,291'</td><td>Upphafsstaður æfingar.</td></tr>
+<tr><td>N 65°01,039'</td><td>V 21°33,029'</td><td>Söfnunarsvæði slasaðra.</td></tr>
+<tr><td><input type="text" value="lengd" /></td><td><input type="text" value="breidd" /></td><td><input type="text" width="20" value="Lýsing" /><input type="button" value="Bæta við" /></td></tr>
+</table>
+<input type="text" value="GPX/KML-skrá" /><input type="button" value="Hlaða upp" />
+</section>
+
+<section>
+<h2>Merki</h2>
+<div>Hópar:
+<select id="merki_hopar" multiple="true">
+	<option>Bækistöðvarhópur</option>
+	<option>Bílahópur</option>
+	<option>Búðahópur</option>
+	<option>Tölvuhópur</option>
+	<option>Fjallahópur</option>
+	<option>Leitarhundar</option>
+	<option>Leitarhópur</option>
+	<option>Léttsveit</option>
+	<option>Sjúkrahópur</option>
+	<option>Sleðahópur</option>
+	<option>Snjóbílshópur</option>
+	<option>Stjórn</option>
+	<option>Stjórnendur</option>
+	<option>Undanfarar</option>
+	<option>Undanrennur</option>
+	<option>Vélhjólahópur</option>
+	<option>Íslenska alþjóðasveitin</option>
+	<option>Þriðja bylgjan</option>
+</select>
+</div>
+
+<div>Verkefni:
+<select id="merki_hopar" multiple="true">
+	<option>Æfing</option>
+	<option>Skemmtun</option>
+	<option>Fundur</option>
+	<option>Vinnufundur</option>
+</select>
+</div>
+
+<div>Skipulag:
+<select id="merki_hopar" multiple="true">
+	<option>Einstaklingar</option>
+	<option>Hópur</option>
+	<option>HSSR</option>
+	<option>Önnur sveit</option>
+	<option>Landsbjörg</option>
+</select>
+</div>
+
+<div>Staðsetning:
+<select id="merki_hopar" multiple="true">
+	<option>Innan dyra</option>
+	<option>Þéttbýli</option>
+	<option>Dreifbýli</option>
+	<option>Utanbæjar</option>
+</select>
+</div>
+
+<div>Tækjanotkun:
+<select id="merki_hopar" multiple="true">
+	<option>Reykur 1</option>
+	<option>Reykur 2</option>
+	<option>Reykur 3</option>
+	<option>Reykur 4</option>
+	<option>Boli</option>
+	<option>Reykur 6</option>
+</select>
+</div>
+</section>
+
+<section id="samantekt">
+<textarea cols="80" rows="5">Samantekt:
+
+* Hvað var gert?
+* Hvað gekk upp?
+* Hvað gekk ekki upp og hvaða lærdóm getum við dregið af því?</textarea>
+</section>
+
+<section id="Félagatal" style="position: absolute; width: 20em; top: 30px; right: 30em">
+  <form>
+		<input type="text" value="Félagatal" />
+  </form>
+</section>
+
+</article>
+
+<footer>
+<div style="float:right;clear:both">
+	<a href="http://validator.w3.org/check/referer"><img
+		width="80" height="15"
+		src="/~martin/imgs/valid-html5-raunvis.png"
+		alt="Valid HTML 5!" /></a>
+	<a href="http://jigsaw.w3.org/css-validator/"><img
+		width="80" height="15"
+		src="/~martin/imgs/valid-css2.1-raunvis.png" 
+		alt="Valid CSS!" /></a>
+</div>
+
+<div id="footer" style="clear:both">
+	© Martin Swift -
+	<time datetime="2011-02-23">23. febrúar 2011.</time>
+</div>
+</footer>
+
+</body>
+</html>

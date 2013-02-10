@@ -1,0 +1,59 @@
+/*
+ * Uppsetning síðunnar
+ * Síðast breytt: 2011.04.01. -- martin@swift.is
+ */
+
+#header, header {
+/*	width: 80%;
+/*	text-align: center;*/
+/*	padding-bottom: .2em;
+	padding-left: 20%;*/
+}
+
+article, #article {
+	padding: .3em;
+/*	padding-right: 20%;*/
+	margin-left: 2em;
+  margin-right: 15em;
+}
+
+#footer, footer {
+	margin-top: 1em;
+	padding-right: 20%;
+	text-align: right;
+	font-size: smaller;
+}
+
+#site_toc {
+/*	position: absolute;
+	right: 80%;
+	text-align: right;*/
+  position: fixed;
+  right: 0; 
+  width: 13em; 
+	padding: 1em;
+}
+#site_toc li { display: block; margin: 0px; }
+
+#page_toc {
+/*	position: fixed;
+	top: 80px;
+	right: 0em;
+	width: 22%;
+	padding: 1ex;
+	padding-bottom: 2em;
+	margin-right: 1em;*/
+  float: right;
+  margin: 0 1em;
+  padding: .5em;
+  width: 12em; 
+}
+#page_toc * { display: block; margin: 0; padding: 0; }
+#page_toc .descr {
+	padding-left: 1em;
+	font-size: smaller;
+}
+#page_toc div a {
+	padding-left: 1em;
+	font-size: smaller;
+}

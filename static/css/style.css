@@ -1,0 +1,179 @@
+/*
+ * style.css
+ * Cascading style sheet - created 2002.08.05. - Martin Swift
+ *                        modified 2004.01.18. -- martin@swift.is
+ *                        modified 2011.04.01. -- martin@swift.is
+ * Litum breytt til að passa við HÍ litina -- 2011.04.01. -- martin@swift.is
+ */
+
+/* HI colours used:
+** HÍ-blár fyrir litaðar fyrirsagnir
+**  #00457c
+** Ljósari útgáfa fyrir hlekki
+**  #0062af
+** Dekkri útgáfa fyrir heimsótta hlekki
+**  #003153
+*/
+
+body {
+	font-family: Verdana,Arial,Helvetica,sans-serif;
+	font-size: .75em;
+}
+
+/*** COMMON ELEMENTS - main look ***/ /*----------*/
+/*a {		color: #f83;	text-decoration: none; }
+a:visited {	color: #c40; }*/
+a {	color: #0072bf;	text-decoration: none; }
+a:visited {	color: #004980; }
+a:hover {	text-decoration: underline; }
+a.broken {	text-decoration: line-through; }
+a.pdf:after {	content: url("/imgs/pdf.sm.png"); }
+
+h1, h2, h3, h4, h5 { margin: .5em 0 0; }
+h1 {
+	font-size: 3em; 
+	font-weight: bold;
+/*	font-family: 'Trebuchet MS', 'Lucida Grande', Verdana, Arial, Sans-Serif;*/
+  font-family:  'Minion Web,', 'Serif';
+  margin: .5em .2em .2em .2em;
+/* color: #720;*/
+}
+h2 {
+	color: #00457c;
+	font-size: 1.8em;
+	font-family: serif;
+}
+h2:first-child { margin-top: 0; }
+h3 {
+	font-size: 1.5em;
+	font-family: serif;
+}
+h4 {
+	font-size: 1.3em;
+	font-family: serif;
+	margin-left: 0.5em;
+	margin-bottom: 0em;
+}
+ul > h2 {
+	margin-top: 10em;
+}
+
+/*** IMAGES ***/
+img {
+  border: none;
+  padding: 2px;
+}
+a img:hover {
+  padding: 1px;
+  border: 1px solid #710;
+}
+
+.date {		font-size: smaller; color: gray }
+.source:before { content: " [" }
+.source:after {	content: "]" }
+.afrit:before {	content: " {" }
+.afrit:after { content: "}" }
+
+/*** LISTS ***/
+ul, ol { margin-bottom: 1em; }
+ul ul, ul ol, ol ul, ol, ol { margin-bottom: 0; }
+li { margin-left: 3em; }
+
+ul.linktree {	list-style-type: none; margin-left: 0px }
+ul.linktree li {	margin-top: .0em; margin-bottom: .4em }
+ul.follow {	margin-top: 0em; }
+ul.inline {	margin-top: 0em; }
+
+ul.thumbnails li.thumbnail { display: inline; margin: 0 }
+
+dt { font-weight: bold }
+dd { margin-left: 1.5em; }
+
+h1 + ul, h2 + ul, h3 + ul,
+h1 + ol, h2 + ol, h3 + ol,
+h1 + dl, h2 + dl, h3 + dl { margin-top: 1em; }
+
+hr {		width: 80% }
+hr.stop {	color: red; width: 3px }
+
+acronym, abbr {	border-bottom: 1px dotted #666; }
+
+/* Ljóð */
+pre.ljod {
+	font-family: sans-serif;
+	background: #ddd;
+	margin: 0 10%;
+	padding: 1em 2em;
+}
+pre.ljod div.sign {
+	font-size: smaller;
+	padding-left: 55%
+}
+
+/*** UNCOMMON ELEMENTS - but they should look like this >:| ***/ /*--*/
+ins {	font-style: italic; text-decoration: none }
+
+/*** ALIGNMENT ***/ /*----------------------------*/
+.right {	float: right; width: 100% }
+table.right {	margin: .5em }
+
+/*** Ýmislegt ***/ /*--------------------------------*/
+#sort {	border: thin solid blue; }
+.sort {	border: thin solid blue; }
+.skoda {	border: thin solid green;
+}
+
+/*
+** colour.css
+** Cascading style sheet - created 20.11.2003. - Martin Swift
+*/
+
+/*** DEFINED IN layout.css ***/ /*------------------------*/
+#footer, footer { color: #00457c }
+#page_toc { background: #fda; border: thin solid #00457c; border-left: 3px double #00457c }
+
+/*** DEFINED IN code.css ***/ /*--------------------------*/
+code, kbd, pre.code, pre.kbd, pre.prompt, pre.gnuplot {
+  color: black;
+  background: #ddd;
+}
+tt { font-size: large }
+
+/*
+ * quotes.css
+ * Cascading style seet - created 20.11.2003. - Martin Swift
+ */
+
+/* Define quotes */
+/*[lang=is] > * { quotes: "&#8222;" "&#8220;" }*/
+/*[lang=is] > q { quotes: "\201E" "\201C" }*/
+q { quotes: "\201E" "\201C" }
+[lang|=en] > * { quotes: "\201C" "\201D" "\2018" "\2019" }
+[LANG=fr] > * { quotes: "«" "»" "\2039" "\203A" }
+
+/* Þetta gildir svo fyrir enskan texta: */
+blockquote:lang(en) p:before     { content: open-quote }
+blockquote:lang(en) p:after      { content: no-close-quote }
+blockquote:lang(en) p.last:after { content: close-quote }
+
+/* Hér er svo skilgreint hvaða ,,element" fá svo gæsalappir: */
+q:before,	blockquote:before,	pre.cite:before	{ content: open-quote }
+q:after,	blockquote:after,		pre.cite:after		{ content: close-quote }
+
+/* ... og svo síðast en ekki síst; ÚTLITIÐ */
+blockquote							{ margin-left: 5% }
+blockquote.cite,
+pre.cite								{ margin: .5em; margin-left: 5%; padding: .2em 1em 1em; border: thin solid #999  }
+/* So that the opening quotation mark doesn't hang above the first child */
+.cite { position: relative; }
+.cite:before { position: absolute; left: .3em; }
+.cite:before,
+.cite:after {	font-weight: bold; color: #00457c; }
+.cite:after { float: right; width: 100% }
+
+div.signQuot {	margin: 1.4em 5% }
+div.signQuot blockquote {	margin: 0; padding: .2em }
+div.signQuot div.sign {		margin: 0; padding: .2em; padding-left: 25%; font-size: smaller }
+
+div.signQuot { color: black; border: 1px solid #00457c; background: #fda}
+blockquote.quote { color: black; border: 1px solid #00457c; background: #fda}

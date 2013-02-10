@@ -1,0 +1,12 @@
+{% extends "tsar.html" %}
+
+{% block content %}
+<section id="felagar">
+<h2>Félagatal</h2>
+<ul>
+{% for member in member_list.all %}
+	<li><a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a></li>
+{% endfor %}
+</ul>
+</section>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "tsar.html" %}
+{% block page_title %}{{ event.title }}{% endblock %}
+
+{% block content %}
+<div class="full-width">
+<section id="event_description">
+	<p>{{ event.description }}
+</section>
+</div>
+
+<div class="third-width">
+<section>
+<h2>Mæting</h2>
+<ul>
+{% for event_role in event.eventrole_set.all %}
+	<li>{{ event_role.role.title }}
+		<ul>
+	{% for group in event_role.invited_groups.all %}
+		<li><a href="/hopur/{{ group.slug }}">{{ group.title }}</a></li>
+	{% endfor %}
+		</ul>
+		<ul>
+	{% for member in event_role.invited_members.all %}
+		<li><a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a></li>
+	{% endfor %}
+		</ul>
+	</li>
+{% endfor %}
+</ul>
+</section>
+</div>
+
+<div class="twothird-width">
+<section>
+<h2>Merki</h2>
+</section>
+</div>
+{% endblock %}

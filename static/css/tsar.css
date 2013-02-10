@@ -1,0 +1,87 @@
+/* Layout */
+body { max-width: 90em; }
+#navigation { padding: .4em; }
+h1 { margin-top: 10px; }
+h1, article { padding-left: 10px; }
+
+article { margin: 1em; }
+#admin-links { margin: .5em; }
+#admin-links a, #navigation a { font-weight: bold; }
+#admin-links, #search-field { float: right; }
+/*#admin-links { position: absolute; right: .5em; top: .5em; }
+#search-field {
+	position: absolute;
+	top: 35px;
+	right: 30px;
+}
+*/
+section {
+	border-radius: .5em;
+	padding: .5em;
+	margin: .25em; }
+section + section { margin-top: .5em; }
+
+div.full-width,
+div.half-width,
+div.third-width,
+div.twothird-width { float: left; margin: 0em; padding: 0; }
+div.full-width { width: 98%; }
+div.half-width { width: 49%; }
+div.third-width { width: 32.7%; }
+div.twothird-width { width: 65.3%; }
+div#profile-picture {
+	float: right;
+	width: 120px;
+	height: 160px;
+	margin: 6px 2px 4px .2em;
+	position: relative;
+	text-align: right; }
+div#profile-picture img { position: absolute; bottom: 0; right: 0; }
+
+td, th { padding: 0 .4em }
+
+#dagatal tr td { height: 5em; }
+#dagatal { width: 100%; table-layout: fixed; }
+#dagatal td { width: 14%; height: 5em; border: thin solid #ddd; vertical-align: top; white-space:nowrap; overflow: visibe; }
+#dagatal td div { overflow: hidden; }
+#dagatal td.i_dag { border: 2px solid #aaf; z-index: -1; }
+#dagatal td.laugardagur, #dagatal td.sunnudagur { background-color: #eef; }
+.dagatal_vidburdur { width: 100%; background-color: #ddf; }
+
+/* Look */
+body {	background-image: url("/static/imgs/tsar_background-transparent-4.png");
+/*	background-color: rgb(229,187,124);*/
+	background-color: white;
+	background-repeat: no-repeat;
+	background-position: 100px 50px;
+	background-attachment: fixed; }
+h1 {
+/*	border: thin solid #dca; */
+/*	color: #eeb; */
+	color: #a33;
+/*	background-color: #bb3333; */
+	padding: 4px 4px 4px .3em;
+	font-variant: small-caps;
+}
+h1, h2 {
+	font-family: "Times New Roman", serif;
+}
+#navigation {
+	background-color: #eee; }
+/*#admin-links a, #navigation a {
+	color: #a33; }*/
+#search-field {
+	border: thin solid white;
+}
+h2 {	color: #a33; }
+date {	color: gray; font-size: smaller; }
+section {
+	background-color: rgba(255,255,255,0.75);
+/*	border: thin solid #eeb; */
+	border: thin solid #dde;
+}
+div#profile-picture {
+	background-color: #eee;
+	border: 1px solid #ddd;
+	color: #ddd; }
+#event-dates-number-list { list-style: none }

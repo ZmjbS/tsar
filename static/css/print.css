@@ -1,0 +1,23 @@
+/*
+* { font-size: 12pt }
+*/
+
+#header {
+	width: 100%;
+	margin: 0px;
+	padding: 0px;
+	height: 40px;
+	font-size: x-large;
+	text-align: center;
+}
+#main {
+  width: 100%;
+	margin: 0px;
+	padding: 0px;
+}
+
+/*
+** Hidden stuff
+*/
+#site_toc { display: none }
+#path { display: none }

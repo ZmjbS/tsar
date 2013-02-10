@@ -1,0 +1,93 @@
+{% extends "tsar.html" %}
+
+{% block head %}
+<script type="text/javascript" src="/static/js/development-bundle/ui/jquery-ui-1.8.21.custom.js"></script>
+<script type="text/javascript" src="/static/js/chosen.jquery.min.js"></script>
+<link type="text/css" rel="stylesheet" href="/static/css/chosen.css" />
+<style>
+#all-members-list { width: 20em; }
+</style>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('#all-members-list').chosen();
+ });
+</script>
+{% endblock %}
+
+{% block page_title %}{{ group.title }}{% endblock %}
+
+{% block content %}
+<div class="full-width">
+<section id="group-description">
+{{ group.description }}
+</section>
+</div>
+
+<div class="twothird-width">
+<section id="group-members" style="position: relative">
+<h2>Meðlimir</h2>
+<table>
+<tr><th><input type="checkbox"></th><th>Nafn</th><th>Sími</th><th>Tölvupóstfang</th><th>A</th><th>B</th><th>C</th></tr>
+{% for member in group.members.all %}
+	<tr>
+		<td><input type="checkbox" /></td>
+		<td><a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a></td>
+		<td>{% for phone in member.phone_set.all %}{% if phone.is_primary %}{{ phone.number }}{% endif %}{% endfor %}</td>
+		<td>{% for email in member.email_set.all %}{% if email.is_primary %}{{ email.address }}{% endif %}{% endfor %}</td>
+		<td><input type="checkbox" checked="true" disabled="true" /></td><!-- A -->
+		<td><input type="checkbox" disabled="true" /></td><!-- B -->
+		<td><input type="checkbox" disabled="true" /></td><!-- C -->
+	</tr>
+{% endfor %}
+	<tr><td></td><td colspan="6">
+	<select id="all-members-list" multiple>
+		{% for member in members %}
+		<option>{{ member }}</option>
+		{% endfor %}
+	</select>
+<!--<input type="text" value="Nafn" />-->
+<input type="button" value="Bæta við" /></td></tr>
+</table>
+<div style="position:absolute;right:.5em;top:.5em;">
+	<select>
+		<option selected="true" disabled="true"></option>
+		<option>Eyða úr hóp</option>
+		<option>Breyta hæfni</option>
+	</select>
+</section>
+
+<section id="group-qualifications">
+<h2>Hæfnir</h2>
+<ol style="list-style-type:upper-alpha;">
+	<li>Kassabílagerð</li>
+	<li>Sérhæfð bið</li>
+	<li>Frímerkjasöfnun</li>
+</ol>
+</section>
+</div>
+
+<div class="third-width">
+<section id="recent-events">
+<h2>Nýlegir viðburðir</h2>
+<ul>
+{% for event in recent_events_list %}
+	<li><a href="/vidburdur/{{ event.id }}">{{ event.title }}</a></li>
+{% endfor %}
+</ul>
+</section>
+<section id="recent-events">
+<h2>Næstu viðburðir</h2>
+<ul>
+{% for event in coming_events_list %}
+	<li><a href="/vidburdur/{{ event.id }}">{{ event.title }}</a></li>
+{% endfor %}
+
+<!-- Er kannski betra að nota „invitation“ frekar en „event“? Sparar það eittthvað?
+{% for invitation in group.groupinvitation_set.all %}
+	<li><a href="/vidburdur/{{ invitation.event_role.event.id }}">{{ invitation.event_role.event.title }}</a></li>
+{% endfor %}
+-->
+</ul>
+</section>
+</div>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "tsar.html" %}
+
+{% block content %}
+<div class="half-width">
+<section id="member-details">
+<h2>{{ member.user.first_name }} {{ member.user.last_name }}</h2>
+<div id="profile-picture"><img src="" alt="Member profile picture" /></div>
+<dl>
+<dt>Nafn:</dt>
+<dd>{{ member.user.first_name }} {{ member.user.last_name }}</dd>
+<dt>Kennitala:</dt>
+<dd>{{ member.member_id }}</dd>
+<dt>Símanúmer:</dt>
+<dd>555-1234</dd>
+<dd>789-1234</dd>
+<dt>Tölvupóstfang</dt>
+<dd>dæmi@dæmi.is</dd>
+<dt>Heimilisfang:</dt><dd>{{ member.address }}</dd>
+<dt>Staða:</dt>
+<dd>{{ member.position }}</dd>
+</dl>
+</section>
+</div>
+
+<div class="half-width">
+<section id="member-groups">
+<h2>Hópar</h2>
+<ul>
+{% for group in member.group_set.all %}
+	<li><a href="/hopur/{{ group.slug }}">{{ group.title }}</a></li>
+{% endfor %}
+</ul>
+<input type="button" value="bæta við hóp">
+</section>
+<section id="member-qualifications">
+<h2>Hæfnir</h2>
+<ul>
+	<li>Frímerkjasöfnun (rennur út <date>eftir 49 mánúði</date>)</li>
+	<li>Réttritun (rennur út <date>á morgun</date></li>
+	<li>Heilaskurðlæknignar</li>
+</ul>
+<input type="button" value="bæta við hæfni">
+</section>
+</div>
+
+<div class="third-width">
+<section id="member-events">
+<h2>Seinustu viðburðir</h2>
+<ul>
+{% for invitation in member.memberinvitation_set.all %}
+	<li><a href="/vidburdur/{{ invitation.event_role.event.id }}">{{ invitation.event_role.event.title }}</a></li>
+{% endfor %}
+</ul>
+</section>
+</div>
+
+<div class="twothird-width">
+<section id="tolfraedi">
+<h2>Tölfræði</h2>
+</section>
+</div>
+{% endblock %}

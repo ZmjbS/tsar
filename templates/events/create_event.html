@@ -1,0 +1,241 @@
+{% extends "tsar.html" %}
+
+{% block head %}
+<script type="text/javascript" src="/static/js/development-bundle/ui/jquery-ui-1.8.21.custom.js"></script>
+<script type="text/javascript" src="/static/js/development-bundle/ui/jquery.ui.datepicker.js"></script>
+<script type="text/javascript" src="/static/js/jquery-ui-timepicker-addon.js"></script>
+<link type="text/css" rel="stylesheet" href="/static/js/css/ui-lightness/jquery-ui-1.8.21.custom.css" />
+<script type="text/javascript" src="/static/js/chosen.jquery.min.js"></script>
+<link type="text/css" rel="stylesheet" href="/static/css/chosen.css" />
+<style>
+/* css for timepicker */
+.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+.ui-timepicker-div dl { text-align: left; }
+.ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
+.ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }
+.ui-timepicker-div td { font-size: 90%; }
+.ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
+</style>
+<style>
+section { overflow: auto; }
+h2 { margin-top: 0; }
+#id_title { width: 44em; }
+.roles { list-style: none; }
+.role { background-color: #eee; padding: .4em; margin-bottom: 3px; margin-left: 0; }
+[id*='role-groups-id_'] { width: 44em; }
+[id*='select-member-role-'] { width: 44em; }
+#tag-groups, #tag-event_task, #tag-location, #tag-equipment { width: 44em; }
+#tag-event_type, #tag-organiser { width: 18em; }
+#id_invited_groups, #id_invited_members { width: 44em; }
+#id_minimum, #id_maximum { width: 2em; }
+th, td { height: 1em; }
+</style>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('#id_date_time_begin').datetimepicker();
+  $('#id_date_time_end').datetimepicker();
+
+  $('#role-groups-id_1').chosen();
+  $('#role-groups-id_2').chosen();
+  $('#role-groups-id_3').chosen();
+  $('#role-groups-id_4').chosen();
+  $('#role-groups-id_5').chosen();
+
+  $('#select-member-role-1').chosen();
+  $('#select-member-role-2').chosen();
+  $('#select-member-role-3').chosen();
+  $('#select-member-role-4').chosen();
+  $('#select-member-role-5').chosen();
+
+  $('#tag-groups').chosen();
+  $('#tag-event_type').chosen();
+  $('#tag-event_task').chosen();
+  $('#tag-organiser').chosen();
+  $('#tag-location').chosen();
+  $('#tag-equipment').chosen();
+
+  $('#id_role').chosen();
+  $('#id_invited_groups').chosen();
+  $('#id_invited_members').chosen();
+ });
+</script>
+{% endblock %}
+
+{% block content %}
+
+<section style="position: absolute; right: 50px; top: 70px">
+	<input type="text" value="Viðburður" /><input type="button" value="Afrita" />
+</section>
+
+{% if error_message %}<div id="error_message">{{ error_message }}</div>{% endif %}
+
+<form action="." method="post">
+{% csrf_token %}
+
+<!-- LÝSING -->
+<div class="full-width">
+<section id="Lýsing">
+<h2>1. Lýsing</h2>
+<div id="event-title">{{ form.title.label }} {{ form.title }}</div>
+<div id="event-dates">
+	{{ form.date_time_begin.label }} {{ form.date_time_begin }}
+	{{ form.date_time_end.label }} {{ form.date_time_end }}
+	<input type="button" value="Bæta við degi" />
+	<ul id="event-dates-number-list">
+		<li><input type="radio" name="event-dates-number" value="Einu sinni" checked="true" /> Einu sinni</li>
+		<li><input type="radio" name="event-dates-number" value="Endurtekið" /> Endurtekið</li>
+	</ul>
+	<div style="vertical-align:bottom">{{ form.description }}
+<!--	<div style="float:right; vertical-align: bottom;"><input type="submit" value="Skrá" /></div>-->
+</div>
+</div>
+</section>
+</div>
+</form>
+
+<!-- BOÐUN Í HLUTVERK -->
+<div class="full-width">
+	<section style="overflow: visible">
+	<!--<form--><div style="float:right; vertical-align: bottom;">
+		<input id="event-invite-button" type="button" name="name-test" value="Boða" onclick="getElementById('bodun-content').style.display='block';getElementById('event-geo-header').style.color='#933';getElementById('event-geo-button').disabled='';"/>
+	</div><!--</form>-->
+
+<h2 id="event-invite-header">2. Boðun</h2>
+
+<div id="bodun-content" style="display: none">
+	<ul class="roles">
+{% for role in event_roles %}
+		<li class="role" id="role-id_{{role.id}}" onclick="$('#role-numbers-id_{{ role.id }}').toggle();$('#role-selector-id_{{ role.id }}').toggle();">
+			<div>
+				<span id="role-title-id_{{ role.id }}" >{{ role.title }}</span>
+				<span style="float: right; display: none;" id="role-numbers-id_{{ role.id }}" onclick="event.stopPropagation();">
+					Lágmark: <input id="hlutverk-{{role.id}}-min" type="number" min="0" value="0" max="999" />
+					Hámark:  <input id="hlutverk-{{role.id}}-max" type="number" min="0" value="0" max="999"  />
+				</span>
+			</div>
+			<div id="role-selector-id_{{ role.id }}" style="display: none;" onclick="event.stopPropagation();">
+				<select id="role-groups-id_{{ role.id }}" multiple style="display: none">
+					{% for group in groups %}
+					<option>{{ group.title }}</option>
+					{% endfor %}
+					{% for member in members %}
+					<option>{{ member }}</option>
+					{% endfor %}
+				</select>
+				<span style="float:right; margin: .8em .4em 0 0">[<a id="role-close-id_{{ role.id }}" onclick="($(this).html()=='lokað')?$(this).html('opið'):$(this).html('lokað');">lokað</a>]</span>
+			</div>
+		</li>
+{% endfor %}
+	</ul>
+</div>
+
+</section>
+</div>
+
+<!-- LANDFRÆÐILEGAR UPPLÝSINGAR -->
+<div class="full-width">
+<section id="stadsetningar">
+<form style="float:right; vertical-align: bottom;"><input id="event-geo-button" type="button" value="Staðsetja" disabled='true' onclick="getElementById('stadsetning-content').style.display='block';getElementById('event-tag-header').style.color='#933';getElementById('event-tag-button').disabled='';" /></form>
+<h2 id="event-geo-header" style="color:gray">3. Staðsetning</h2>
+<div id="stadsetning-content" style="display:none">
+
+<div style="float:right;"><img src="/static/imgs/hengill-husmuli.png" width="200" height="200" style="loat:right" alt="Kort af svæðinu." /></div>
+<table>
+<tr><th>Lengd</th><th>Breidd</th><th>Lýsing</th></tr>
+<tr><td>N 64°34,392'</td><td>V 21°39,291'</td><td>Upphafsstaður æfingar.</td></tr>
+<tr><td>N 65°01,039'</td><td>V 21°33,029'</td><td>Söfnunarsvæði slasaðra.</td></tr>
+<tr>
+	<td><input type="text" value="lengd" style="width: 7em" /></td>
+	<td><input type="text" value="breidd" style="width: 7em" /></td>
+	<td><input type="text" maxlength="18" value="Lýsing" /><input type="button" value="Bæta við" /></td></tr>
+	<td colspan="3"><input type="text" value="GPX/KML-skrá" /><input type="button" value="Hlaða upp" /></td>
+</table>
+</div>
+</section>
+</div>
+
+<!-- MERKI -->
+<div class="full-width">
+<section style="overflow: visible">
+<form style="float:right; vertical-align: bottom;"><input id="event-tag-button" type="button" value="Merkja" disabled='true' onclick="getElementById('merki-content').style.display='block';getElementById('create-event-button').disabled='';" /></form>
+<h2 id="event-tag-header" style="color:gray">4. Merki</h2>
+<div id="merki-content" style="display:none">
+<table>
+<tr><td>Hópar:</td><td>
+<select id="tag-groups" multiple>
+	{% for group in groups %}
+	<option>{{ group.title }}</option>
+	{% endfor %}
+</select>
+</td></tr>
+<tr><td>Skipulag:</td><td>
+<select id="tag-organiser">
+	<option>Einstaklingar</option>
+	<option>Hópur</option>
+	<option>HSSR</option>
+	<option>Önnur sveit</option>
+	<option>Landsbjörg</option>
+</select>
+</td></tr>
+<tr><td>Tegund:</td><td>
+<select id="tag-event_type">
+	<option>Æfing</option>
+	<option>Skemmtun</option>
+	<option>Fundur</option>
+	<option>Vinnufundur</option>
+</select>
+</td></tr>
+<tr><td>Verkefni:</td><td>
+<select id="tag-event_task" multiple>
+	<option>Björgun</option>
+	<option>Böruburður</option>
+	<option>Búðavinna</option>
+	<option>Fjallabjörgun</option>
+	<option>Flugvélarútköll (flugvél í vanda)</option>
+	<option>Fyrstu hjálp beitt</option>  
+	<option>Hópslys</option>
+	<option>Leit (almenn)</option>
+	<option>Leit (sérhæfð)</option>
+	<option>Línuvinna</option>
+	<option>Óveðursaðstoð</option>
+	<option>Sjúkraflutningur</option>
+	<option>Snjóflóð</option>
+	<option>Veitt aðstoð í ófærð</option>
+</select>
+</td></tr>
+<tr><td>Staðsetning:</td><td>
+<select id="tag-location" multiple>
+	<option>Fjalllendi</option>
+	<option>Fjara</option>
+	<option>Flatlendi</option>
+	<option>Innanbæjar</option>
+	<option>Jökull</option>
+	<option>Óbyggðir</option>
+	<option>Straumvatn</option>
+</td></tr>
+<tr><td>Tækjanotkun:</td><td>
+<select id="tag-equipment" multiple>
+	<option>Reykur 1</option>
+	<option>Reykur 2</option>
+	<option>Reykur 3</option>
+	<option>Reykur 4</option>
+	<option>Reykur Boli</option>
+	<option>Reykur 6</option>
+	<option>Reykur 7</option>
+	<option>Vélsleðar</option>
+</select>
+</td></tr>
+</table>
+</section>
+</div>
+
+<div class="full-width" id="create-event">
+<section>
+	<input id="create-event-button" type="button" value="Vista viðburð" /><!--disabled='true' /> -->
+</section>
+</div>
+
+</form>
+
+{% endblock %}
