@@ -27,7 +27,7 @@ a {	color: #0072bf;	text-decoration: none; }
 a:visited {	color: #004980; }
 a:hover {	text-decoration: underline; }
 a.broken {	text-decoration: line-through; }
-a.pdf:after {	content: url("/imgs/pdf.sm.png"); }
+/*a.pdf:after {	content: url("/img/pdf.sm.png"); }*/
 
 h1, h2, h3, h4, h5 { margin: .5em 0 0; }
 h1 {

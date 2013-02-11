@@ -81,7 +81,7 @@ class MemberInvitation(models.Model):
 class EventCreation(ModelForm):
 	class Meta:
 		model = Event
-	title = forms.CharField(max_length=64,label='Titill:',initial='Titill')
+	title = forms.CharField(max_length=64,label='Titill:',initial='Titill', widget=forms.TextInput(attrs={'placeholder': 'Titill viðburðar'}))
 	date_time_begin = forms.DateTimeField(input_formats={'%m/%d/%Y %H:%M'},label='Hefst:')
 	date_time_end   = forms.DateTimeField(input_formats={'%m/%d/%Y %H:%M'},label='Lýkur:')
 	description = forms.CharField(widget=forms.Textarea(attrs={'cols': '80', 'rows': '5'}),label='',initial='Lýsing')

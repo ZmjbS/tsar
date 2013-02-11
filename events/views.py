@@ -3,7 +3,7 @@ from django.shortcuts import render_to_response, render
 from django.template import RequestContext
 from members.models import Member
 from groups.models import Group
-from events.models import Role, Event, EventCreation, EventRoleForm
+from events.models import Role, EventType, Event, EventCreation, EventRoleForm
 from django.http import HttpResponseRedirect
 
 #from django.utils import timezone
@@ -17,6 +17,7 @@ def list_events(request):
 	return render_to_response('events/events_index.html', { 'recent_events_list': recent_events_list, 'coming_events_list': coming_events_list })
 
 def display_or_save_event_form(request):
+	event_types = EventType.objects.all()
 	event_roles = Role.objects.all()
 	members = Member.objects.all()
 	groups = Group.objects.all()
@@ -25,20 +26,20 @@ def display_or_save_event_form(request):
 		event_role_form = EventRoleForm(request.POST)
 		if (form.is_valid()):
 			form.save()
-		return HttpResponse(json.dumps({ 'form': form, 'event_role_form': event_role_form, 'event_roles': event_roles, 'members': members, 'groups': groups, }))
+		return HttpResponse(json.dumps({ 'form': form, 'event_role_form': event_role_form, 'event_types': event_types, 'event_roles': event_roles, 'members': members, 'groups': groups, }))
 	else:
-		return render(request, 'events/create_event.html', { 'form': form, 'event_roles': event_roles, 'members': members, 'groups': groups, })
+		return render(request, 'events/create_event.html', { 'form': form, 'event_types': event_types, 'event_roles': event_roles, 'members': members, 'groups': groups, })
 
-def display_event_form(request):
-	form = EventCreation(request.POST)
-	event_roles = Role.objects.all()
-	members = Member.objects.all()
-	groups = Group.objects.all()
-	if request.POST == 'invite':
-		event_role_form = EventRoleForm(request.POST)
-		return render(request, 'events/create_event.html', { 'form': form, 'event_role_form': event_role_form, 'event_roles': event_roles, 'members': members, 'groups': groups, })
-	else:
-		return render(request, 'events/create_event.html', { 'form': form, 'event_roles': event_roles, 'members': members, 'groups': groups, })
+#def display_event_form(request):
+#	form = EventCreation(request.POST)
+#	event_roles = Role.objects.all()
+#	members = Member.objects.all()
+#	groups = Group.objects.all()
+#	if request.POST == 'invite':
+#		event_role_form = EventRoleForm(request.POST)
+#		return render(request, 'events/create_event.html', { 'form': form, 'event_role_form': event_role_form, 'event_roles': event_roles, 'members': members, 'groups': groups, })
+#	else:
+#		return render(request, 'events/create_event.html', { 'form': form, 'event_roles': event_roles, 'members': members, 'groups': groups, })
 
 ## Receive a POST request from JavaScript and create (or update) the event.
 #def save_event(request):
