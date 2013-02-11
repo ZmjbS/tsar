@@ -5,7 +5,7 @@
 <script type="text/javascript" src="/static/js/chosen.jquery.min.js"></script>
 <link type="text/css" rel="stylesheet" href="/static/css/chosen.css" />
 <style>
-#all-members-list { width: 100%; }
+#all-members-list { width: 80%; }
 </style>
 <script type="text/javascript">
 $(document).ready(function(){
@@ -25,7 +25,9 @@ $(document).ready(function(){
 
 <div class="twothird-width">
 <section id="group-members" style="position: relative">
-<h2>Meðlimir</h2>
+<h2>Meðlimir
+		<input type="button" class="btn btn-primary pull-right" value="Lokið" style="vertical-align: bottom;" />
+</h2>
 <table class="table-hover table-condensed table">
 <thead>
 <tr><th><input type="checkbox"></th><th>Nafn</th><th>Sími</th><th>Tölvupóstfang</th><th>A</th><th>B</th><th>C</th></tr>
@@ -40,18 +42,21 @@ $(document).ready(function(){
 		<td><input type="checkbox" checked="true" isabled="true" /></td><!-- A -->
 		<td><input type="checkbox" isabled="true" /></td><!-- B -->
 		<td><input type="checkbox" isabled="true" /></td><!-- C -->
+		<td><i class="icon-remove-sign"> </td><!-- C -->
 	</tr>
 {% endfor %}
 </tbody>
 </table>
 
+<!--
 <div class="controls controls-row">
 	<div class="pull-right">
 		<input type="button" class="btn btn-danger" value="Endursetja" />
 		<input type="button" class="btn btn-primary" value="Vista" />
 	</div>
-	<div class="input-append">
-		<select id="all-members-list" multiple data-placeholder="Nafn" style="margin-right: 10em;">
+-->
+	<div class="input-append" style="width: 100%">
+		<select id="all-members-list" multiple data-placeholder="Nafn">
 			{% for member in members %}
 			<option>{{ member }}</option>
 			{% endfor %}
@@ -59,7 +64,9 @@ $(document).ready(function(){
 	<!--<input type="text" value="Nafn" />-->
 		<input type="button" class="btn btn-rimary" value="Bæta við" />
 	</div>
+<!--
 </div>
+-->
 	<!--<div style="position:absolute;right:.5em;top:.5em;">-->
 	<!--<input type="button" class="btn btn-danger" value="Breyta skráningu" />-->
 	<!--<select>
