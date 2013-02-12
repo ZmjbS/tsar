@@ -10,5 +10,5 @@ now = datetime.datetime.now()
 
 def my_page(request):
 	#recent_events_list = Event.objects.all().order_by('-date_time_begin')[:20]
-	recent_events_list = Event.objects.filter(date_time_begin__lte=now).order_by('-date_time_begin')[:20]
+	recent_events_list = Event.objects.filter(date_time_begin__gte=now).order_by('date_time_begin')[:20]
 	return render_to_response('my_page.html', { 'events_list': recent_events_list })

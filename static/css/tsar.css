@@ -74,7 +74,7 @@ h1, h2 {
 	border: thin solid white;
 }
 h2 {	color: #a33; }
-date {	color: gray; font-size: smaller; }
+date, time {	color: gray; font-size: smaller; }
 section {
 	background-color: rgba(255,255,255,0.75);
 /*	border: thin solid #eeb; */

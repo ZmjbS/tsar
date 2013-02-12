@@ -1,20 +1,13 @@
 {% extends "tsar.html" %}
-{% block page_title %}{{ event.title }}{% endblock %}
 
 {% block content %}
-<div class="full-width">
-<section id="event_description">
-	<div class="date pull-right">{{ event.date_time_begin }}〜{{ event.date_time_end }}</div>
-	<p>{{ event.description }}
-</section>
-</div>
 
 <div class="third-width">
 <section>
 <h2>Mæting</h2>
-<ul>
+<ul style="list-style: none">
 {% for event_role in event.eventrole_set.all %}
-	<li>{{ event_role.role.title }}
+	<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;">{{ event_role.role.title }} <span style="font-size:smaller; color: gray; float: right;">{{ event_role.minimum }}〜{{ event_role.maximum }}</span></div>
 		<ul>
 	{% for group in event_role.invited_groups.all %}
 		<li><a href="/hopur/{{ group.slug }}">{{ group.title }}</a></li>
@@ -32,8 +25,20 @@
 </div>
 
 <div class="twothird-width">
+<section id="event_description">
+	<date class="pull-right">{{ event.date_time_begin }}〜{{ event.date_time_end }}</date>
+	<h2>{{ event.title }}</h2>
+	{{ event.description }}
+</section>
 <section>
+<img class="pull-right span3" src="/static/img/hengill-husmuli.png" alt="kort" />
 <h2>Merki</h2>
+<dl class="dl-horizontal" style="margin-top: 0">
+	<dt>Umsjón:<dt><dd>Bækistöðvarhópur</dd>
+	<dt>Verkefni:</dt><dd>Fyrsta hjálp</dd>
+	<dt>Aðstæður:</dt><dd>Innanhúss, innanbæjar</dd>
+	<dt>Tækjanotkun:</dt><dd>Reykur 1, Reykur 4</dd>
+</dl>
 </section>
 </div>
 {% endblock %}
