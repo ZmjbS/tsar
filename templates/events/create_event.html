@@ -75,6 +75,25 @@ $(document).ready(function(){
   $('#add_days').addClass('span6');
 
   $('#id_description').addClass('span12');
+
+  $('#create-event-button').click(function(){
+	title = $('#id_title').val().toString();
+//	alert(title);
+	d = $('#id_description').val();
+	dtb = $('#id_date_time_begin').val();
+	dte = $('#id_date_time_end').val();
+	et = $('#event_type').val();
+//    alert(t+d+dtb+dte+et);
+	bla='testing';
+//	title='teststring';
+//	$('#results').html('&nbsp;').load('/vidburdur/nyskraning/test?t='+title);//+'&d='+d+'&dtb='+dtb+'&dte='+dte+'&et='+et);
+	var posting = $.post("/vidburdur/nyskraning/test", { t: title, d: d, dtb: dtb, dte: dte, et: et });
+
+	posting.done(function(data) {
+//		var content = $(data);
+		$('#results').html(data);
+	});
+  });
  });
 </script>
 {% endblock %}
@@ -88,6 +107,7 @@ $(document).ready(function(){
 -->
 
 {% if error_message %}<div id="error_message">{{ error_message }}</div>{% endif %}
+<div class="alert" id="results">Test</div>
 
 <form action="." method="post">
 {% csrf_token %}
@@ -99,7 +119,7 @@ $(document).ready(function(){
 		{{ form.title }}
 		<select id="event_type">
 			{% for type in event_types %}
-			<option>{{ type.title }}</option>
+			<option value="{{ type.pk }}">{{ type.title }}</option>
 			{% endfor %}
 		</select>
 	</div>

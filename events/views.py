@@ -4,10 +4,11 @@ from django.template import RequestContext
 from members.models import Member
 from groups.models import Group
 from events.models import Role, EventType, Event, EventCreation, EventRoleForm
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 
-#from django.utils import timezone
+from django.utils import timezone
 import datetime
+from dateutil import parser
 
 now = datetime.datetime.now()
 
@@ -30,63 +31,22 @@ def display_or_save_event_form(request):
 	else:
 		return render(request, 'events/create_event.html', { 'form': form, 'event_types': event_types, 'event_roles': event_roles, 'members': members, 'groups': groups, })
 
-#def display_event_form(request):
-#	form = EventCreation(request.POST)
-#	event_roles = Role.objects.all()
-#	members = Member.objects.all()
-#	groups = Group.objects.all()
-#	if request.POST == 'invite':
-#		event_role_form = EventRoleForm(request.POST)
-#		return render(request, 'events/create_event.html', { 'form': form, 'event_role_form': event_role_form, 'event_roles': event_roles, 'members': members, 'groups': groups, })
-#	else:
-#		return render(request, 'events/create_event.html', { 'form': form, 'event_roles': event_roles, 'members': members, 'groups': groups, })
-
-## Receive a POST request from JavaScript and create (or update) the event.
-#def save_event(request):
-#	if request.method == 'POST':
-#		if request.POST == 'save':
-#			e = EventCreation(request.POST)
-#			if e.is_valid():
-#				e.save()
-#	#			return display_event_form(request)
-#				#return render(request, 'events/create_event.html', { 'event': e, })
-#			else:
-#				return display_event_form(request)
-#		if request.POST == 'event-invite-button':
-#			e = EventCreation(request.POST)
-#			if e.is_valid():
-#				e.save()
-#	#			return display_event_form(request)
-#	else:
-#		return render_to_response('Not POST request')
-#
-## Receive a POST request from JavaScript and add or update roles to an event.
-#def save_role(request):
-#	if request.method == 'POST':
-#		e = Event.objects(id=request.POST.event_id)
-#		e_r = EventRoleForm(request.POST)
-#		if e_r.is_valid():
-#			e_r.save()
-#			return render(request, 'events/create_event.html', { 'event': e, 'event_role': e_r, } )
-#	else:
-#		return render('Not POST')
-
-# Receive a POST request from JavaScript and add or update tags to an event.
-#def save_tag(request):
-
-#def create_event(request):
-#	if request.method == 'POST':
-#		form = EventCreation(request.POST)
-#		#e = Event(title="annar titill", description="Lýsingin", date_time_begin=timezone.now(), date_time_end=timezone.now(), event_type_id="1")
-#		#e.save()
-#		# Process data in form.cleaned_data
-#		form.date_time_begin = timezone.now()
-#		form.date_time_end= timezone.now()
-#		form.event_type_id="1"
-#		if form.is_valid():
-#			form.save()
-#			return HttpResponseRedirect('')
-#	else:
-#		form = EventCreation(request.POST)
-#
-#	return render(request, 'events/create_event.html', { 'form': form, })
+from django.views.decorators.csrf import csrf_exempt
+# TODO: Read up on CSRF <https://docs.djangoproject.com/en/dev/ref/contrib/csrf/>
+@csrf_exempt
+def test_save(request):
+	if request.is_ajax():
+		t = request.POST['t']
+		d = request.POST['d']
+		dtb = timezone.make_aware(parser.parse(request.POST['dtb']),timezone.get_default_timezone())
+		dte = timezone.make_aware(parser.parse(request.POST['dte']),timezone.get_default_timezone())
+		et_id = request.POST['et']
+		try:
+			event = Event(title=t, description=d, date_time_begin=dtb, date_time_end=dte, event_type_id=3)
+			event.clean_fields()
+			event.save()
+		except:
+			return HttpResponse("Hello, world. Could not create event.")
+		return HttpResponse("Request is ajax. with Title: "+t+", Description: "+d+", Start: "+dtb.isoformat()+", End: "+dte.isoformat()+" and Type: "+et_id)
+	else:
+		return HttpResponse("Hello, world. Not AJAX request.")
