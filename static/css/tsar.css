@@ -56,15 +56,18 @@ body {	background-image: url("/static/img/tsar_background-transparent-4.png");
 	background-position: 100px 50px;
 	background-attachment: fixed; }
 h1 {
-/*	border: thin solid #dca; */
-/*	color: #eeb; */
-	color: #a33;
-/*	background-color: #bb3333; */
 	padding: 4px 4px 4px .3em;
 	font-variant: small-caps;
+	font-size: 2.57em;
 }
 h1, h2 {
+	margin: 0;
+	color: #a33;
 	font-family: "Times New Roman", serif;
+}
+h2 {
+	font-weight: bol; ont-size: normal;
+	font-size: 1.54em;
 }
 #navigation {
 	background-color: #eee; }
@@ -73,7 +76,6 @@ h1, h2 {
 #search-field {
 	border: thin solid white;
 }
-h2 {	color: #a33; }
 date, time {	color: gray; font-size: smaller; }
 section {
 	background-color: rgba(255,255,255,0.75);

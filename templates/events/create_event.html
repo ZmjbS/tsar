@@ -91,6 +91,7 @@ $(document).ready(function(){
 
 	posting.done(function(data) {
 //		var content = $(data);
+		$('#results').slideDown();
 		$('#results').html(data);
 	});
   });
@@ -107,7 +108,7 @@ $(document).ready(function(){
 -->
 
 {% if error_message %}<div id="error_message">{{ error_message }}</div>{% endif %}
-<div class="alert" id="results">Test</div>
+<div class="alert" style="display:none" id="results"></div>
 
 <form action="." method="post">
 {% csrf_token %}

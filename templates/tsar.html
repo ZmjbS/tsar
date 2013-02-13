@@ -2,31 +2,29 @@
 {% load bootstrap_toolkit %}
 <html lang="is">
 <head>
-  <meta charset="utf-8" />
+	<meta charset="utf-8" />
+	<link type="text/css" rel="stylesheet" href="/static/css/html-5-reset.css" />
 	{% bootstrap_stylesheet_tag %}
-  <link type="text/css" rel="stylesheet" href="/static/css/html-5-reset.css" />
-  <link type="text/css" rel="stylesheet" href="/static/css/style.css" />
-<!--  <link rel="stylesheet" href="/~martin/css/layout.css" />-->
-  <link type="text/css" rel="stylesheet" href="/static/css/print.css" media="print" />
-  <link type="text/css" rel="stylesheet" href="/static/css/code.css"  />
-  <link type="text/css" rel="stylesheet" href="/static/css/tsar.css"  />
-  <link type="text/css" rel="stylesheet" href="/static/css/font-awesome.min.css">
-  <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+	<link type="text/css" rel="stylesheet" href="/static/css/font-awesome.min.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/tsar.css"  />
+	<script type="text/javascript" src="/static/js/jquery.min.js"></script>
 	{% bootstrap_javascript_tag "dropdown" %}
-  <title>{% block title %}Innra svæði HSSR{% endblock %}</title>
+
+	<title>{% block title %}Innra svæði HSSR{% endblock %}</title>
+
 	{% block head %}{% endblock %}
 </head>
 <body>
 
 <!-- HEADER -->
-<header>
+<header style="margin-top:.6em;">
 	<form id="search-field" class="form-search" style="margin-right: 1em;">
 		<div class="input-append">
-			<input type="text" class="search-query span2" data-placeholder="Félagatal" />
-			<button type="sumbit" class="btn">Leita</button>
-		</div>
-	</form>
-	<h1>{% block page_title %}Hjálparsveit Skáta í Reykjavík{% endblock %}</h1>
+<input type="text" class="search-query span2" data-placeholder="Félagatal" />
+<button type="sumbit" class="btn">Leita</button>
+</div>
+</form>
+<h1>{% block page_title %}Hjálparsveit Skáta í Reykjavík{% endblock %}</h1>
 <div class="navbar">
 	<div class="navbar-inner">
 		<div class="container">
@@ -42,8 +40,8 @@
 			<ul class="nav">
 				<li><a href="/">Síðan mín</a></li>
 				<li><a href="/hopur">Hópar og flokkar</a></li>
-				<li><a href="/vidburdur" style="padding-right:0">Viðburðir og útköll</a></li>
-				<li><a href="/vidburdur/nyskraning" style="padding-left:0; margin-left:-2em;"><b class="icon-edit" style="vertical-align: 10%"></b></a></li>
+				<li><a href="/vidburdur" style="padding-right:.2em">Viðburðir og útköll</a></li>
+				<li><a href="/vidburdur/nyskraning" style="padding-left:0.2em;"><b class="icon-edit" style="vertical-align: 10%"></b></a></li>
 			</ul>
 			<ul class="nav pull-right" >
 				<li class="pull-right"><a href="/admin">admin</a></li>
@@ -52,8 +50,6 @@
 	</div>
 </div>
 
-<!--	<div id="admin-links"> <a href="/admin/">admin</a> </div>
-	{% block navbar-content %}{% endblock %}-->
 </header>
 
 <!-- MAIN -->

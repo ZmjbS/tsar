@@ -44,9 +44,11 @@ def test_save(request):
 		try:
 			event = Event(title=t, description=d, date_time_begin=dtb, date_time_end=dte, event_type_id=3)
 			event.clean_fields()
-			event.save()
+			#event.save()
 		except:
 			return HttpResponse("Hello, world. Could not create event.")
-		return HttpResponse("Request is ajax. with Title: "+t+", Description: "+d+", Start: "+dtb.isoformat()+", End: "+dte.isoformat()+" and Type: "+et_id)
+		#return HttpResponse("Request is ajax. with Title: "+t+", Description: "+d+", Start: "+dtb.isoformat()+", End: "+dte.isoformat()+" and Type: "+et_id)
+		notice = "string"
+		return HttpResponse(string)
 	else:
 		return HttpResponse("Hello, world. Not AJAX request.")
