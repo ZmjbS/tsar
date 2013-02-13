@@ -31,7 +31,7 @@ $(document).ready(function(){
 </h2>
 <table class="table-hover table-condensed table">
 <thead>
-<tr><th style="width: 1.1em;"><input class="edit-interface" type="checkbox"></th><th>Nafn</th><th>Sími</th><th>Tölvupóstfang</th><th>A</th><th>B</th><th>C</th><th style="width:1.6em;"></th></tr>
+<tr><th style="width: 1.1em;"><input class="edit-interface" type="checkbox"></th><th>Nafn</th><th>Sími</th><th>Tölvupóstfang</th><th>A</th><th>B</th><th>C</th><th style="width:1.1em;"></th></tr>
 </thead>
 <tbody>
 {% for member in group.members.all %}
@@ -43,7 +43,7 @@ $(document).ready(function(){
 		<td><input class="edit-interface-checkbox" type="checkbox" checked="true" disabled="true" /></td><!-- A -->
 		<td><input class="edit-interface-checkbox" type="checkbox" disabled="true" /></td><!-- B -->
 		<td><input class="edit-interface-checkbox" type="checkbox" disabled="true" /></td><!-- C -->
-		<td><span class="icon-remove-sign edit-interface" style="width: 2em">&nbsp;&nbsp;&nbsp;&nbsp;</span> </td><!-- C -->
+		<td><span class="icon-remove-sign edit-interface"></span> </td><!-- C -->
 	</tr>
 {% endfor %}
 </tbody>
