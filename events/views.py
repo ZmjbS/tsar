@@ -44,11 +44,24 @@ def test_save(request):
 		try:
 			event = Event(title=t, description=d, date_time_begin=dtb, date_time_end=dte, event_type_id=3)
 			event.clean_fields()
-			#event.save()
+			event.save()
 		except:
 			return HttpResponse("Hello, world. Could not create event.")
+		## If successful:
 		#return HttpResponse("Request is ajax. with Title: "+t+", Description: "+d+", Start: "+dtb.isoformat()+", End: "+dte.isoformat()+" and Type: "+et_id)
-		notice = "string"
-		return HttpResponse(string)
+		return HttpResponse(event.id)
 	else:
 		return HttpResponse("Hello, world. Not AJAX request.")
+
+@csrf_exempt
+def group_save(request):
+	if request.is_ajax():
+		eventId = request.POST['eid']
+		roleId = request.POST['rid']
+		group = request.POST['grp']
+		member = request.POST['grp']
+		mininum = request.POST['min']
+		maximum = request.POST['max']
+	else:
+		# Perhaps just merge this with the standard view response.
+		return HttpResponse("Group save request isn't an AJAX request.")
