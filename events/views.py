@@ -36,19 +36,35 @@ from django.views.decorators.csrf import csrf_exempt
 @csrf_exempt
 def test_save(request):
 	if request.is_ajax():
-		t = request.POST['t']
-		d = request.POST['d']
-		dtb = timezone.make_aware(parser.parse(request.POST['dtb']),timezone.get_default_timezone())
-		dte = timezone.make_aware(parser.parse(request.POST['dte']),timezone.get_default_timezone())
-		et_id = request.POST['et']
+		# TODO: Add handler for these below. They are required and must be submitted or else the form will not validate. Or perhaps the clean_fields() exception is enough...?
+		t = request.POST['title']
+		d = request.POST['description']
+		dtb = timezone.make_aware(parser.parse(request.POST['date_time_begin']),timezone.get_default_timezone())
+		dte = timezone.make_aware(parser.parse(request.POST['date_time_end']),timezone.get_default_timezone())
+		et_id = request.POST['event_type']
 		try:
-			event = Event(title=t, description=d, date_time_begin=dtb, date_time_end=dte, event_type_id=3)
-			event.clean_fields()
-			event.save()
+			event_id = request.POST['event_id']
+			if event_id == '':
+			# If no event id has been supplied, we'll create a new event.
+				event = Event(title=t, description=d, date_time_begin=dtb, date_time_end=dte, event_type_id=et_id)
+			else:
+			# else we update the existing one.
+				event = Event.objects.get(pk=event_id)
+				event.title = t
+				event.description = d
+				event.date_time_begin = dtb
+				event.date_time_end = dte
+				event.event_type_id = et_id
+				#return HttpResponse('Event fields updated.')
+			# Now that the event has been taken care of, let's sort out the event roles etc.
+			try:
+				event.clean_fields()
+#				return HttpResponse('Event fields clean.')
+				event.save()
+			except:
+				return HttpResponse ("Hello, world. Could not save event.")
 		except:
 			return HttpResponse("Hello, world. Could not create event.")
-		## If successful:
-		#return HttpResponse("Request is ajax. with Title: "+t+", Description: "+d+", Start: "+dtb.isoformat()+", End: "+dte.isoformat()+" and Type: "+et_id)
 		return HttpResponse(event.id)
 	else:
 		return HttpResponse("Hello, world. Not AJAX request.")

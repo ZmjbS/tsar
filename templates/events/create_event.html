@@ -9,69 +9,45 @@
 <script type="text/javascript" src="/static/js/chosen.jquery.min.js"></script>
 <link type="text/css" rel="stylesheet" href="/static/css/chosen.css" />
 <style>
-/* css for timepicker */
-.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
-.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
-.ui-timepicker-div dl { text-align: left; }
-.ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
-.ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }
-.ui-timepicker-div td { font-size: 90%; }
-.ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
+	/* css for timepicker */
+	.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+	.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+	.ui-timepicker-div dl { text-align: left; }
+	.ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
+	.ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }
+	.ui-timepicker-div td { font-size: 90%; }
+	.ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
 </style>
 <style>
-section { overflow: auto; }
-h2 { margin-top: 0; }
-/*#id_title { width:90%; }*/
-/*#event-title, #event-date { margin: .4em; }*/
-/*.roles { list-style: none; }*/
-/*.role { background-color: #eee; padding: .4em; margin-bottom: 3px; margin-left: 0; }*/
-.select-participants, [id*='role-groups-id_'] { width: 100%; }
-/*[id*='select-member-role-'] { width: 44em; }*/
-#tag-event_task, #tag-organiser, #tag-location, #tag-equipment { width: 44em; }
-/*#event_type { width: 8em; }*/
-/*#id_invited_groups, #id_invited_members { width: 44em; }*/
-#id_minimum, #id_maximum { width: 2em; }
-th, td { height: 1em; }
-#role_groups_id_template_chzn, #role_groups_id_template_chzn .chzn-drop, #role_groups_id_template_chzn ul li input { width: 100% !important; }
-#id_date_time_begin, #id_date_time_end { width: 100%; }
-#id_date_time_begin-label, #id_date_time_end-label { text-align: right; }
-
-.role_entry { background-color: #efefef; padding: .4em; margin-bottom: .4em; }
-.role_entry-title { font-size: 1.6em; font-weight: old; padding-top: .3em; }
+	section { overflow: auto; }
+	h2 { margin-top: 0; }
+	.select-participants, [id*='role-groups-id_'] { width: 100%; }
+	#tag-event_task, #tag-organiser, #tag-location, #tag-equipment { width: 44em; }
+	#id_minimum, #id_maximum { width: 2em; }
+	th, td { height: 1em; }
+	#role_groups_id_template_chzn, #role_groups_id_template_chzn .chzn-drop, #role_groups_id_template_chzn ul li input { width: 100% !important; }
+	#id_date_time_begin, #id_date_time_end { width: 100%; }
+	#id_date_time_begin-label, #id_date_time_end-label { text-align: right; }
+	
+	.role_entry { background-color: #efefef; padding: .4em; margin-bottom: .4em; }
+	.role_entry-title { font-size: 1.6em; font-weight: old; padding-top: .3em; }
 </style>
 <script type="text/javascript">
 
-//var event_id;
-
 $(document).ready(function(){
+// Datetimepicker
 	$('#id_date_time_begin').datetimepicker();
 	$('#id_date_time_end').datetimepicker();
 
+// Chosen UI
 	$('#role-groups-id_template').chosen();
-	//$('#role-groups-id_1').chosen();
-	//$('#role-groups-id_2').chosen();
-	//$('#role-groups-id_3').chosen();
-	//$('#role-groups-id_4').chosen();
-	//$('#role-groups-id_5').chosen();
 
-	//$('#select-member-role-1').chosen();
-	//$('#select-member-role-2').chosen();
-	//$('#select-member-role-3').chosen();
-	//$('#select-member-role-4').chosen();
-	//$('#select-member-role-5').chosen();
-
-// $('#tag-event_type').chosen();
 	$('#tag-event_task').chosen();
 	$('#tag-organiser').chosen();
 	$('#tag-location').chosen();
 	$('#tag-equipment').chosen();
 
-	//$('.select-participants').live('load',alert('loaded'));
-
-	//$('#id_role').chosen();
-	//$('#id_invited_groups').chosen();
-	//$('#id_invited_members').chosen();
-
+// Bootstrap styling
 	$('#id_title').addClass('span10');
 	$('#event_type').addClass('span2');
 
@@ -79,45 +55,28 @@ $(document).ready(function(){
 	$('#id_date_time_begin-content').addClass('span2');
 	$('#id_date_time_end-label').addClass('span1');
 	$('#id_date_time_end-content').addClass('span2');
-//  $('#add_day').addClass('span2 offset1');
 	$('#add_days').addClass('span6');
 
 	$('#id_description').addClass('span12');
 
+
+// Serialise the input data and submit the form.
+	$('form').submit(function() {
+		// TODO: Look into serializeJSON() to gather the event roles.
+		//alert('serialising');
+		fields = $(this).serializeArray();
+		json = $(this).serializeJSON();
+		console.log(fields);
+		var posting = $.post("/vidburdur/nyskraning/test", fields);
+	//	var posting = $.post("/vidburdur/nyskraning/test", { t: title, d: d, dtb: dtb, dte: dte, et: et });
+		posting.done(function(data) {
+			$('#event_id').val(data);
+			//alert('Posting is done. Finished with data ('+data+') in event_id as: '+$('#event_id').val());
+		});
+		return false;
+	});
+
 }); //END READY -----------------------
-
-	function add_message(message,type) {
-		$('#message').slideDown();
-		$('#message').css('class','warning');
-		$('#message').html(message);
-	}
-
-function save_event() {
-	// read the values of the fields, send a POST request to the view and receive (and possibly process) the response.
-	title = $('#id_title').val().toString();
-	d = $('#id_description').val();
-	dtb = $('#id_date_time_begin').val();
-	dte = $('#id_date_time_end').val();
-	et = $('#event_type').val();
-	event_id = '';
-
-	var posting = $.post("/vidburdur/nyskraning/test", { t: title, d: d, dtb: dtb, dte: dte, et: et });
-	posting.done(function(data) {
-		//event_id = $(data);
-		//event_id = data;
-		$('#event-creator').data('event_id', data);
-		alert('In save_event. .done for .post finished with event_id as: '+$('#event-creator').data('event_id')+' in .data');//event_id);//+' data is: '+data);
-	});
-	//event_id = 3;
-	// Odd, here we seem to have event_id as undefined though it seems ot work in the function that calls the function above.
-	alert('Just leaving save_event(). Now event_id is: '+$('#event-creator').data('event_id'));
-}
-
-
-	$('#create-event-button').click(function(){
-		alert('Event handler for #create-event-button.\nThis should create the event if event_id is undefined and save the roles, event and other info if it is defined.\nCalling save_event().');
-//		save_event();
-	});
 
 	$('.role-entry-tmp').live('click',(function(){
 		role_id = $(this).attr('id');
@@ -134,19 +93,20 @@ function save_event() {
 	node=	'<div class="role_entry">'
 		+		'<div class="row-fluid">'
 		+			'<div class="role_entry-title span6">'+role_title+'</div>'
+		+			'<input type="hidden" name="role_'+role_id+'-id" value="'+role_id+'" />'
 		+			'<div class="role_entry-numbers span6">'
 		+				'<div class="row-fluid">'
-		+					'<div class="span4">minnst: <input class="span6 role-min" type="number" min="0" value="0" max="999" /></div>'
-		+					'<div class="span4">mest: <input class="span6 role-max" type="number" min="0" value="0" max="999" /></div>'
+		+					'<div class="span4">minnst: <input name="role_'+role_id+'-minimum" class="span6 role-min" type="number" min="0" value="0" max="999" /></div>'
+		+					'<div class="span4">mest:   <input name="role_'+role_id+'-maximum" class="span6 role-max" type="number" min="0" value="0" max="999" /></div>'
 		+					'<div class="span3">'
-		+						'<input class="btn btn-danger span12" type="button" value="lokað" onclick="$(this).toggleClass(\'btn-danger btn-success\');($(this).val()==\'lokað\')?$(this).val(\'opið\'):$(this).val(\'lokað\');" />'
+		+						'<input name="role_'+role_id+'-closed" class="btn btn-danger span12" type="button" value="lokað" onclick="$(this).toggleClass(\'btn-danger btn-success\');($(this).val()==\'lokað\')?$(this).val(\'opið\'):$(this).val(\'lokað\');" />'
 		+					'</div>'
 		+					'<div class="span1"><i id="'+role_id+'" class="role-entry-tmp icon-remove-sign pull-right" style="cursor: pointer"></i></div>'
 		+				'</div>'
 		+			'</div>'
 		+		'</div>'
 		+		'<div>'
-		+			'<select multiple data-placeholder="Veldu þáttakendur" class="select-participants">'
+		+			'<select name="role_'+role_id+'-participants" multiple data-placeholder="Veldu þáttakendur" class="select-participants">'
 		+				'<optgroup label="Hópar og flokkar">'
 		+					'{% for group in groups %}'
 		+					'<option value="{{ group.id }}">{{ group.title }}</option>'
@@ -164,23 +124,6 @@ function save_event() {
 		$('#invite-role-list').append(node);
 		$('.select-participants').chosen();
 	}));
-
-function add_role(rid) {
-	if (event_id == "") alert('event_id is empty string');
-//	if (event_id == "") save_event();
-	//rid = $('#').val();
-	grp = $('#role-groups-id_template').val() || [];
-	//mbr = $('#').val();
-	min = $('#role-min-template').val();
-	max = $('#role-min-template').val();
-//	alert('Role ID: '+rid+' Group: '+grp.join(', '));//+' Member: '+mbr);
-	//var posting = $.post("/vidburdur/hopaskraning", { eid: event_id, rid: rid, grp: grp, mbr: mbr, min: min, max: max });
-
-//	posting.done(function(data) {
-//		$('#results').html('Group '+grp+' added');
-//	});
-}
-
 </script>
 {% endblock %}
 
@@ -200,10 +143,11 @@ function add_role(rid) {
 
 <!-- LÝSING -->
 <section class="full-width " id="lysing" tyle="overflow: visible">
+	<input type="hidden" name="event_id" id="event_id" value="" />
 	<h2>1. Lýsing</h2>
 	<div class="row-fluid">
 		{{ form.title }}
-		<select id="event_type">
+		<select id="event_type" name="event_type">
 			{% for type in event_types %}
 			<option value="{{ type.pk }}">{{ type.title }}</option>
 			{% endfor %}
@@ -341,7 +285,8 @@ function add_role(rid) {
 </section>
 
 <section class="full-width" id="create-event">
-	<input id="create-event-button" type="button" class="btn btn-primary pull-right" value="Vista viðburð" /><!--disabled='true' /> -->
+	<!--<input id="create-event-button" type="button" class="btn btn-primary pull-right" value="Vista viðburð" />-->
+	<button id="create-event-button" class="btn btn-primary pull-right">Vista viðburð</button>
 </section>
 
 </form>
