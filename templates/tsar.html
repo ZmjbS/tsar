@@ -3,21 +3,24 @@
 <html lang="is">
 <head>
 	<meta charset="utf-8" />
+<!-- Reset for HTML5 -->
 	<link type="text/css" rel="stylesheet" href="/static/css/html-5-reset.css" />
-	{% bootstrap_stylesheet_tag %}
-<!-- Font Awesome is awesome. Provides a bunch of icons as font characters. Supercedes the Bootstrap icons. -->
-	<link type="text/css" rel="stylesheet" href="/static/css/font-awesome.min.css">
-	<link type="text/css" rel="stylesheet" href="/static/css/tsar.css"  />
 <!-- jQuery -->
 	<script type="text/javascript" src="/static/js/jquery.min.js"></script>
 <!-- Not sure if still used -->
+<!--
 	<script type="text/javascript" src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
 	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css" />
+-->
 <!-- serializeJSON is used to gather form data and put it on JSON form for a post request. -->
 	<script type="text/javascript" src="/static/js/jquery.serializeJSON.min.js"></script>
-	{% bootstrap_javascript_tag "dropdown" %}
-<!-- Added to make buttons depressable, but never got it to work -->
-	{% bootstrap_javascript_tag "button" %}
+<!-- Bootstrap -->
+	<link type="text/css" rel="stylesheet" href="/static/css/bootstrap.min.css" />
+	<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+<!-- Font Awesome is awesome. Provides a bunch of icons as font characters. Supercedes the Bootstrap icons. -->
+	<link type="text/css" rel="stylesheet" href="/static/css/font-awesome.min.css">
+<!-- Override TSAR specific styling -->
+	<link type="text/css" rel="stylesheet" href="/static/css/tsar.css"  />
 
 	<title>{% block title %}Innra svæði HSSR{% endblock %}</title>
 

@@ -50,8 +50,8 @@ class EventRole(models.Model):
 	# TODO: The “hidden” parameter should probably be here, rather than in the intermediary models.
 	event = models.ForeignKey(Event)
 	role = models.ForeignKey(Role)
-	invited_groups = models.ManyToManyField(Group, through='GroupInvitation')
-	invited_members = models.ManyToManyField(Member, through='MemberInvitation')
+	invited_groups = models.ManyToManyField(Group, through='GroupInvitation', blank=True, null=True)
+	invited_members = models.ManyToManyField(Member, through='MemberInvitation', blank=True, null=True)
 	minimum = models.SmallIntegerField(default=0)
 	maximum = models.SmallIntegerField(default=0)
 
