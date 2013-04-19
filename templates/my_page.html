@@ -42,17 +42,17 @@
   <h2>Fréttir</h2>
 	<a href="http://www.hssr.is">HSSR</a>
 	<ul>
-		<li><a href="http://www.hssr.is/main/frettir.asp?t=2&id=1737"><span class="frett_titill">Breytingar á svörun við útkallsboðun</span></a> <date>22.maí. 2012 </date></li>
-		<li><a href="http://www.hssr.is/main/frettir.asp?t=2&id=1736"><span class="frett_titill">UNDAC</span></a> <date>22.maí. 2012</date></li>
-		<li><a href="http://www.hssr.is/main/frettir.asp?t=2&id=1735"><span class="frett_titill">Búðahópur kaupir 5kW ljósavél</span></a> <date>21.maí. 2012</date> </li>
-		<li><a href="http://www.hssr.is/main/frettir.asp?t=2&id=1734"><span class="frett_titill">Útkall F2 rauður á Keflavíkurflugvelli</span></a> <date>18.maí. 2012</date></li>
-		<li><a href="http://www.hssr.is/main/frettir.asp?t=2&id=1733"><span class="frett_titill">Samningur við KSÍ endurnýjaður</span></a> <date>18.maí. 2012</date></li>
+{% for entry in hssr_entries %}
+	<li><a href="{{ entry.link }}">{{ entry.title }}</a> <date>{{ entry.published }}</date></li>
+{% endfor %}
 	</ul>
-	<a href="http://landsbjorg.is/">Landsbjörg</a>
 
+	<a href="http://landsbjorg.is/">Landsbjörg</a>
 	<ul>
 <!-- Skoða: http://justquick.github.com/django-native-tags/contrib/feeds.html -->
-	<li>http://landsbjorg.is/Rss.aspx?CatID=466</li>
+{% for entry in sl_entries %}
+	<li><a href="{{ entry.link }}">{{ entry.title }}</a> <date>{{ entry.published }}</date></li>
+{% endfor %}
 	</ul>
 <!-- Skoða: http://www.b-list.org/weblog/2007/dec/09/updates/ -->
 </section>
