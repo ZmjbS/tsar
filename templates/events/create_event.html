@@ -24,7 +24,6 @@
 	.select-participants, [id*='role-groups-id_'] { width: 100%; }
 	/*#tag-event_task, #tag-organiser, #tag-location, #tag-equipment { width: 44em; }*/
 	/*#tag-event_task, #tag-organiser, #tag-location, #tag-equipment { width: 100%; }*/
-	#tag-organiser, #tag-event_task, #tag-location, #tag-equipment { width: 100%; }
 	#tag_organiser_chzn, #tag_event_task_chzn, #tag_location_chzn, #tag_equipment_chzn { width: 100% !important; }
 	/*#tag-organiser { width: 8em; } */
 	#id_minimum, #id_maximum { width: 2em; }
@@ -124,12 +123,12 @@ $(document).ready(function(){
 		+			'<select name="role['+role_id+'][participants][]" multiple data-placeholder="Veldu þáttakendur" class="select-participants">'
 		+				'<optgroup label="Hópar og flokkar">'
 		+					'{% for group in groups %}'
-		+					'<option value="{{ group.id }}">{{ group.title }}</option>'
+		+					'<option value="g{{ group.id }}">{{ group.title }}</option>'
 		+					'{% endfor %}'
 		+				'</optgroup>'
 		+				'<optgroup label="Meðlimir">'
 		+					'{% for member in members %}'
-		+					'<option value="{{ member.id }}">{{ member }}</option>'
+		+					'<option value="m{{ member.id }}">{{ member }}</option>'
 		+					'{% endfor %}'
 		+				'</optgroup>'
 		+			'</select>'

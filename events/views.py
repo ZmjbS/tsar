@@ -3,7 +3,7 @@ from django.shortcuts import render_to_response, render
 from django.template import RequestContext
 from members.models import Member
 from groups.models import Group
-from events.models import Role, EventType, Event, EventRole, EventCreation, EventRoleForm, GroupInvitation
+from events.models import Role, EventType, Event, EventRole, EventCreation, EventRoleForm, GroupInvitation, MemberInvitation
 from django.http import HttpResponseRedirect, HttpResponse
 
 from django.utils import timezone
@@ -34,7 +34,6 @@ def display_or_save_event_form(request):
 	#else:
 	return render(request, 'events/create_event.html', { 'form': form, 'event_types': event_types, 'event_roles': event_roles, 'members': members, 'groups': groups, })
 
-#TODO: Need to find a way to differentiate between groups and members that are invited. Since the group IDs are just strings, maybe use strings on the form 'm4' and 'g4' for the fourth member and group, respectively.
 #TODO: Do we need to remove orphaned invitations once an EventRole has been removed?
 #TODO: Reorder these try-s to shorten them so that the exceptions make more sense.
 def save_event(request):
@@ -84,20 +83,22 @@ def save_event(request):
 				print 'Role is %s' % role
 				try: #if we want the role:
 					currentparticipants = [] # This will be populated below if the event exists (and currently has any participants).
-					currentgroups= [] # This will be populated below if the event exists (and currently has any participants).
+					currentgroups = [] # This will be populated below if the event exists (and currently has any participants).
+					currentmembers= [] # This will be populated below if the event exists (and currently has any participants).
 
-					wantedparticipantIDs = map(int,data['role'][role.id]['participants'])
+					wantedparticipantIDs = data['role'][role.id]['participants']
 					print 'Wanted participantsID: {}'.format(wantedparticipantIDs)
-					#TODO: Add an option to allow for wantedparticipatns to be either groups or members. Will require some modification of the form to distinguish between member and group IDs.
-					#wantedgroups = map(int,wantedparticipantIDs)
-					wantedgroups = [Group.objects.get(pk=groupid) for groupid in wantedparticipantIDs]
+					wantedgroups = [Group.objects.get(pk=int(groupid[1:])) for groupid in wantedparticipantIDs if groupid[0]=='g']
 					print 'We want event role {} with groups {}'.format(role, wantedgroups)
+					wantedmembers= [Member.objects.get(pk=int(memberid[1:])) for memberid in wantedparticipantIDs if memberid[0]=='m']
+					print 'We want event role {} with members {}'.format(role, wantedmembers)
 					try: #check whether the EventRole already exists
 						# In the event that an EventRole already exists, we have to:
 						#  1. Get the EventRole, stored in eventrole.
 						#  2. Remove unwanted participants
 						# Adding wanted participants is shared with EventRoles that
 						# need to be created so we're doing that later on.
+						#  3. Update the minimum and maximum number of participants
 
 						# 1.
 						eventrole = EventRole.objects.get(event_id=event.id,role_id=role.id)
@@ -106,7 +107,9 @@ def save_event(request):
 						# 2.
 						#currentgroups= GroupInvitation.objects.filter(event_role=eventrole)
 						currentgroups = eventrole.invited_groups.all()
+						currentmembers= eventrole.invited_members.all()
 						print 'currentgroups: {}'.format(currentgroups)
+						print 'currentmembers: {}'.format(currentmembers)
 						print 'EventRole already has these invitations:'
 						for group in currentgroups:
 							print '>>{} ({})'.format(group, group.id)
@@ -126,6 +129,30 @@ def save_event(request):
 									print 'Could not remove group {} from {}'.format(group,currentgroups)
 							else:
 								print '++ ID is {}: We keep {}.'.format(group.id,group)
+						for member in currentmembers:
+							print '>>{} ({})'.format(member, member.id)
+							if member not in wantedmembers:
+								print '-- ID is {}: We don\'t want {}.'.format(member.id,member)
+								try:
+									print 'DEBUG: {}'.format(eventrole.invited_members)
+									mi = MemberInvitation.objects.get(event_role=eventrole,member=member)
+									#print mi
+									mi.delete()
+									print 'BINGO'
+								except:
+									print 'Could not remove member {} from {}'.format(member,currentmembers)
+							else:
+								print '++ ID is {}: We keep {}.'.format(member.id,member)
+						# 3.
+						if eventrole.minimum != int(data['role'][role.id]['min']) or eventrole.maximum != int(data['role'][role.id]['max']):
+							eventrole.minimum = int(data['role'][role.id]['min'])
+							eventrole.maximum = int(data['role'][role.id]['max'])
+							try:
+								eventrole.clean_fields()
+								eventrole.save()
+								print 'eventrole saved: {}.'.format(eventrole)
+							except:
+								return HttpResponse('Hello, world. Could not update eventrole max/min numbers.')
 					except: #else
 						# Since there is no existing EventRole, we need to:
 						#  1. Create an EventRole, and save it as eventrole.
@@ -150,6 +177,7 @@ def save_event(request):
 					# For each participant
 					print 'Adding invitations:'
 					print 'Wanted groups: {}'.format(wantedgroups)
+					print 'Wanted members: {}'.format(wantedmembers)
 					for group in wantedgroups:
 						print '>>{} ({})'.format(group, group.id)
 						if group not in currentgroups:
@@ -164,6 +192,21 @@ def save_event(request):
 								print 'ERROR: Could not save GroupInvitation {}'.format(gi)
 						else:
 							print '.. Group {} already invited: nothing to do. :-)'.format(group)
+					print 'Groups done!'
+					for member in wantedmembers:
+						print '>>{} ({})'.format(member, member.id)
+						if member not in currentmembers:
+							print '++ Member {} is not invited: Create MemberInvitation!'.format(member)
+							mi = MemberInvitation(event_role=eventrole, member=member)
+							print '++ MemberInvitation created: '.format(mi)
+							try:
+								mi.clean_fields()
+								mi.save()
+								print '++ MemberInvitation saved'
+							except:
+								print 'ERROR: Could not save MemberInvitation {}'.format(mi)
+						else:
+							print '.. Member {} already invited: nothing to do. :-)'.format(member)
 					print 'All done!'
 				except: #if we don't want the role:
 					print 'No role wanted.'

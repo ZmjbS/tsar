@@ -76,7 +76,7 @@ class MemberInvitation(models.Model):
 	def __unicode__(self):
 		return self.event_role.__unicode__() +'>'+ self.member.user.username
 
-# TODO: Need to implement some sort of confirmation class.
+# TODO: Need to implement some sort of confirmation/response class.
 
 class EventCreation(ModelForm):
 	class Meta:
