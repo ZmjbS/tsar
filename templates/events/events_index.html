@@ -1,13 +1,22 @@
 {% extends "tsar.html" %}
 {% block page_title %}HSSR: Viðburðir og útköll{% endblock %}
 
-{% block navbar-content %}
-	<section style="float:right">
-		<a style="color: #b33; font-weight: bold" href="nyskraning/">Skrá viðburð</a>
-	</section>
+{% block head %}
+<style>
+.nav { margin-bottom: 10px; }
+</style>
 {% endblock %}
 
 {% block content %}
+
+<ul class="nav nav-pills">
+	<li class="active"><a href="#calendar" data-toggle="tab">Dagatal</a></li>
+	<li><a href="#lists" data-toggle="tab">Viðburðalistar</a></li>
+</ul>
+
+<div class="tab-content">
+	<div class="tab-pane active" id="calendar">
+
 <div class="full-width">
 <section id="calendar">
 <div style="margin-left:6em;">Mars</div>
@@ -82,6 +91,9 @@
 </section>
 </div>
 
+	</div>
+	<div class="tab-pane" id="lists">
+
 <div class="third-width">
 <section id="recent-events">
 <h2>Nýlegir viðburðir</h2>
@@ -113,6 +125,9 @@
 {% endfor %}
 </ul>
 </section>
+</div>
+
+	</div>
 </div>
 
 {% endblock %}

@@ -7,11 +7,6 @@
 	<link type="text/css" rel="stylesheet" href="/static/css/html-5-reset.css" />
 <!-- jQuery -->
 	<script type="text/javascript" src="/static/js/jquery.min.js"></script>
-<!-- Not sure if still used -->
-<!--
-	<script type="text/javascript" src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
-	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css" />
--->
 <!-- serializeJSON is used to gather form data and put it on JSON form for a post request. -->
 	<script type="text/javascript" src="/static/js/jquery.serializeJSON.min.js"></script>
 <!-- Bootstrap -->
@@ -19,12 +14,13 @@
 	<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
 <!-- Font Awesome is awesome. Provides a bunch of icons as font characters. Supercedes the Bootstrap icons. -->
 	<link type="text/css" rel="stylesheet" href="/static/css/font-awesome.min.css">
-<!-- Override TSAR specific styling -->
+<!-- Add per-template options. -->
+	{% block head %}{% endblock %}
+<!-- Override styles with TSAR specific styling -->
 	<link type="text/css" rel="stylesheet" href="/static/css/tsar.css"  />
 
 	<title>{% block title %}Innra svæði HSSR{% endblock %}</title>
 
-	{% block head %}{% endblock %}
 </head>
 <body>
 

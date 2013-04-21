@@ -14,9 +14,8 @@ def index(request):
 
 def group_page(request, slug):
 	g = get_object_or_404(Group, slug=slug)
-	members = Member.objects.all()
-	#gm = Member.objects.filter(group__title=group_name)
-	om = Member.objects.exclude(membership__group__slug=slug)
+	#import pprint
+	#pprint.pprint(g.members.all())
 	recent_events_list=Event.objects.filter(eventrole__groupinvitation__group__slug=slug).filter(date_time_begin__lte=now)
 	coming_events_list=Event.objects.filter(eventrole__groupinvitation__group__slug=slug).filter(date_time_begin__gte=now)
-	return render_to_response('groups/group_page.html', { 'group': g, 'members': om, 'recent_events_list': recent_events_list, 'coming_events_list': coming_events_list, })
+	return render_to_response('groups/group_page.html', { 'group': g, 'recent_events_list': recent_events_list, 'coming_events_list': coming_events_list, })

@@ -1,16 +1,114 @@
 {% extends "tsar.html" %}
 
 {% block head %}
-<script type="text/javascript" src="/static/js/development-bundle/ui/jquery-ui-1.8.21.custom.js"></script>
-<script type="text/javascript" src="/static/js/chosen.jquery.min.js"></script>
-<link type="text/css" rel="stylesheet" href="/static/css/chosen.css" />
+	<!--<script type="text/javascript" src="/static/js/development-bundle/ui/jquery-ui-1.8.21.custom.js"></script>-->
+	<script type="text/javascript" src="/static/js/chosen.jquery.min.js"></script>
+	<link type="text/css" rel="stylesheet" href="/static/css/chosen.css" />
+<!-- Added for proper sorting: -->
+	<script type="text/javascript" src="/static/js/sugar-1.3.9-custom.min.js"></script>
+<!-- jQuery tablesorter -->
+	<script type="text/javascript" src="/static/js/jquery.tablesorter.min.js"></script>
+	<script type="text/javascript" src="/static/js/jquery.tablesorter.parser-input-select.js"></script>
 <style>
 #all_members_list_chzn { width: 80% !important; }
 .edit-interface { display: none; }
 </style>
 <script type="text/javascript">
 $(document).ready(function(){
-  $('#all-members-list').chosen();
+
+///////// BEGIN SNIPPET ////////////////////////
+// see: https://github.com/Mottie/tablesorter/wiki/Language
+// TODO: Why on earth am I not just able to reference sortBy from the script (sugar-1.3.9-custom) above???
+
+	/* sortBy functions & helpers extracted and slightly modified from
+  * Sugar Library v1.3.7
+  * Freely distributable and licensed under the MIT-style license.
+  * Copyright (c) 2012 Andrew Plummer
+  * http://sugarjs.com/arrays#sorting
+  */
+  var array = {
+    AlphanumericSortIgnoreCase  : true,
+    AlphanumericSortEquivalents : {}
+  },
+
+  order = 'AÁÀÂÃĄBCĆČÇDĎÐEÉÈĚÊËĘFGĞHıIÍÌİÎÏJKLŁMNŃŇÑOÓÒÔPQRŘSŚŠŞTŤUÚÙŮÛÜVWXYÝZŹŻŽÞÆŒØÕÅÄÖ',
+  // equiv = 'AÁÀÂÃ,CÇ,EÉÈÊË,IÍÌİÎÏ,OÓÒÔ,Sß,UÚÙÛÜ',
+  // modified order to match Icelandic sorting - see https://github.com/Mottie/tablesorter/issues/212
+  //order = 'AÁBCDÐEÉĘFGHIÍJKLMNOÓPQRSTUÚVWXYÝZÞÆÖ',
+  equiv = '',
+
+  sortBy = function(a,b){
+    return typeof a === "string" && typeof b === "string" ? collateStrings(a,b) : a < b ? -1 : a > b ? 1 : 0;
+  },
+
+  // Alphanumeric collation helpers
+  collateStrings = function(a, b) {
+    var aValue, bValue, aChar, bChar, aEquiv, bEquiv, index = 0, tiebreaker = 0;
+    a = getCollationReadyString(a);
+    b = getCollationReadyString(b);
+    do {
+      aChar  = getCollationCharacter(a, index);
+      bChar  = getCollationCharacter(b, index);
+      aValue = getCollationValue(aChar);
+      bValue = getCollationValue(bChar);
+      if (aValue === -1 || bValue === -1) {
+        aValue = a.charCodeAt(index) || null;
+        bValue = b.charCodeAt(index) || null;
+      }
+      aEquiv = aChar !== a.charAt(index);
+      bEquiv = bChar !== b.charAt(index);
+      if (aEquiv !== bEquiv && tiebreaker === 0) {
+        tiebreaker = aEquiv - bEquiv;
+      }
+      index += 1;
+    } while (aValue != null && bValue != null && aValue === bValue);
+    if (aValue === bValue) return tiebreaker;
+    return aValue < bValue ? -1 : 1;
+  },
+
+  getCollationReadyString = function(str) {
+    if (array.AlphanumericSortIgnoreCase) {
+      str = str.toLowerCase();
+    }
+    return str.replace(array.AlphanumericSortIgnore, '');
+  },
+
+  getCollationCharacter = function(str, index) {
+    var chr = str.charAt(index), eq = array.AlphanumericSortEquivalents || {};
+    return eq[chr] || chr;
+  },
+
+  getCollationValue = function(chr){
+    var order = array.AlphanumericSortOrder;
+    return chr ? order.indexOf(chr) : null;
+  },
+
+  equivalents = {};
+
+  array.AlphanumericSortOrder = $.map(order.split(''), function(str) {
+    return str + str.toLowerCase();
+  }).join('');
+
+  $.each(equiv.split(','), function(i,set) {
+    var equivalent = set.charAt(0);
+    $.each(set.slice(1).split(''), function(i,chr) {
+      equivalents[chr] = equivalent;
+      equivalents[chr.toLowerCase()] = equivalent.toLowerCase();
+    });
+  });
+/////////// END SNIPPET ////////////////////////
+
+	$('#all-members-list').chosen();
+	$("#group_members_list").tablesorter({
+		sortList: [[0,0], [1,0]],
+		textSorter : sortBy,
+		headers: {
+	      5: { sorter: 'checkbox' },
+	      6: { sorter: 'checkbox' },
+	      7: { sorter: 'checkbox' },
+	      8: { sorter: 'checkbox' },
+		},
+	}); 
  });
 </script>
 {% endblock %}
@@ -29,7 +127,7 @@ $(document).ready(function(){
 <h2>Meðlimir
 		<input type="button" class="btn pull-right btn-small" value="Sýsla" style="vertical-align: bottom;" onclick="$('.edit-interface').toggle('600');$(this).toggleClass('btn-primary');($(this).val()=='Lokið')?$(this).val('Sýsla'):$(this).val('Lokið');$('.edit-interface-checkbox').prop('disabled',!$('.edit-interface-checkbox').prop('disabled'));" />
 </h2>
-<table class="table-hover table-condensed table">
+<table id="group_members_list" class="table-hover table-condensed table tablesorter">
 <thead>
 <tr><th style="width: 1.1em;"><input class="edit-interface" type="checkbox"></th><th>Nafn</th><th>Sími</th><th>Tölvupóstfang</th><th>A</th><th>B</th><th>C</th><th style="width:1.1em;"></th></tr>
 </thead>
