@@ -17,6 +17,6 @@ def group_page(request, slug):
 	#import pprint
 	#pprint.pprint(g.members.all())
 	om = Member.objects.exclude(membership__group__slug=slug)
-	recent_events_list=Event.objects.filter(eventrole__groupinvitation__group__slug=slug).filter(date_time_begin__lte=now)
-	coming_events_list=Event.objects.filter(eventrole__groupinvitation__group__slug=slug).filter(date_time_begin__gte=now)
+	recent_events_list=Event.objects.filter(eventrole__groupinvitation__group__slug=slug).filter(date_time_begin__lte=now).distinct()
+	coming_events_list=Event.objects.filter(eventrole__groupinvitation__group__slug=slug).filter(date_time_begin__gte=now).distinct()
 	return render_to_response('groups/group_page.html', { 'group': g, 'members': om, 'recent_events_list': recent_events_list, 'coming_events_list': coming_events_list, })
