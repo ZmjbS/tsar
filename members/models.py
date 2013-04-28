@@ -13,17 +13,18 @@ class Member(models.Model):
 		(u'QT', u'Quit'),
 	)
 	position = models.CharField(max_length=2, choices=POSITION_CHOICES)
-	BLOOD_TYPE_CHOICES = (
-		(u'AP', u'A RhD pos'),
-		(u'AN', u'A RhD neg'),
-		(u'BP', u'B RhD pos'),
-		(u'BN', u'B RhD neg'),
-		(u'CP', u'AB RhD pos'),
-		(u'CP', u'AB RhD neg'),
-		(u'OP', u'O RhD pos'),
-		(u'OP', u'O RhD neg'),
-	)
-	blood_type = models.CharField(max_length=2, choices=BLOOD_TYPE_CHOICES, blank=True)
+	# TODO: Probably drop this?
+	#BLOOD_TYPE_CHOICES = (
+	#	(u'AP', u'A RhD pos'),
+	#	(u'AN', u'A RhD neg'),
+	#	(u'BP', u'B RhD pos'),
+	#	(u'BN', u'B RhD neg'),
+	#	(u'CP', u'AB RhD pos'),
+	#	(u'CN', u'AB RhD neg'),
+	#	(u'OP', u'O RhD pos'),
+	#	(u'ON', u'O RhD neg'),
+	#)
+	#blood_type = models.CharField(max_length=2, choices=BLOOD_TYPE_CHOICES, blank=True)
 	#ForeignKey-ed in: Phone, Email
 	address = models.TextField(blank=True)
 	info = models.TextField(blank=True)

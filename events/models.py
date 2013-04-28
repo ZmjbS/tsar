@@ -47,13 +47,14 @@ class EventRole(models.Model):
 	# * (optionally) one or more members through MemberInvitation
 	# An event role may have a minimum or maximum number of participants and can even be open to anyone who may wish to join.
 	# TODO: Open/closed events. Simple boolean?
-	# TODO: The “hidden” parameter should probably be here, rather than in the intermediary models.
 	event = models.ForeignKey(Event)
 	role = models.ForeignKey(Role)
 	invited_groups = models.ManyToManyField(Group, through='GroupInvitation', blank=True, null=True)
-	invited_members = models.ManyToManyField(Member, through='MemberInvitation', blank=True, null=True)
+	invited_members = models.ManyToManyField(Member, through='MemberInvitation', related_name='eventrole_invitations', blank=True, null=True)
+	responses = models.ManyToManyField(Member, through='MemberResponse', related_name='eventrole_responses', blank=True, null=True)
 	minimum = models.SmallIntegerField(default=0)
 	maximum = models.SmallIntegerField(default=0)
+	is_hidden = models.BooleanField(default=False)
 
 	def __unicode__(self):
 		return self.event.title +' '+ self.role.title
@@ -62,7 +63,6 @@ class GroupInvitation(models.Model):
 	# An intermediary model between an event role and a group.
 	event_role = models.ForeignKey(EventRole)
 	group = models.ForeignKey(Group)
-	is_hidden = models.BooleanField(default=False)
 
 	def __unicode__(self):
 		return self.event_role.__unicode__() +'>'+ self.group.title
@@ -71,12 +71,26 @@ class MemberInvitation(models.Model):
 	# An intermediary model between an event role and a member.
 	event_role = models.ForeignKey(EventRole)
 	member = models.ForeignKey(Member)
-	is_hidden = models.BooleanField(default=False)
 
 	def __unicode__(self):
 		return self.event_role.__unicode__() +'>'+ self.member.user.username
 
 # TODO: Need to implement some sort of confirmation/response class.
+class MemberResponse(models.Model):
+	event_role = models.ForeignKey(EventRole)
+	member = models.ForeignKey(Member)
+	EVENT_RESPONSES = (
+		(u'Y',u'Attending'),
+		(u'N',u'Abscent'),
+		(u'U',u'Unclear'),
+	)
+	response = models.CharField(max_length=1, choices=EVENT_RESPONSES)
+	# TODO: Should we add this to help gather a bit of data on member event response behaviour or is it a bit to Big-Brothery?
+	#prior = models.CharField(max_length=1, choices=EVENT_RESPONSES, blank=True)
+	time_responded = models.DateTimeField(auto_now_add=True)
+
+	def __unicode__(self):
+		return self.event_role.__unicode__() +'>'+ self.member.user.username
 
 class EventCreation(ModelForm):
 	class Meta:

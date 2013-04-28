@@ -21,6 +21,7 @@
 
 <div class="third-width">
 <section>
+<!--You are: {{ curmember.user }}-->
 	<a href="bodun"><span class="icon-edit edit-icon" style="float:right"></span></a>
 	<!--<h2>Mæting</h2>-->
 	<ul class="nav nav-pills">
@@ -35,8 +36,10 @@
 {% for event_role in event.eventrole_set.all %}
 		<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;">{{ event_role.role.title }} <span style="font-size:smaller; color: gray; float: right;">{{ event_role.minimum }}〜{% if event_role.maximum == 0 %}∞{% else %}{{ event_role.maximum }}{% endif %}</span></div>
 			<ul>
-	{% for member in event_role.attending_members.all %}
-				<li><a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a></li>
+	{% for memberresponse in event_role.memberresponse_set.all %}
+		{% if memberresponse.response == 'Y' %}
+				<li><a href="/felagi/{{ memberresponse.member.user.username }}">{{ memberresponse.member.user.first_name }} {{ memberresponse.member.user.last_name }}</a></li>
+		{% endif %}
 	{% endfor %}
 			</ul>
 		</li>
@@ -49,8 +52,10 @@
 {% for event_role in event.eventrole_set.all %}
 		<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;">{{ event_role.role.title }} <span style="font-size:smaller; color: gray; float: right;">{{ event_role.minimum }}〜{% if event_role.maximum == 0 %}∞{% else %}{{ event_role.maximum }}{% endif %}</span></div>
 			<ul>
-	{% for member in event_role.absent_members.all %}
-				<li><a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a></li>
+	{% for memberresponse in event_role.memberresponse_set.all %}
+		{% if memberresponse.response == 'N' %}
+				<li><a href="/felagi/{{ memberresponse.member.user.username }}">{{ memberresponse.member.user.first_name }} {{ memberresponse.member.user.last_name }}</a></li>
+		{% endif %}
 	{% endfor %}
 			</ul>
 		</li>
@@ -60,12 +65,16 @@
 <!-- Unclear -->
 <div  class="tab-pane" id="unclear">
 	<ul style="list-style: none; margin-left:0;">
-{% for event_role in event.eventrole_set.all %}
+{#{% for event_role in event.eventrole_set.all %}#}
+{% for event_role, ims in invitedmembers.iteritems %}
 		<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;">{{ event_role.role.title }} <span style="font-size:smaller; color: gray; float: right;">{{ event_role.minimum }}〜{% if event_role.maximum == 0 %}∞{% else %}{{ event_role.maximum }}{% endif %}</span></div>
 			<ul>
-	{% for member in event_role.unclear_members.all %}
+	{% for member in ims %}
 				<li><a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a></li>
 	{% endfor %}
+	{# {% for member in invitedmembers[event_role.id] %} #}
+	<!--			<li><a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a></li>-->
+	{#{% endfor %}#}
 			</ul>
 		</li>
 {% endfor %}

@@ -5,6 +5,7 @@ from members.models import Member
 from groups.models import Group
 from events.models import Role, EventType, Event, EventRole, EventCreation, EventRoleForm, GroupInvitation, MemberInvitation
 from django.http import HttpResponseRedirect, HttpResponse
+from django.shortcuts import get_object_or_404, render_to_response
 
 from django.utils import timezone
 import datetime
@@ -19,6 +20,52 @@ def list_events(request):
 	recent_events_list = Event.objects.filter(date_time_begin__lte=now).order_by('-date_time_begin')[:20]
 	coming_events_list = Event.objects.filter(date_time_begin__gte=now).order_by('date_time_begin')[:20]
 	return render_to_response('events/events_index.html', { 'recent_events_list': recent_events_list, 'coming_events_list': coming_events_list })
+
+def display_event(request, pk):
+	event = get_object_or_404(Event, id=pk)
+	cm = get_object_or_404(Member, id=1)
+	# Compile a list of members who are invited.
+	# Workflow:
+	# Create an empty list of invited members.
+	# For each role
+	#	for each invited group
+	#		for each member
+	#			if member is not on the invited list
+	#				add member to the list
+	#	for each invited member
+	#		if member is not on the invited list
+	#			add member to the list
+	from collections import defaultdict
+	invitedmembers = defaultdict(list)
+	for eventrole in EventRole.objects.filter(event=event):
+		print 'On EventRole {}:'.format(eventrole)
+		print '>> Members invited through groups'
+		for member in Member.objects.filter(group__groupinvitation__event_role=eventrole).filter(group__groupinvitation__event_role__event=event):
+			print '>>   {}'.format(member)
+			if member not in invitedmembers[eventrole]:
+				invitedmembers[eventrole].append(member)
+		print '>> Members invited directly'
+		for member in Member.objects.filter(memberinvitation__event_role=eventrole).filter(memberinvitation__event_role__event=event):
+			print '>>   {}'.format(member)
+			if member not in invitedmembers[eventrole]:
+				invitedmembers[eventrole].append(member)
+		print invitedmembers[eventrole]
+		#print eventrole
+		#print eventrole.invited_groups.
+		#for group in eventrole.invited_groups..all:
+		#	print group
+		#	for member in group.members.all:
+		#		if member not in invitedmembers:
+		#			invitedmembers.add(member)
+		#for member in eventrole.invited_members.all:
+		#	if member not in invitedmembers:
+		#		invitedmembers.add(member)
+	print invitedmembers
+	invitedmembers = dict(invitedmembers)
+	print invitedmembers
+	#
+	#return render_to_response('events/event_page.html', { 'event': event, 'curmember': cm, 'responses': allresponses, })
+	return render_to_response('events/event_page.html', { 'event': event, 'curmember': cm, 'invitedmembers': invitedmembers, })
 
 def display_or_save_event_form(request):
 	event_types = EventType.objects.all()
@@ -223,14 +270,14 @@ def save_event(request):
 	else:
 		return HttpResponse("Hello, world. Not AJAX request.")
 
-def group_save(request):
-	if request.is_ajax():
-		eventId = request.POST['eid']
-		roleId = request.POST['rid']
-		group = request.POST['grp']
-		member = request.POST['grp']
-		mininum = request.POST['min']
-		maximum = request.POST['max']
-	else:
-		# Perhaps just merge this with the standard view response.
-		return HttpResponse("Group save request isn't an AJAX request.")
+#def group_save(request):
+#	if request.is_ajax():
+#		eventId = request.POST['eid']
+#		roleId = request.POST['rid']
+#		group = request.POST['grp']
+#		member = request.POST['grp']
+#		mininum = request.POST['min']
+#		maximum = request.POST['max']
+#	else:
+#		# Perhaps just merge this with the standard view response.
+#		return HttpResponse("Group save request isn't an AJAX request.")

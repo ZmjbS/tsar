@@ -103,6 +103,7 @@ $(document).ready(function(){
 		role_id = $(this).attr('id');
 		role_title = $(this).parents('.role_entry').find('.role_entry-title').html();
 		$(this).parents('.role_entry').fadeOut(300).slideUp({ duration: 500, queue: false });
+		$(this).parents('.role_entry').remove();
 		$('#role-dropdown').append('<li id="'+role_id+'" class="role-tmp"><a>'+role_title+'</a></li>');
 	}));
 

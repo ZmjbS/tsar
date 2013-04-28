@@ -1,11 +1,33 @@
 {% extends "tsar.html" %}
 {% block page_title %}HSSR: Hópar og flokkar{% endblock %}
 
+{% block head %}
+<style>
+</style>
+<script type="text/javascript">
+//$(document).ready(function(){
+//	$('#test').children().sort()
+//	$('#test').children().sort(function(a, b){
+//        var keyA = $(a).text();
+//        var keyB = $(b).text();
+//        if($($sort).hasClass('asc')){
+//            return (keyA &gt; keyB) ? 1 : 0;
+//        } else {
+//            return (keyA &lt; keyB) ? 1 : 0;
+//        }
+//    });
+//	$.each($('#test').children(), function(index, row){
+//        $('#test').append(row);
+//    });
+//});
+</script>
+{% endblock %}
+
 {% block content %}
 <div class="half-width">
 <section>
 <h2>Útkallshópar</h2>
-<ul>
+<ul id="test">
 {% for group in group_list.all %}
 	{% if group.group_type == 'UH' %}
 	<li><a href="/hopur/{{ group.slug }}">{{ group.title }}</a></li>

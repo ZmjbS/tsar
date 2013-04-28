@@ -23,9 +23,10 @@ class Membership(models.Model):
 	member = models.ForeignKey(Member)
 	group = models.ForeignKey(Group)
 	date_joined = models.DateField(default=datetime.now)
-	is_leader = models.BooleanField(default='false')
+	is_leader = models.BooleanField(default=False)
 
 #class Qualify(models.Model):
 #	qualification = models.ForeignKey(Qualification)
 #	group = models.ForeignKey(Group)
+# TODO: Is a required minimum number really useful?
 #	required_minimum_number = models.PositiveSmallIntegerField(default='0')
