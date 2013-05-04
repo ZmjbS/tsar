@@ -18,7 +18,7 @@
 	<h2>Næstu viðburðir</h2>
   <ul>
 {% for event in events_list %}
-	<li><a href="/vidburdur/{{ event.id }}"/>{{ event.title }}</a> <date>{{ event.date_time_begin|naturaltime }}</li>
+	<li><a href="/vidburdur/{{ event.id }}/">{{ event.title }}</a> <time datetime='{{event.date_time_begin|date:"Y-m-d"}}'>{{ event.date_time_begin|naturaltime }}</time></li>
 {% endfor %}
 	</ul>
 </section>
@@ -30,11 +30,11 @@
 <!--Hæfnir sem eru í boði (næstu skref/námskeið í boði?).-->
 <ul>
 <li>Frímerkjasöfnun 2</li>
-<li>Kassabílagerð 3 [<date>2011.02.31</date>]</li>
+<li>Kassabílagerð 3 [<time datetime='2011-02-13'>2011.02.31</time>]</li>
 </ul>
 <h2>Endurnýjun</h2>
 <ul>
-<li>Sérhæfð bið (rennur út <date>eftir 3 mánuði</date>)</li>
+<li>Sérhæfð bið (rennur út <time datetime='2028-03-09'>eftir 3 mánuði</time>)</li>
 </ul>
 </section>
 
@@ -43,7 +43,7 @@
 	<a href="http://www.hssr.is">HSSR</a>
 	<ul>
 {% for entry in hssr_entries %}
-	<li><a href="{{ entry.link }}">{{ entry.title }}</a> <date>{{ entry.published }}</date></li>
+	<li><a href="{{ entry.link }}">{{ entry.title }}</a> <time datetime='{{entry.published|date:"Y-m-d"}}'>{{ entry.published }}</time></li>
 {% endfor %}
 	</ul>
 
@@ -51,7 +51,7 @@
 	<ul>
 <!-- Skoða: http://justquick.github.com/django-native-tags/contrib/feeds.html -->
 {% for entry in sl_entries %}
-	<li><a href="{{ entry.link }}">{{ entry.title }}</a> <date>{{ entry.published }}</date></li>
+	<li><a href="{{ entry.link }}">{{ entry.title }}</a> <time datetime='{{entry.published|date:"Y-m-d"}}'>{{ entry.published }}</time></li>
 {% endfor %}
 	</ul>
 <!-- Skoða: http://www.b-list.org/weblog/2007/dec/09/updates/ -->
@@ -60,4 +60,4 @@
 
 {% endblock %}
 
-{% block datetimestamp %}<time datetime="2011-02-23">23. febrúar 2011.</time>{% endblock %}
+{% block datetimestamp %}<time datetime="2013-05-03">3. maí 2013.</time>{% endblock %}

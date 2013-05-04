@@ -4,7 +4,7 @@
 <div class="half-width">
 <section id="member-details">
 <h2>{{ member.user.first_name }} {{ member.user.last_name }}</h2>
-<div id="profile-picture"><img src="" alt="Member profile picture" /></div>
+<div id="profile-picture"><img src="/static/img/tsar_background.png" alt="Member profile picture" /></div>
 <dl>
 <dt>Nafn:</dt>
 <dd>{{ member.user.first_name }} {{ member.user.last_name }}</dd>
@@ -35,8 +35,8 @@
 <section id="member-qualifications">
 <h2>Hæfnir</h2>
 <ul>
-	<li>Frímerkjasöfnun (rennur út <date>eftir 49 mánúði</date>)</li>
-	<li>Réttritun (rennur út <date>á morgun</date></li>
+	<li>Frímerkjasöfnun (rennur út <time datetime="2028-11-22">eftir 49 mánúði</time>)</li>
+	<li>Réttritun (rennur út <time datetime="2028-11-22">á morgun</time></li>
 	<li>Heilaskurðlæknignar</li>
 </ul>
 <input type="button" value="bæta við hæfni">
@@ -45,6 +45,7 @@
 
 <div class="third-width" style="clear:both">
 <section id="member-events">
+<!-- TODO: This must be modified to list events that the member actually attended. -->
 <h2>Seinustu viðburðir</h2>
 <ul>
 {% for invitation in member.memberinvitation_set.all %}
