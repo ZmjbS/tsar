@@ -81,7 +81,7 @@ class MemberResponse(models.Model):
 	member = models.ForeignKey(Member)
 	EVENT_RESPONSES = (
 		(u'Y',u'Attending'),
-		(u'N',u'Abscent'),
+		(u'N',u'Absent'),
 		(u'U',u'Unclear'),
 	)
 	response = models.CharField(max_length=1, choices=EVENT_RESPONSES)

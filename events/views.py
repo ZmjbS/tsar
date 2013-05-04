@@ -3,7 +3,7 @@ from django.shortcuts import render_to_response, render
 from django.template import RequestContext
 from members.models import Member
 from groups.models import Group
-from events.models import Role, EventType, Event, EventRole, EventCreation, EventRoleForm, GroupInvitation, MemberInvitation
+from events.models import Role, EventType, Event, EventRole, EventCreation, EventRoleForm, GroupInvitation, MemberInvitation, MemberResponse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response
 
@@ -21,9 +21,60 @@ def list_events(request):
 	coming_events_list = Event.objects.filter(date_time_begin__gte=now).order_by('date_time_begin')[:20]
 	return render_to_response('events/events_index.html', { 'recent_events_list': recent_events_list, 'coming_events_list': coming_events_list })
 
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def event_response(request, pk):
+	print 'in event_response'
+	cm = get_object_or_404(Member, id=2)
+	print cm
+	if request.is_ajax():
+		#import pprint
+		action = request.POST['action']
+		if action == 'attend':
+			act = 'Y'
+		elif action == 'absent':
+			act = 'N'
+		eventrole_id = request.POST['eventrole']
+
+		print 'action: {} or {}'.format(action,act)
+		print 'eventrole.id: {}'.format(eventrole_id)
+
+		print 'OK, now for my second act...'
+		#TODO: read current member info from login!!!
+		#mr = MemberResponse(event_role__id=eventrole_id, member=cm, response='Y')
+		#event = get_object_or_404(Event, id=pk)
+		#print event
+		event_role = get_object_or_404(EventRole, id=eventrole_id)
+		#event_role = EventRole.objects.get(event_role__id=14)
+		print event_role.id
+		try:
+			mr = MemberResponse.objects.get(event_role=event_role, member=cm)
+			print '>> MemberResponse {} found'.format(mr)
+			mr.response=act
+		except:
+			mr = MemberResponse(event_role=event_role, member=cm, response=act)
+			print '>> No MemberResponse found. Creating a new one: {}'.format(mr)
+
+		try:
+			mr.clean_fields()
+			mr.save()
+			print '>> SAVED'
+		except:
+			print '>> FAILED'
+			return HttpResponse('Failed: could not save member response')
+		##print 'Hér kemur JSON útgáfan:'
+		##data = json.loads(request.POST['data'])
+		##pprint.pprint(data)
+	#else:
+		#print 'not ajax'
+	#TODO: Have to return the change so that the script can update the attendance list.
+	return HttpResponse({ 'member_response': mr, })
+
 def display_event(request, pk):
 	event = get_object_or_404(Event, id=pk)
-	cm = get_object_or_404(Member, id=1)
+	#TODO: read this from login info!!!
+	cm = get_object_or_404(Member, id=2)
 	# Compile a list of members who are invited.
 	# Workflow:
 	# Create an empty list of invited members.
@@ -35,37 +86,57 @@ def display_event(request, pk):
 	#	for each invited member
 	#		if member is not on the invited list
 	#			add member to the list
-	from collections import defaultdict
-	invitedmembers = defaultdict(list)
+	role_data = []
+	
 	for eventrole in EventRole.objects.filter(event=event):
 		print 'On EventRole {}:'.format(eventrole)
+		attending = []
+		absent = []
+		for memberresponse in eventrole.memberresponse_set.all():
+			print '> memberresponse: {}'.format(memberresponse)
+			if memberresponse.response == 'Y':
+				attending.append(memberresponse.member)
+			if memberresponse.response == 'N':
+				absent.append(memberresponse.member)
+		print '> Attending members {}:'.format(attending)
+		print '> Absent members: {}'.format(absent)
+		invitedmembers = []
 		print '>> Members invited through groups'
 		for member in Member.objects.filter(group__groupinvitation__event_role=eventrole).filter(group__groupinvitation__event_role__event=event):
-			print '>>   {}'.format(member)
-			if member not in invitedmembers[eventrole]:
-				invitedmembers[eventrole].append(member)
+			print '>>   {}'.format(member.user.username)
+			if member not in invitedmembers and member not in attending and member not in absent:
+				invitedmembers.append(member)
+				print '++   {}'.format(member)
 		print '>> Members invited directly'
 		for member in Member.objects.filter(memberinvitation__event_role=eventrole).filter(memberinvitation__event_role__event=event):
 			print '>>   {}'.format(member)
-			if member not in invitedmembers[eventrole]:
-				invitedmembers[eventrole].append(member)
-		print invitedmembers[eventrole]
-		#print eventrole
-		#print eventrole.invited_groups.
-		#for group in eventrole.invited_groups..all:
-		#	print group
-		#	for member in group.members.all:
-		#		if member not in invitedmembers:
-		#			invitedmembers.add(member)
-		#for member in eventrole.invited_members.all:
-		#	if member not in invitedmembers:
-		#		invitedmembers.add(member)
-	print invitedmembers
-	invitedmembers = dict(invitedmembers)
-	print invitedmembers
-	#
-	#return render_to_response('events/event_page.html', { 'event': event, 'curmember': cm, 'responses': allresponses, })
-	return render_to_response('events/event_page.html', { 'event': event, 'curmember': cm, 'invitedmembers': invitedmembers, })
+			if member not in invitedmembers and member not in attending and member not in absent:
+				invitedmembers.append(member)
+				print '++   {}'.format(member)
+
+		# Check to see whether the current member has responded or is invited to a particular role.
+		cm_status = 'not invited'
+		if cm in invitedmembers:
+			cm_status = 'invited'
+		if cm in absent:
+			cm_status = 'absent'
+		if cm in attending:
+			cm_status = 'attending'
+		role_data.append({ 'eventrole': eventrole, 'invitedmembers': invitedmembers, 'absentmembers': absent, 'attendingmembers': attending, 'cm_status': cm_status, })
+
+	# Now let's make sure that a member who is attending a role doesn't get invited
+	# to others.
+	# TODO: Perhaps we should implement a way of attending more than one role.
+	# Perhaps a pop-up to allow members to split their time among the roles.
+	for role in role_data:
+		if role['cm_status'] == 'attending':
+			for tmprole in role_data:
+				if tmprole['cm_status'] == 'invited' or tmprole['cm_status'] == 'absent':
+					tmprole['cm_status'] = 'attending elsewhere'
+			role['cm_status'] = 'attending'
+	import pprint
+	pprint.pprint(role_data)
+	return render_to_response('events/event_page.html', { 'event': event, 'cm': cm, 'role_data': role_data, })
 
 def display_or_save_event_form(request):
 	event_types = EventType.objects.all()

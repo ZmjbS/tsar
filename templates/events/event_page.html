@@ -15,13 +15,46 @@
 .nav-pills > li > a.warning:hover { color: rgb(155, 93, 4); }
 /*.nav-pills > .active > a.info, .nav-pills > .active > a.info:hover { background-color: rgb(); }*/
 </style>
+<script type="text/javascript">
+// Serialise the input data and submit the form.
+$(document).ready(function(){
+
+});
+   $('.respond').live('click',(function() {
+      //csrf = "{{ csrf_token|escapejs }}"
+      console.log('responding');
+		console.log('attribute: '+$(this).attr('id'))
+		action = $(this).attr('id').substring(0,6);
+		eventrole = $(this).attr('id').substring(7);
+		console.log('action: '+action)
+		console.log('eventrole: '+eventrole)
+	//alert(action + ' ' + eventrole);
+      //json = JSON.stringify($(this).serializeJSON());
+      //console.log(json);
+      //var posting = $.post("svara", {'csrfmiddlewaretoken': csrf, 'action': action, 'eventrole': eventrole, });
+      var posting = $.post("svara", {'action': action, 'eventrole': eventrole, });
+		console.log('posted')
+      posting.done(function(data) {
+			console.log('Done: received '+data['member_response'])
+         //if (isNaN(parseInt(data))) {
+          //  alert('jei!');
+//print_result('Error: '+data,'alert-error');
+        // } else {
+          //  $('#event_id').val(data);
+ //           print_result('Viðburður númer '+data+' búinn til. Sjá <a href="/vidburdur/'+data+'">síðu viðburðarins</a>','alert-success');
+			//	alert('action taken')
+        });
+      return false;
+   }));
+
+</script>
+
 {% endblock %}
 
 {% block content %}
 
 <div class="third-width">
 <section>
-<!--You are: {{ curmember.user }}-->
 	<a href="bodun"><span class="icon-edit edit-icon" style="float:right"></span></a>
 	<!--<h2>Mæting</h2>-->
 	<ul class="nav nav-pills">
@@ -29,17 +62,33 @@
 		<li><a class="important" href="#absense" data-toggle="tab">Fjarri</a></li>
 		<li><a class="warning" href="#unclear" data-toggle="tab">Óvíst</a></li>
 		<li><a href="#invitation" data-toggle="tab">Boðun</a></li>
+<!--You are: {{ cm.user }}-->
 	</ul><!-- nav-tabs -->
 <div class="tab-content">
 <div  class="tab-pane active" id="attendance">
 	<ul style="list-style: none; margin-left:0;">
-{% for event_role in event.eventrole_set.all %}
-		<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;">{{ event_role.role.title }} <span style="font-size:smaller; color: gray; float: right;">{{ event_role.minimum }}〜{% if event_role.maximum == 0 %}∞{% else %}{{ event_role.maximum }}{% endif %}</span></div>
+{% for role in role_data %}
+		<li style="margin: 0 1em;">
+			<div style="border-bottom: 1px solid #eee;">
+				<span style="display:inline-block; width: 35%">{{ role.eventrole.role.title }}</span>
+	{% if role.cm_status == 'invited' %}
+				<span style="">
+					<a class="respond" href="#" id="attend-{{ role.eventrole.id }}"><span class="icon-plus-sign edit-icon" style="color: rgb(70, 136, 71)"></span></a>
+					<a class="respond" href="#" id="absent-{{ role.eventrole.id }}"><span class="icon-remove-sign edit-icon" style="color: rgb(185, 74, 72)"></span></a>
+				</span>
+	{% endif %}
+				<span style="font-size:smaller; color: gray; float: right;">{{ role.eventrole.minimum }}〜{% if role.eventrole.maximum == 0 %}∞{% else %}{{ role.eventrole.maximum }}{% endif %}</span>
+			</div>
 			<ul>
-	{% for memberresponse in event_role.memberresponse_set.all %}
-		{% if memberresponse.response == 'Y' %}
-				<li><a href="/felagi/{{ memberresponse.member.user.username }}">{{ memberresponse.member.user.first_name }} {{ memberresponse.member.user.last_name }}</a></li>
+	{% for member in role.attendingmembers %}
+				<li>
+					<a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a>
+		{% if member == cm %}
+					<a class="respond" href="#" id="absent-{{ role.eventrole.id }}"><span class="icon-remove-sign edit-icon" style="float:right; color: rgb(185, 74, 72)"></span></a>
+					<a class="respond" href="#" id="unclea-{{ role.eventrole.id }}"><span class="icon-question-sign edit-icon" style="float:right; color: rgb(248, 148, 6)"></span></a>
+				</li>
 		{% endif %}
+				</li>
 	{% endfor %}
 			</ul>
 		</li>
@@ -49,12 +98,20 @@
 <!-- Absense -->
 <div  class="tab-pane" id="absense">
 	<ul style="list-style: none; margin-left:0;">
-{% for event_role in event.eventrole_set.all %}
-		<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;">{{ event_role.role.title }} <span style="font-size:smaller; color: gray; float: right;">{{ event_role.minimum }}〜{% if event_role.maximum == 0 %}∞{% else %}{{ event_role.maximum }}{% endif %}</span></div>
+{% for role in role_data %}
+		<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;">{{ role.eventrole.role.title }} <span style="font-size:smaller; color: gray; float: right;">{{ role.eventrole.minimum }}〜{% if role.eventrole.maximum == 0 %}∞{% else %}{{ role.eventrole.maximum }}{% endif %}</span></div>
 			<ul>
-	{% for memberresponse in event_role.memberresponse_set.all %}
-		{% if memberresponse.response == 'N' %}
-				<li><a href="/felagi/{{ memberresponse.member.user.username }}">{{ memberresponse.member.user.first_name }} {{ memberresponse.member.user.last_name }}</a></li>
+	{% for member in role.absentmembers %}
+		{% if member != cm %}
+				<li><a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a></li>
+		{% else %}
+			{% if role.cm_status != 'attending elsewhere' %}
+				<li>
+					<a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a>
+					<a class="respond" href="#" id="unclea-{{ role.eventrole.id }}"><span class="icon-question-sign edit-icon" style="float:right; color: rgb(248, 148, 6)"></span></a>
+					<a class="respond" href="#" id="attend-{{ role.eventrole.id }}"><span class="icon-plus-sign edit-icon" style="float:right; color: rgb(70, 136, 71)"></span></a>
+				</li>
+			{% endif %}
 		{% endif %}
 	{% endfor %}
 			</ul>
@@ -66,15 +123,20 @@
 <div  class="tab-pane" id="unclear">
 	<ul style="list-style: none; margin-left:0;">
 {#{% for event_role in event.eventrole_set.all %}#}
-{% for event_role, ims in invitedmembers.iteritems %}
-		<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;">{{ event_role.role.title }} <span style="font-size:smaller; color: gray; float: right;">{{ event_role.minimum }}〜{% if event_role.maximum == 0 %}∞{% else %}{{ event_role.maximum }}{% endif %}</span></div>
+{% for role in role_data %}
+		<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;">{{ role.eventrole.role.title }} <span style="font-size:smaller; color: gray; float: right;">{{ role.eventrole.minimum }}〜{% if role.eventrole.maximum == 0 %}∞{% else %}{{ role.eventrole.maximum }}{% endif %}</span></div>
+{{ event_role.invitedmembers.items }}
 			<ul>
-	{% for member in ims %}
-				<li><a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a></li>
+	{% for member in role.invitedmembers %}
+				<li>
+					<a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a>
+		{% if member == cm %}
+					<a class="respond" href="#" id="absent-{{ role.eventrole.id }}"><span class="icon-remove-sign edit-icon" style="float:right; color: rgb(185, 74, 72)"></span></a>
+					<a class="respond" href="#" id="attend-{{ role.eventrole.id }}"><span class="icon-plus-sign edit-icon" style="float:right; color: rgb(70, 136, 71)"></span></a>
+				</li>
+		{% endif %}
+				</li>
 	{% endfor %}
-	{# {% for member in invitedmembers[event_role.id] %} #}
-	<!--			<li><a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a></li>-->
-	{#{% endfor %}#}
 			</ul>
 		</li>
 {% endfor %}
@@ -130,7 +192,7 @@
 		</div>
 		<div class="half-width" style="margin-left: 1em;">
 			<img class="pull-right span3" src="/static/img/hengill-husmuli.png" alt="kort" style="width:100%;"/>
-	</div>
-		</section>
+		</div>
+	</section>
 </div>
 {% endblock %}
