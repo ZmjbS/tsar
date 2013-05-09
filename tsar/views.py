@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
+from django.contrib.auth.models import User
 from events.models import Event
 
 from django.db.models import Q
@@ -15,7 +16,7 @@ now = datetime.datetime.now()
 #@login_required
 def my_page(request):
 	if not request.user.is_authenticated():
-		request.user = User.get.objects(id=2)
+		request.user = User.objects.get(id=2)
 
 	# Retrieve a list of upcoming events
 	recent_events_list = Event.objects.filter(date_time_begin__gte=now).order_by('date_time_begin')[:20]
