@@ -23,6 +23,8 @@ class EventType(models.Model):
 	def __unicode__(self):
 		return self.title
 
+#class EventManager(models.Manager):
+
 class Event(models.Model):
 	# The fundamental object. Most of the magic happens in EventRole, however.
 	# An event may have several roles and members can be invited to one or more roles, either as members, or through groups which they belong to.
@@ -31,8 +33,28 @@ class Event(models.Model):
 	description = models.TextField(blank=True)
 	date_time_begin = models.DateTimeField()
 	date_time_end = models.DateTimeField()
-	# TODO: Need to implement locations. Character fields or just store this all in a GPX file?
 	event_type = models.ForeignKey(EventType)
+
+#	objects = EventManager()
+	def invited_roles(self, member):
+		invitedroles = []
+		#print self.eventrole_set.all()
+		for eventrole in self.eventrole_set.all():
+			for group in eventrole.invited_groups.all():
+				if member in group.members.all():
+					invitedroles.append(eventrole)
+			if member in eventrole.invited_members.all() and eventrole not in invitedroles:
+				invitedroles.append(eventrole)
+		return invitedroles
+
+	def responded_roles(self, member):
+		respondedroles = []
+		for eventrole in eventroles:
+			if member in eventrole.responses:
+				respondedroles.add(eventrole)
+		return respondedroles
+
+	# TODO: Need to implement locations. Character fields or just store this all in a GPX file?
 	# TODO: Add equipment to log equipment use. Better to add this as a relation rather than a tag?
 
 	def __unicode__(self):

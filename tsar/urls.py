@@ -8,13 +8,10 @@ urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'tsar.views.home', name='home'),
     url(r'^$', 'tsar.views.my_page', name='home'),
-    # url(r'^tsar/', include('tsar.foo.urls')),
-     #url(r'^hopar', 'tsar.groups.groups', name='groups')),
      url(r'^hopur/', include('groups.urls')),
      url(r'^felagi/', include('members.urls')),
 	url(r'^vidburdur/', include('events.urls')),
-#	url(r'skra_vidburd/$', 'events.views.create_event'),
-     #url(r'^skraning_vidburdar/', include('events.urls')),
+	url(r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'registration/login.html'}),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

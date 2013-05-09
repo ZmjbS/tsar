@@ -73,8 +73,8 @@ $(document).ready(function(){
 				<span style="display:inline-block; width: 35%">{{ role.eventrole.role.title }}</span>
 	{% if role.cm_status == 'invited' %}
 				<span style="">
-					<a class="respond" href="#" id="attend-{{ role.eventrole.id }}"><span class="icon-plus-sign edit-icon" style="color: rgb(70, 136, 71)"></span></a>
-					<a class="respond" href="#" id="absent-{{ role.eventrole.id }}"><span class="icon-remove-sign edit-icon" style="color: rgb(185, 74, 72)"></span></a>
+					<a class="respond" href="#" id="attend-{{ role.eventrole.id }}"><span class="icon-plus-sign edit-icon" style="margin: 0; color: rgb(70, 136, 71)"></span></a>
+					<a class="respond" href="#" id="absent-{{ role.eventrole.id }}"><span class="icon-remove-sign edit-icon" style="margin: 0; color: rgb(185, 74, 72)"></span></a>
 				</span>
 	{% endif %}
 				<span style="font-size:smaller; color: gray; float: right;">{{ role.eventrole.minimum }}〜{% if role.eventrole.maximum == 0 %}∞{% else %}{{ role.eventrole.maximum }}{% endif %}</span>
@@ -190,7 +190,7 @@ $(document).ready(function(){
 				<tr><td>N 64°34,392'	V 21°39,291'</td><td>Upphafsstaður æfingar.</td></tr>
 			</table>
 		</div>
-		<div class="half-width" style="margin-left: 1em;">
+		<div class="half-width" style="float:right;">
 			<img class="pull-right span3" src="/static/img/hengill-husmuli.png" alt="kort" style="width:100%;"/>
 		</div>
 	</section>

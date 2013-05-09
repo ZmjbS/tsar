@@ -12,6 +12,9 @@ def index(request):
 	all_groups_list = Group.objects.all().order_by('title')
 	return render_to_response('groups/groups_index.html', { 'group_list': all_groups_list })
 
+from django.contrib.auth.decorators import login_required
+
+#@login_required
 def group_page(request, slug):
 	g = get_object_or_404(Group, slug=slug)
 	#import pprint

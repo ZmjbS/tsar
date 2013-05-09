@@ -11,6 +11,7 @@ class Member(models.Model):
 		(u'IT', u'In training'),
 		(u'NC', u'Off call'),
 		(u'QT', u'Quit'),
+	#TODO: Do we maybe want to make this editable by giving it a class of its own?
 	)
 	position = models.CharField(max_length=2, choices=POSITION_CHOICES)
 	# TODO: Probably drop this?

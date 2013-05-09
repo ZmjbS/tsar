@@ -16,9 +16,20 @@
 <div class="half-width">
 <section id="vidburdir">
 	<h2>Næstu viðburðir</h2>
-  <ul>
+  <ul style="list-style: none; margin-left: .5em;">
 {% for event in events_list %}
-	<li><a href="/vidburdur/{{ event.id }}/">{{ event.title }}</a> <time datetime='{{event.date_time_begin|date:"Y-m-d"}}'>{{ event.date_time_begin|naturaltime }}</time></li>
+{# for event, invited in invited.items #}
+	<li>
+		<span style="">
+		{% if invited %}<a class="respond" href="#">{% endif %}<span class="icon-plus-sign edit-icon" style="margin: 0; color: {% if invited %}rgb(70, 136, 71){%else%}#ddd{%endif%}"></span></a>
+		{% if invited %}<a class="respond" href="#">{% endif %}<span class="icon-remove-sign edit-icon" style="margin: 0; color: {% if invited %}rgb(185, 74, 72){%else%}#ddd{%endif%}"></span></a>
+		</span>
+		<a href="/vidburdur/{{ event.id }}/">{{ event.title }}</a>
+		<time datetime='{{event.date_time_begin|date:"Y-m-d"}}'>{{ event.date_time_begin|naturaltime }}</time>
+	{% for eventrole in event.invitedroles %}
+			hi
+	{% endfor %}
+	</li>
 {% endfor %}
 	</ul>
 </section>
