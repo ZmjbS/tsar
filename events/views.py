@@ -8,17 +8,49 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response
 
 from django.utils import timezone
-import datetime
+from datetime import datetime
 from dateutil import parser
 
 import simplejson as json
 #import json
 
-now = datetime.datetime.now()
+now = datetime.now()
+
+def calendar_events_list(start, end):
+	# Get all events between the two dates:
+	print 'Retrieve events between {} and {}'.format(start, end)
+	import time
+	#print time.gmtime(int(start))
+	#print int(start)
+	#print datetime.fromtimestamp(int(start))
+	calendar_begins = datetime.fromtimestamp(int(start))
+	calendar_ends = datetime.fromtimestamp(int(end))
+	import calendar
+	print 'The calendar runs from {} to {}'.format(calendar_begins, calendar_ends)#time.strftime("%Y", time.gmtime(calendar.timegm(calendar_begins))), time.strftime("%Y", time.gmtime(calendar.timegm(calendar_ends))))
+	events = Event.objects.filter(date_time_end__gt=calendar_begins).filter(date_time_begin__lt=calendar_ends)
+	events_list = []
+	for event in events:
+		events_list.append({
+			'title': event.title,
+			'start': calendar.timegm(event.date_time_begin.utctimetuple()),
+			'end': calendar.timegm(event.date_time_end.utctimetuple()),
+			'id': event.id,
+			'url': '/vidburdur/'+str(event.id),
+		})
+	import pprint
+	pprint.pprint(events_list)
+	return HttpResponse(json.dumps(events_list), mimetype='application/javascript')
+	print 'FINISHED'
 
 def list_events(request):
+	if request.is_ajax():
+		# Prepare events for calendar
+		return calendar_events_list(request.GET['start'], request.GET['end'])
+	# Otherwise it's just a normal request for the events page.
 	recent_events_list = Event.objects.filter(date_time_begin__lte=now).order_by('-date_time_begin')[:20]
 	coming_events_list = Event.objects.filter(date_time_begin__gte=now).order_by('date_time_begin')[:20]
+	# TODO: Add incidents?
+	# recent_incidents_list = Incident.objects.filter(date_time_begin__lte=now).order_by('-date_time_begin')[:20]
 	return render_to_response('events/events_index.html', { 'recent_events_list': recent_events_list, 'coming_events_list': coming_events_list })
 
 from django.views.decorators.csrf import csrf_exempt

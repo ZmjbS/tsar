@@ -2,8 +2,39 @@
 {% block page_title %}HSSR: Viðburðir og útköll{% endblock %}
 
 {% block head %}
+<link rel='stylesheet' type='text/css' href='/static/css/fullcalendar.css' />
+<script type='text/javascript' src='/static/js/fullcalendar.min.js'></script>
+<script type='text/javascript'>
+$(document).ready(function() {
+
+    // page is now ready, initialize the calendar...
+
+    $('#calendar').fullCalendar({
+        // put your options and callbacks here
+	//	events: '/vidburdur/',
+		events: {
+        url: '/vidburdur/',
+        //type: 'GET',
+        //data: {
+        //    custom_param1: 'something',
+        //    custom_param2: 'somethingelse'
+        //},
+        error: function() {
+            alert('there was an error while fetching events!');
+        },
+        //color: 'yellow',   // a non-ajax option
+        //textColor: 'black' // a non-ajax option
+    },
+		firstDay: 1,
+		contentHeight: 400,
+		weekMode: 'liquid',
+    })
+
+});
+</script>
 <style>
 .nav { margin-bottom: 10px; }
+#calendar { background-color: rgba(255,255,255,0.75); }
 </style>
 {% endblock %}
 
@@ -11,11 +42,15 @@
 
 <ul class="nav nav-pills">
 	<li class="active"><a href="#calendar" data-toggle="tab">Dagatal</a></li>
+	<li><a href="#old-calendar" data-toggle="tab">Gamla Dagatal</a></li>
 	<li><a href="#lists" data-toggle="tab">Viðburðalistar</a></li>
 </ul>
 
 <div class="tab-content">
 	<div class="tab-pane active" id="calendar">
+<div id='calendar'></div>
+	</div>
+	<div class="tab-pane" id="old-calendar">
 
 <div class="full-width">
 <section id="calendar">
