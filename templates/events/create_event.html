@@ -4,6 +4,7 @@
 {% block head %}
 <script type="text/javascript" src="/static/js/development-bundle/ui/jquery-ui-1.8.21.custom.js"></script>
 <script type="text/javascript" src="/static/js/development-bundle/ui/jquery.ui.datepicker.js"></script>
+<script type="text/javascript" src="/static/js/development-bundle/ui/ui.datepicker-is.js"></script>
 <script type="text/javascript" src="/static/js/jquery-ui-timepicker-addon.js"></script>
 <link type="text/css" rel="stylesheet" href="/static/js/css/ui-lightness/jquery-ui-1.8.21.custom.css" />
 <script type="text/javascript" src="/static/js/chosen.jquery.min.js"></script>
@@ -41,10 +42,64 @@
 </style>
 <script type="text/javascript">
 
+$( "#datepicker" ).datepicker( $.datepicker.regional[ "fr" ] );
+
 $(document).ready(function(){
 // Datetimepicker
-	$('#id_date_time_begin').datetimepicker();
-	$('#id_date_time_end').datetimepicker();
+	startDateTextBox = $('#id_date_time_begin')
+	endDateTextBox = $('#id_date_time_end')
+	$('#id_date_time_begin').datetimepicker({
+		//maxDateTime: new Date(2013, 4, 5, 8, 30),
+		onClose: function (selectedDateTime){
+			var select_dt = new Date(selectedDateTime);
+			var original_end = endDateTextBox.val();
+			var testEndDate = endDateTextBox.datetimepicker('getDate');
+			endDateTextBox.datetimepicker('option', 'minDate', startDateTextBox.datetimepicker('getDate') );
+	
+  	      if (original_end != '') {
+  	          if(testEndDate < select_dt){
+  	              endDateTextBox.val(selectedDateTime);
+  	          }else{
+  	              endDateTextBox.val(original_end);
+  	          }
+  	      }else{
+  	          endDateTextBox.val(selectedDateTime);
+  	      }
+		}
+
+	//	onClose: function( selectedDate ) {
+	//		$( "#id_date_time_end" ).datetimepicker( "option", "minDate", selectedDate );
+	//		//$( "#id_date_time_end" ).datetimepicker( "option", "minDateTime", new Date($(this).datepicker('getDate').getTime()));
+	//	}
+	});
+	$('#id_date_time_end').datetimepicker({
+		onClose: function (selectedDateTime){
+			var select_dt = new Date(selectedDateTime);
+			var original_start = startDateTextBox.val();
+			var testStartDate = startDateTextBox.datetimepicker('getDate');
+			startDateTextBox.datetimepicker('option', 'maxDate', endDateTextBox.datetimepicker('getDate') );
+
+			if (original_start != '') {
+				if(testStartDate > select_dt){
+					startDateTextBox.val(selectedDateTime);
+				}else{
+					startDateTextBox.val(original_start);
+				}
+			}else{
+				startDateTextBox.val(selectedDateTime);
+			}
+		}
+//		onClose: function( selectedDate ) {
+//			console.log(selectedDate);
+//			test = new Date(selectedDate);
+//			console.log(test);
+//			$( "#id_date_time_begin" ).datetimepicker( "option", "maxDateTime", test );
+//			//$( "#id_date_time_begin" ).datetimepicker( "option", "maxDateTime", selectedDate );
+//			//$( "#id_date_time_begin" ).datetimepicker( "option", "maxDateTime", new Date($(this).datepicker('getDate').getTime()));
+//		}
+	});
+//onClose: function( selectedDateTime ) { $( "#id_date_time_begin" ).datetimepicker( "option", "maxDateTime", selectedDateTime );} });
+//onClose: function( selectedDateTime ) { $( "#id_date_time_end" ).datetimepicker( "option", "minDateTime", selectedDateTime );} });
 
 // Chosen UI
 	$('#role-groups-id_template').chosen();
