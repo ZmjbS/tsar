@@ -6,6 +6,7 @@ from groups.models import Group
 from events.models import Role, EventType, Event, EventRole, EventCreation, EventRoleForm, GroupInvitation, MemberInvitation, MemberResponse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response
+from django.contrib.auth.models import User
 
 from django.utils import timezone
 from datetime import datetime
@@ -58,7 +59,10 @@ from django.views.decorators.csrf import csrf_exempt
 @csrf_exempt
 def event_response(request, pk):
 	print 'in event_response'
-	cm = get_object_or_404(Member, id=2)
+	if not request.user.is_authenticated():
+		cm = User.objects.get(id=2)
+	else:
+		cm = request.user.member
 	print cm
 	if request.is_ajax():
 		#import pprint
@@ -106,7 +110,10 @@ def event_response(request, pk):
 def display_event(request, pk):
 	event = get_object_or_404(Event, id=pk)
 	#TODO: read this from login info!!!
-	cm = get_object_or_404(Member, id=2)
+	if not request.user.is_authenticated():
+		cm = User.objects.get(id=2)
+	else:
+		cm = request.user.member
 	# Compile a list of members who are invited.
 	# Workflow:
 	# Create an empty list of invited members.

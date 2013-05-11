@@ -41,7 +41,7 @@ class Event(models.Model):
 		#print self.eventrole_set.all()
 		for eventrole in self.eventrole_set.all():
 			for group in eventrole.invited_groups.all():
-				if member in group.members.all():
+				if member in group.members.all() and eventrole not in invitedroles:
 					invitedroles.append(eventrole)
 			if member in eventrole.invited_members.all() and eventrole not in invitedroles:
 				invitedroles.append(eventrole)
@@ -49,9 +49,9 @@ class Event(models.Model):
 
 	def responded_roles(self, member):
 		respondedroles = []
-		for eventrole in eventroles:
-			if member in eventrole.responses:
-				respondedroles.add(eventrole)
+		for eventrole in self.eventrole_set.all():
+			if member in eventrole.responses.all():
+				respondedroles.append(eventrole)
 		return respondedroles
 
 	# TODO: Need to implement locations. Character fields or just store this all in a GPX file?
@@ -77,6 +77,24 @@ class EventRole(models.Model):
 	minimum = models.SmallIntegerField(default=0)
 	maximum = models.SmallIntegerField(default=0)
 	is_hidden = models.BooleanField(default=False)
+
+	def invited(self, member):
+		for group in self.invited_groups.all():
+			if member in group.members.all():
+				return True
+		if member in self.invited_members.all():
+			return True
+		return False
+
+	def response(self, member):
+		#print 'XXX',self.memberresponse_set
+		try:
+			mr = MemberResponse.objects.get(event_role=self,member=member)
+			print 'XXX',mr.response
+			return mr.response
+		except:
+			print 'XXX NO RESPONSE'
+			return 'U'
 
 	def __unicode__(self):
 		return self.event.title +' '+ self.role.title
