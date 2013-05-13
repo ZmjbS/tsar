@@ -95,3 +95,10 @@ div#profile-picture {
 
 .edit-icon { color: gray; margin-left: .3em; }
 .edit-icon:hover { color: black; text-decoration: none; }
+.respond { float: right; }
+.respond.icon-plus-sign,
+	.respond.icon-remove-sign,
+	.respond.icon-question-sign { cursor: pointer; color: #ddd; }
+.respond.icon-plus-sign:hover { color: rgb(70, 136, 71); }
+.respond.icon-remove-sign:hover { color: rgb(185, 74, 72); }
+.respond.icon-question-sign:hover { color: rgb(248, 148, 6); }

@@ -135,6 +135,7 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
 #	'native_tags',
     'bootstrap_toolkit',
+	'django.contrib.markup',
 )
 
 #NATIVE_TAGS = (

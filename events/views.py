@@ -105,7 +105,20 @@ def event_response(request, pk):
 	#else:
 		#print 'not ajax'
 	#TODO: Have to return the change so that the script can update the attendance list.
-	return HttpResponse({ 'member_response': mr, })
+	data = {
+		'user_id': cm.user.id,
+		'user_name': cm.__unicode__(),
+		'username': cm.user.username,
+		'role_id': event_role.role.id,
+		'event_role_id': event_role.id,
+		'action': action,
+	}
+	print 'Data: {}'.format(data)
+	jsondata = json.dumps(data)
+	print 'JSON: ',jsondata
+	print 'XXXXX responding'
+	return HttpResponse(json.dumps(data))##, mimetype='application/javascript')
+	#return HttpResponse(jsondata)
 
 def display_event(request, pk):
 	event = get_object_or_404(Event, id=pk)
