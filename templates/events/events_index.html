@@ -3,7 +3,8 @@
 
 {% block head %}
 <link rel='stylesheet' type='text/css' href='/static/css/fullcalendar.css' />
-<script type='text/javascript' src='/static/js/fullcalendar.min.js'></script>
+<!--<script type='text/javascript' src='/static/js/fullcalendar.min.js'></script>-->
+<script type='text/javascript' src='/static/js/fullcalendar.mod.js'></script>
 <script type='text/javascript'>
 $(document).ready(function() {
 
@@ -28,6 +29,19 @@ $(document).ready(function() {
 		firstDay: 1,
 		contentHeight: 400,
 		weekMode: 'liquid',
+		defaultView: 'fiveWeeks',
+		monthNames: ['janúar', 'febrúar', 'mars', 'apríl', 'maí', 'júní', 'júlí', 'ágúst', 'september', 'október', 'nóvember', 'desember'],
+		monthNamesShort: ['jan', 'feb', 'mar', 'apr', 'maí', 'jún', 'júl', 'ágú', 'sep', 'okt', 'nóv', 'des'],
+		dayNames: ['sunnudagur', 'mánudagur', 'þriðjudagur', 'miðvikudagur', 'fimmtudagur', 'föstudagur', 'laugardagur'],
+		dayNamesShort: ['sun', 'mán', 'þri', 'mið', 'fim', 'fös', 'lau'],
+		weekNumbers: true,
+		weekNumberTitle: 'vika',
+		columnFormat: {
+			month: 'dddd',    // Mon
+			week: 'ddd M/d', // Mon 9/7
+			day: 'dddd M/d'  // Monday 9/7
+		}
+
     })
 
 });
@@ -36,6 +50,10 @@ $(document).ready(function() {
 .nav { margin-bottom: 10px; }
 #calendar { background-color: rgba(255,255,255,0.75); }
 .fc-event-title { white-space:nowrap; }
+.fc-week-number { border: none; }
+.fc-week-number div { color: rgb(170, 51, 51); }
+td.fc-sat, td.fc-sun { background-color: #eff; }
+
 </style>
 {% endblock %}
 
@@ -43,91 +61,12 @@ $(document).ready(function() {
 
 <ul class="nav nav-pills">
 	<li class="active"><a href="#calendar" data-toggle="tab">Dagatal</a></li>
-	<li><a href="#old-calendar" data-toggle="tab">Gamla Dagatal</a></li>
 	<li><a href="#lists" data-toggle="tab">Viðburðalistar</a></li>
 </ul>
 
 <div class="tab-content">
-	<div class="tab-pane active" id="calendar">
-<div id='calendar'></div>
-	</div>
-	<div class="tab-pane" id="old-calendar">
+	<div class="tab-pane active" id="calendar"></div>
 
-<div class="full-width">
-<section id="calendar">
-<div style="margin-left:6em;">Mars</div>
-  <table id="dagatal">
-    <tr>
-      <th>Mánudagur</th>
-      <th>Þriðjudagur</th>
-      <th>Miðvikudagur</th>
-      <th>Fimmtudagur</th>
-      <th>Föstudagur</th>
-      <th>Laugardagur</th>
-      <th>Sunnudagur</th>
-    </tr>
-    <tr>
-      <td class="manudagur"><date>14.</date>
-        <div class="dagatal_vidburdur"><time>19:00</time> <a href="/~martin/hssr/ninna/vidburdur/.../" class="vidb_titill">Bílahópur vinnukvöld</a><div></td>
-      <td class="thridjudagur"><date>15.</date></td>
-      <td class="midvikudagur"><date>16.</date></td>
-      <td class="fimmtudagur"><date>17.</date></td>
-      <td class="fostudagur"><date>18.</date></td>
-      <td class="laugardagur"><date>19.</date></td>
-      <td class="sunnudagur"><date>20.</date></td>
-    </tr>
-    <tr>
-      <td class="manudagur"><date>21.</date>
-        <div class="dagatal_vidburdur"><time>19:00</time> <a href="/~martin/hssr/ninna/vidburdur/.../" class="vidb_titill">Bílahópur vinnukvöld</a><div></td>
-      <td class="thridjudagur"><date>22.</date>
-        <div class="dagatal_vidburdur"><time>17:45</time> <a href="/~martin/hssr/ninna/vidburdur/39972-leitarhundaaefing/" class="vidb_titill">Leitarhundar æfing</a><div></td>
-      <td class="midvikudagur i_dag"><date>23.</date></td>
-      <td class="fimmtudagur"><date>24.</date></td>
-      <td class="fostudagur"><date>25.</date></td>
-      <td class="laugardagur"><date>26.</date></td>
-      <td class="sunnudagur"><date>27.</date>
-        <div class="dagatal_vidburdur"><time>19:00</time> <a href="23" class="vidb_titill">Sýniviðburður</a><div></td>
-	</td>
-    </tr>
-    <tr>
-      <td class="manudagur"><date>28.</date>
-        <div class="dagatal_vidburdur"><time>19:00</time> <a href="/~martin/hssr/ninna/vidburdur/.../" class="vidb_titill">Bílahópur vinnukvöld</a><div></td>
-      <td class="thridjudagur"><date>29.</date></td>
-      <td class="midvikudagur"><date>30.</date></td>
-      <td class="fimmtudagur"><date>31.</date></td>
-      <td class="fostudagur"><date>1.</date></td>
-      <td class="laugardagur"><date>2.</date></td>
-      <td class="sunnudagur"><date>3.</date></td>
-    </tr>
-    <tr>
-      <td class="manudagur"><date>4.</date>
-        <div class="dagatal_vidburdur"><time>19:00</time> <a href="/~martin/hssr/ninna/vidburdur/.../" class="vidb_titill">Bílahópur vinnukvöld</a><div></td>
-      <td class="thridjudagur"><date>5.</date></td>
-      <td class="midvikudagur"><date>6.</date></td>
-      <td class="fimmtudagur"><date>7.</date></td>
-      <td class="fostudagur"><date>8.</date>
-        <div class="dagatal_vidburdur" style="width: 318%;"><time>18:00</time> <a href="/~martin/hssr/ninna/vidburdur/.../" class="vidb_titill">Hvannadalshnjúkur</a><div></td>
-      <td class="laugardagur"><date>9.</date></td>
-      <td class="sunnudagur"><date>10.</date></td>
-    </tr>
-    <tr>
-    <tr>
-      <td class="manudagur"><date>11.</date>
-        <div class="dagatal_vidburdur"><time>19:00</time> <a href="/~martin/hssr/ninna/vidburdur/.../" class="vidb_titill">Bílahópur vinnukvöld</a><div></td>
-      <td class="thridjudagur"><date>12.</date></td>
-      <td class="midvikudagur"><date>13.</date></td>
-      <td class="fimmtudagur"><date>14.</date></td>
-      <td class="fostudagur"><date>15.</date></td>
-      <td class="laugardagur"><date>16.</date></td>
-      <td class="sunnudagur"><date>17.</date></td>
-    </tr>
-  </table>
-  <div style="margin-right:6em; margin-top: 3px; float:right">Apríl</div>
-<div style="clear:both"></div>
-</section>
-</div>
-
-	</div>
 	<div class="tab-pane" id="lists">
 
 <div class="third-width">
@@ -163,7 +102,6 @@ $(document).ready(function() {
 </section>
 </div>
 
-	</div>
 </div>
 
 {% endblock %}

@@ -43,6 +43,10 @@
 {% for role in role_data %}
 		<li id="role_{{ role.id }}_entry" style="margin: 0 1em;">
 			<div style="border-bottom: 1px solid #eee;">
+				<span
+         		class="{% if role.cm_status == "not invited" %}icon-circle-blank{% else %}{% if role.cm_status == "attending" %}icon-ok-circle{% else %}{% if role.cm_status == "absent" %}icon-ban-circle{% else %}icon-circle-blank{% endif %}{% endif %}{% endif %} edit-icon"
+         		style="cursor: pointer; color: {% if role.cm_status == "not invited" %}#ddd; cursor: default;{% else %}{% if role.cm_status == "attending" %}rgb(70, 136, 71);{% else %}{% if role.cm_status == "absent" %}rgb(248, 148, 6){% else %}rgb(185, 74, 72){% endif %}{% endif %}{% endif %}; margin: 0;"
+      ></span>
 				<span style="display:inline-block; width: 35%">{{ role.eventrole.role.title }}</span>
 	{% if role.cm_status == 'invited' %}
 				<span style="">

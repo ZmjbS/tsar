@@ -72,7 +72,6 @@
 	<ul id="all_events" class="events_list">
 {% for ed in all_events_dictionaries_list %}
 	<li>
-			<!--class="{% if not ed.invitedroles_dictionaries_list %}icon-circle-blank{% else %}{% if ed.positive_response %}icon-circle{% else %}{% if ed.unanswered_response %}icon-question-sign{% else %}icon-circle{% endif %}{% endif %}{% endif %} edit-icon"-->
 		<span
 			class="{% if not ed.invitedroles_dictionaries_list %}icon-circle-blank{% else %}icon-circle{% endif %} edit-icon"
 			style="cursor: pointer; color: {% if not ed.invitedroles_dictionaries_list %}#ddd; cursor: default;{% else %}{% if ed.positive_response %}rgb(70, 136, 71);{% else %}{% if ed.unanswered_response %}rgb(248, 148, 6){% else %}rgb(185, 74, 72){% endif %}{% endif %}{% endif %}; margin: 0;"
