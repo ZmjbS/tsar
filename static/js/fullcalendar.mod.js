@@ -2093,9 +2093,11 @@ function FiveWeeksView(element, calendar) {
 		var start = cloneDate(date);
 		var end = addMonths(cloneDate(start), 1);
 		//var visStart = cloneDate(start);
-		var visStart = addDays(cloneDate(start), (date.getDay() - opt('firstDay') - 7 ));
+		//var visStart = addDays(cloneDate(start), (date.getDay() - opt('firstDay') - 7 ));
+		var visStart = addDays(cloneDate(start), -7 );
 		//var visEnd = cloneDate(end);
-		var visEnd = addDays(cloneDate(end), (date.getDay() - opt('firstDay') - 7 ));
+		//var visEnd =   addDays(cloneDate(end),   (date.getDay() - opt('firstDay') - 7 ));
+		var visEnd =   addDays(cloneDate(start),   7*3 );
 		var firstDay = opt('firstDay');
 		var nwe = opt('weekends') ? 0 : 1;
 		if (nwe) {

@@ -18,6 +18,9 @@
 
 </style>
 <script type="text/javascript">
+$(document).ready(function(){
+   $('body').delegate('.respond-icon', 'click', function() { respond_to_event(this, 'Event page') } );
+});
 </script>
 
 {% endblock %}
@@ -29,91 +32,78 @@
 <div class="third-width">
 <section>
 	<a href="bodun"><span class="icon-edit edit-icon" style="float:right"></span></a>
-	<!--<h2>Mæting</h2>-->
 	<ul class="nav nav-pills">
-		<li class="active"><a class="success" href="#attendance" data-toggle="tab">Mæting</a></li>
-		<li><a class="important" href="#absense" data-toggle="tab">Fjarri</a></li>
+		<li class="active"><a class="success" href="#attending" data-toggle="tab">Mæting</a></li>
+		<li><a class="important" href="#absent" data-toggle="tab">Fjarri</a></li>
 		<li><a class="warning" href="#unclear" data-toggle="tab">Óvíst</a></li>
 		<li><a href="#invitation" data-toggle="tab">Boðun</a></li>
-<!--You are: {{ cm.user }}-->
-	</ul><!-- nav-tabs -->
+<!--
+	You are: {{ cm.user }}
+-->
+	</ul><!-- nav-pills -->
 <div class="tab-content">
-<div  class="tab-pane active" id="attendance">
-	<ul id="attending_roles" style="list-style: none; margin-left:0;">
-{% for role in role_data %}
-		<li id="role_{{ role.id }}_entry" style="margin: 0 1em;">
-			<div style="border-bottom: 1px solid #eee;">
-				<span
-         		class="{% if role.cm_status == "not invited" %}icon-circle-blank{% else %}{% if role.cm_status == "attending" %}icon-ok-circle{% else %}{% if role.cm_status == "absent" %}icon-ban-circle{% else %}icon-circle-blank{% endif %}{% endif %}{% endif %} edit-icon"
-         		style="cursor: pointer; color: {% if role.cm_status == "not invited" %}#ddd; cursor: default;{% else %}{% if role.cm_status == "attending" %}rgb(70, 136, 71);{% else %}{% if role.cm_status == "absent" %}rgb(248, 148, 6){% else %}rgb(185, 74, 72){% endif %}{% endif %}{% endif %}; margin: 0;"
-      ></span>
-				<span style="display:inline-block; width: 35%">{{ role.eventrole.role.title }}</span>
-	{% if role.cm_status == 'invited' %}
-				<span style="">
-					<span id="attend-{{ role.eventrole.id }}" class="respond icon-plus-sign edit-icon"></span>
-					<span id="absent-{{ role.eventrole.id }}" class="respond icon-remove-sign edit-icon"></span>
+
+{# Create a tab pane for each status: #}
+{% for status in status_list %} {# attending absent unclear #}
+<div  class="tab-pane {% if status == "attending" %}active{% endif %}" id="{{ status }}">
+	{# List each role for this particular status #}
+	<ul id="{{ status }}_roles" style="list-style: none; margin-left:0;">
+	{% for role in role_data %}
+		<li id="role_{{ role.eventrole.role.id }}_entry" style="margin: 0 1em;">
+			<div class="role_entry_header">
+		{% if role.cm_status == "not invited" %}
+				<span id="role_{{ role.eventrole.role.id}}_status_icon" class="icon-circle-blank not-invited"></span>
+		{% else %}
+			{% if role.cm_status == "attending" %}
+				<span id="role_{{ role.eventrole.role.id}}_status_icon" class="icon-ok-circle"></span>
+			{% else %}
+				{% if role.cm_status == "absent" or role.cm_status == "attending elsewhere" %}
+				<span id="role_{{ role.eventrole.role.id}}_status_icon" class="icon-ban-circle"></span>
+				{% else %}
+				{# invited #}
+				<span id="role_{{ role.eventrole.role.id}}_status_icon" class="icon-circle-blank invited"></span>
+				{% endif %}
+			{% endif %}
+		{% endif %}
+				<span class="role_entry-title">{{ role.eventrole.role.title }}</span>
+				<span class="role_entry-bttns">{{ role.eventrole.minimum }}〜{% if role.eventrole.maximum == 0 %}∞{% else %}{{ role.eventrole.maximum }}{% endif %}</span>
+		{% if not role.cm_status == 'not invited' %}
+				<span style="float: right;">
+					<span style="float:none;" id="attend-{{ role.eventrole.id }}" class="respond-icon icon-plus-sign"></span>
+					<span style="float:none;" id="absent-{{ role.eventrole.id }}" class="respond-icon icon-remove-sign"></span>
 				</span>
-	{% endif %}
-				<span style="font-size:smaller; color: gray; float: right;">{{ role.eventrole.minimum }}〜{% if role.eventrole.maximum == 0 %}∞{% else %}{{ role.eventrole.maximum }}{% endif %}</span>
+		{% endif %}
 			</div>
-			<ul id="attending_members">
-	{% for member in role.attendingmembers %}
-				<li id="member_{{ member.user.id }}_entry">
+			<ul id="role_{{ role.eventrole.role.id }}_{{ status }}_members">
+		{% if status == "attending" %}
+			{% for member in role.attendingmembers %}
+				<li id="role_{{ role.eventrole.role.id }}_member_{{ member.user.id }}_entry">
 					<a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a>
-		{% if member == cm %}
-					<span id="absent-{{ role.eventrole.id }}" class="respond icon-remove-sign edit-icon"></span>
-					<span id="unclea-{{ role.eventrole.id }}" class="respond icon-question-sign edit-icon"></span>
 				</li>
-		{% endif %}
-				</li>
-	{% endfor %}
-			</ul>
-		</li>
-{% endfor %}
-	</ul>
-</div>
-<!-- Absense -->
-<div  class="tab-pane" id="absense">
-	<ul id="absense_roles" style="list-style: none; margin-left:0;">
-{% for role in role_data %}
-		<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;">{{ role.eventrole.role.title }} <span style="font-size:smaller; color: gray; float: right;">{{ role.eventrole.minimum }}〜{% if role.eventrole.maximum == 0 %}∞{% else %}{{ role.eventrole.maximum }}{% endif %}</span></div>
-			<ul id="absent_members">
-	{% for member in role.absentmembers %}
-				<li id="member_{{ member.user.id }}_entry"><a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a>
-		{% if member == cm and role.cm_status != 'attending elsewhere' %}
-					<span id="unclea-{{ role.eventrole.id }}" class="respond icon-question-sign edit-icon"></span>
-					<span id="attend-{{ role.eventrole.id }}" class="respond icon-plus-sign edit-icon"></span>
-		{% endif %}
-				</li>
-	{% endfor %}
-			</ul>
-		</li>
-{% endfor %}
-	</ul>
-</div>
-<!-- Unclear -->
-<div  class="tab-pane" id="unclear">
-	<ul id="unclear_roles" style="list-style: none; margin-left:0;">
-{#{% for event_role in event.eventrole_set.all %}#}
-{% for role in role_data %}
-		<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;">{{ role.eventrole.role.title }} <span style="font-size:smaller; color: gray; float: right;">{{ role.eventrole.minimum }}〜{% if role.eventrole.maximum == 0 %}∞{% else %}{{ role.eventrole.maximum }}{% endif %}</span></div>
-{{ event_role.invitedmembers.items }}
-			<ul id="unclear_members">
-	{% for member in role.invitedmembers %}
-				<li id="member_{{ member.user.id }}_entry">
+			{% endfor %}
+		{% else %}
+			{% if status == "absent" %}
+				{% for member in role.absentmembers %}
+				<li id="role_{{ role.eventrole.role.id }}_member_{{ member.user.id }}_entry">
 					<a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a>
-		{% if member == cm %}
-					<span id="absent-{{ role.eventrole.id }}" class="respond icon-remove-sign edit-icon"></span>
-					<span id="attend-{{ role.eventrole.id }}" class="respond icon-plus-sign edit-icon"></span>
 				</li>
+				{% endfor %}
+			{% else %}
+				{# unclear #}
+				{% for member in role.invitedmembers %}
+				<li id="role_{{ role.eventrole.role.id }}_member_{{ member.user.id }}_entry">
+					<a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a>
+				</li>
+				{% endfor %}
+			{% endif %}
 		{% endif %}
-				</li>
-	{% endfor %}
 			</ul>
 		</li>
-{% endfor %}
+	{% endfor %}
 	</ul>
 </div>
+{% endfor %}
+
 <!-- Invitations -->
 <div class="tab-pane" id="invitation">
 	<ul style="list-style: none; margin-left:0;">
@@ -133,10 +123,10 @@
 {% endfor %}
 	</ul>
 </div>
-</div>
+</div><!-- class="tab-content" -->
 
 </section>
-</div>
+</div><!-- class="third-width" -->
 
 <div class="twothird-width">
 	<section id="event_description">

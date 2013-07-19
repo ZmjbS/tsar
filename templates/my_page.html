@@ -4,6 +4,11 @@
 <style>
 .events_list { list-style: none; margin-left: 0.3em; }
 </style>
+<script>
+$(document).ready(function(){
+   $('.respond-icon').click(function(event) { event.stopPropagation(); respond_to_event(this, 'My page'); } );
+});
+</script>
 {% endblock %}
 {% load humanize %}
 
@@ -23,89 +28,92 @@
 <section id="vidburdir">
 	<span class="btn pull-right" onclick="$('#my_events').toggle();$('#all_events').toggle();$(this).toggleClass('active');"><i class="icon-user"></i></span>
 	<h2>Næstu viðburðir</h2>
-  <ul id="my_events" class="events_list" style="display: none;">
-{% for ed in my_events_dictionaries_list %}
-	<li>
-		<span
-			class="{% if not ed.invitedroles_dictionaries_list %}icon-circle-blank{% else %}icon-circle{% endif %} edit-icon"
-			style="cursor: pointer; color: {% if not ed.invitedroles_dictionaries_list %}#ddd; cursor: default;{% else %}{% if ed.positive_response %}rgb(70, 136, 71);{% else %}{% if ed.unanswered_response %}rgb(248, 148, 6){% else %}rgb(185, 74, 72){% endif %}{% endif %}{% endif %}; margin: 0;"
-			onclick="if ($(this).parent().children('.event_{{ ed.event.id }}_roles_list').is(':visible')) { $('.event_{{ ed.event.id }}_roles_list').hide() } else { $('.event_{{ ed.event.id }}_roles_list').show(); };"
-		></span>
-
-		<a href="/vidburdur/{{ ed.id }}/">{{ ed.event.title }}</a>
-		<time datetime='{{ed.event.date_time_begin|date:"Y-m-d"}}'>{{ ed.event.date_time_begin|naturaltime }}</time>
-			<ul style="list-style: none; margin-left: .5em; display: none;" class="event_{{ ed.event.id }}_roles_list">
-	{% for ird in ed.invitedroles_dictionaries_list %}
-				<li>
-					<span style="">
-					{% if ird.response == 'Y' %}
-			<span class="icon-ok-circle" style="color: rgb(70, 136, 71); cursor: default; margin: 0;"></span>
-					{% else %}
-						{% if ird.response == 'N' %}
-			<span class="icon-ban-circle" style="color: rgb(185, 74, 72); cursor: default; margin: 0;"></span>
-						{% else %}
-			<span class="icon-circle-blank" style="color: rgb(248, 148, 6); cursor: default; margin: 0;"></span>
-						{% endif %}
-					{% endif %}
-					</span>
-					{{ ird.eventrole.role }}
-					<span style="float: right;">
-					{% if ird.response == 'Y' %}
-					<a class="respond" href="#"><span class="icon-question-sign edit-icon" style="margin: 0; color: rgb(248, 148, 6)"></span></a>
-					<a class="respond" href="#"><span class="icon-remove-sign edit-icon" style="margin: 0; color: rgb(185, 74, 72)"></span></a>
-					{% else %}
-						{% if ird.response == 'N' %}
-					<a class="respond" href="#"><span class="icon-plus-sign edit-icon" style="margin: 0; color: rgb(70, 136, 71)"></span></a>
-					<a class="respond" href="#"><span class="icon-question-sign edit-icon" style="margin: 0; color: rgb(248, 148, 6)"></span></a>
-						{% else %}
-					<a class="respond" href="#"><span class="icon-plus-sign edit-icon" style="margin: 0; color: rgb(70, 136, 71)"></span></a>
-					<a class="respond" href="#"><span class="icon-remove-sign edit-icon" style="margin: 0; color: rgb(185, 74, 72)"></span></a>
-						{% endif %}
-					{% endif %}
-					</span>
-				</li>
-	{% endfor %}
-			</ul>
-	</li>
-{% endfor %}
-	</ul>
 	<ul id="all_events" class="events_list">
 {% for ed in all_events_dictionaries_list %}
-	<li>
-		<span
-			class="{% if not ed.invitedroles_dictionaries_list %}icon-circle-blank{% else %}icon-circle{% endif %} edit-icon"
-			style="cursor: pointer; color: {% if not ed.invitedroles_dictionaries_list %}#ddd; cursor: default;{% else %}{% if ed.positive_response %}rgb(70, 136, 71);{% else %}{% if ed.unanswered_response %}rgb(248, 148, 6){% else %}rgb(185, 74, 72){% endif %}{% endif %}{% endif %}; margin: 0;"
-			onclick="if ($(this).parent().children('.event_{{ ed.event.id }}_roles_list').is(':visible')) { $('.event_{{ ed.event.id }}_roles_list').hide() } else { $('.event_{{ ed.event.id }}_roles_list').show(); };"
+		<li id="event-{{ ed.event.id }}" class="event-list-item"
+ {% if ed.invitedroles_dictionaries_list %}
+			onclick="
+				if ($('#event_{{ ed.event.id }}_roles_list').is(':visible')) {
+					$('#event_{{ ed.event.id }}_roles_list').hide();
+					$('#event_{{ ed.event.id }}_response_icons').show();
+					$(this).css('padding-bottom', '0');
+					$(this).css('background-color', '#fff');
+				} else {
+					$('#event_{{ ed.event.id }}_roles_list').show();
+					$('#event_{{ ed.event.id }}_response_icons').hide();
+					$(this).css('padding-bottom', '.4em');
+					$(this).css('background-color', '#eef');
+				};
+				$(this).children('span.status-icon').toggleClass('icon-circle icon-circle-blank');"{% endif %}>
+		<span id="event_{{ ed.event.id }}_status_icon" 
+	{% if ed.invitedroles_dictionaries_list %}
+		{% if ed.positive_response %}
+			class="icon-circle status-icon attending-icon"
+		{% else %}
+			{% if ed.unanswered_response %}
+			class="icon-circle status-icon unclear-icon"
+			{% else %}
+			class="icon-circle status-icon absent-icon"
+			{% endif %}
+		{% endif %}
+	{% else %}
+			class="icon-circle-blank status-icon notinvited-icon"
+	{% endif %}
 		></span>
 
-		<a href="/vidburdur/{{ ed.id }}/">{{ ed.event.title }}</a> {{ ed.invitedroles_dictionaries_list|length }}
+		<a href="/vidburdur/{{ ed.id }}/" onclick="event.stopPropagation()">{{ ed.event.title }}</a>
 		<time datetime='{{ed.event.date_time_begin|date:"Y-m-d"}}'>{{ ed.event.date_time_begin|naturaltime }}</time>
-			<ul style="list-style: none; margin-left: .5em; display: none;" class="event_{{ ed.event.id }}_roles_list">
+		<span id="event_{{ ed.event.id }}_response_icons" class="response-icons"
+	{% if ed.invitedroles_dictionaries_list|length == 1 %}
+			 nclick="event.stopPropagation();">
+		{% if ed.positive_response %}
+			<span id="absentX{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" action="attend" class="respond-icon icon-remove-sign"></span>
+			<span id="uncleaX{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" action="unclear" class="respond-icon icon-question-sign"></span>
+		{% else %}
+			{% if ed.unanswered_response %}
+			<span id="absentX{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" action="absent" class="respond-icon icon-remove-sign"></span>
+			<span id="attendX{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" action="attend" class="respond-icon icon-plus-sign"></span>
+			{% else %}
+			<span id="uncleaX{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" action="unclear" class="respond-icon icon-question-sign"></span>
+			<span id="attendX{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" action="attend" class="respond-icon icon-plus-sign"></span>
+			{% endif %}
+		{% endif %}
+	{% else %}
+			onclick="">
+		{% if ed.invitedroles_dictionaries_list|length > 1 %}
+				<span style="float: right; color: #ccc;">{{ ed.invitedroles_dictionaries_list|length }} hlutverk</span>
+		{% endif %}
+	{% endif %}
+			</span>
+			<ul id="event_{{ ed.event.id }}_roles_list" class="roles_list">
 	{% for ird in ed.invitedroles_dictionaries_list %}
-				<li>
-					<span style="">
+				<li id="eventrole_{{ird.eventrole.id }}" class="eventrole-list-item">
+					<span id="eventrole_{{ ird.eventrole.id }}_status_icon"
 					{% if ird.response == 'Y' %}
-			<span class="icon-ok-circle" style="color: rgb(70, 136, 71); cursor: default; margin: 0;"></span>
+						status="attending" class="icon-circle status-icon" style="color: rgb(70, 136, 71); cursor: default; margin: 0;"
 					{% else %}
 						{% if ird.response == 'N' %}
-			<span class="icon-ban-circle" style="color: rgb(185, 74, 72); cursor: default; margin: 0;"></span>
+						status="absent" class="icon-circle status-icon" style="color: rgb(185, 74, 72); cursor: default; margin: 0;"
 						{% else %}
-			<span class="icon-circle-blank" style="color: rgb(248, 148, 6); cursor: default; margin: 0;"></span>
+						status="unclear" class="icon-circle status-icon" style="color: rgb(248, 148, 6); cursor: default; margin: 0;"
 						{% endif %}
 					{% endif %}
-					</span>
+					></span>
+
 					{{ ird.eventrole.role }}
-					<span style="float: right;">
-					{% if ird.response == 'Y' %}
-					<a class="respond" href="#"><span class="icon-question-sign edit-icon" style="margin: 0; color: rgb(248, 148, 6)"></span></a>
-					<a class="respond" href="#"><span class="icon-remove-sign edit-icon" style="margin: 0; color: rgb(185, 74, 72)"></span></a>
+
+					<span id="eventrole_{{ ird.eventrole.id }}_response_icons" class="response_icons"
+					nclick="event.stopPropagation();">
+					{% if ird.response != 'N' %}
+						<span id="absent-{{ ird.eventrole.id }}" action="absent"  class="respond-icon icon-remove-sign"></span>
+						<span id="unclea-{{ ird.eventrole.id }}" action="unclear" class="respond-icon icon-question-sign"></span>
 					{% else %}
 						{% if ird.response == 'N' %}
-					<a class="respond" href="#"><span class="icon-plus-sign edit-icon" style="margin: 0; color: rgb(70, 136, 71)"></span></a>
-					<a class="respond" href="#"><span class="icon-question-sign edit-icon" style="margin: 0; color: rgb(248, 148, 6)"></span></a>
+						<span id="unclea-{{ ird.eventrole.id }}" action="unclear" class="respond-icon icon-question-sign"></span>
+						<span id="attend-{{ ird.eventrole.id }}" action="attend"  class="respond-icon icon-plus-sign"></span>
 						{% else %}
-					<a class="respond" href="#"><span class="icon-plus-sign edit-icon" style="margin: 0; color: rgb(70, 136, 71)"></span></a>
-					<a class="respond" href="#"><span class="icon-remove-sign edit-icon" style="margin: 0; color: rgb(185, 74, 72)"></span></a>
+						<span id="absent-{{ ird.eventrole.id }}" action="absent"  class="respond-icon icon-remove-sign"></span>
+						<span id="attend-{{ ird.eventrole.id }}" action="attend"  class="respond-icon icon-plus-sign"></span>
 						{% endif %}
 					{% endif %}
 					</span>
@@ -115,25 +123,102 @@
 	</li>
 {% endfor %}
 	</ul>
-<!--
-<ul>
-	<hr />
-{% for event in events_list %}
-{# for event, invited in invited.items #}
-	<li>
-		<span style="">
-		{% if invited %}<a class="respond" href="#">{% endif %}<span class="icon-plus-sign edit-icon" style="margin: 0; color: {% if invited %}rgb(70, 136, 71){%else%}#ddd{%endif%}"></span></a>
-		{% if invited %}<a class="respond" href="#">{% endif %}<span class="icon-remove-sign edit-icon" style="margin: 0; color: {% if invited %}rgb(185, 74, 72){%else%}#ddd{%endif%}"></span></a>
-		</span>
-		<a href="/vidburdur/{{ event.id }}/">{{ event.title }}</a>
-		<time datetime='{{event.date_time_begin|date:"Y-m-d"}}'>{{ event.date_time_begin|naturaltime }}</time>
-	{% for eventrole in event.invitedroles %}
-			hi
+{# HERE FOLLOWS ESSENTIALLY A COPY OF THE LIST ABOVE ######################## #}
+	<ul id="my_events" class="events_list" style="display: none;">
+{% for ed in my_events_dictionaries_list %}
+		<li id="event-{{ ed.event.id }}" class="event-list-item"
+ {% if ed.invitedroles_dictionaries_list %}
+			onclick="
+				if ($('#event_{{ ed.event.id }}_roles_list').is(':visible')) {
+					$('#event_{{ ed.event.id }}_roles_list').hide();
+					$('#event_{{ ed.event.id }}_response_icons').show();
+					$(this).css('padding-bottom', '0');
+					$(this).css('background-color', '#fff');
+				} else {
+					$('#event_{{ ed.event.id }}_roles_list').show();
+					$('#event_{{ ed.event.id }}_response_icons').hide();
+					$(this).css('padding-bottom', '.4em');
+					$(this).css('background-color', '#eef');
+				};
+				$(this).children('span.status-icon').toggleClass('icon-circle icon-circle-blank');"{% endif %}>
+		<span id="event_{{ ed.event.id }}_status_icon" 
+	{% if ed.invitedroles_dictionaries_list %}
+		{% if ed.positive_response %}
+			class="icon-circle status-icon attending-icon"
+		{% else %}
+			{% if ed.unanswered_response %}
+			class="icon-circle status-icon unclear-icon"
+			{% else %}
+			class="icon-circle status-icon absent-icon"
+			{% endif %}
+		{% endif %}
+	{% else %}
+			class="icon-circle-blank status-icon notinvited-icon"
+	{% endif %}
+		></span>
+
+		<a href="/vidburdur/{{ ed.id }}/" onclick="event.stopPropagation()">{{ ed.event.title }}</a>
+		<time datetime='{{ed.event.date_time_begin|date:"Y-m-d"}}'>{{ ed.event.date_time_begin|naturaltime }}</time>
+		<span id="event_{{ ed.event.id }}_response_icons" class="response-icons"
+	{% if ed.invitedroles_dictionaries_list|length == 1 %}
+			 nclick="event.stopPropagation();">
+		{% if ed.positive_response %}
+			<span id="absentX{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" action="attend" class="respond-icon icon-remove-sign"></span>
+			<span id="uncleaX{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" action="unclear" class="respond-icon icon-question-sign"></span>
+		{% else %}
+			{% if ed.unanswered_response %}
+			<span id="absentX{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" action="absent" class="respond-icon icon-remove-sign"></span>
+			<span id="attendX{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" action="attend" class="respond-icon icon-plus-sign"></span>
+			{% else %}
+			<span id="uncleaX{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" action="unclear" class="respond-icon icon-question-sign"></span>
+			<span id="attendX{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" action="attend" class="respond-icon icon-plus-sign"></span>
+			{% endif %}
+		{% endif %}
+	{% else %}
+			onclick="">
+		{% if ed.invitedroles_dictionaries_list|length > 1 %}
+				<span style="float: right; color: #ccc;">{{ ed.invitedroles_dictionaries_list|length }} hlutverk</span>
+		{% endif %}
+	{% endif %}
+			</span>
+			<ul id="event_{{ ed.event.id }}_roles_list" class="roles_list">
+	{% for ird in ed.invitedroles_dictionaries_list %}
+				<li id="eventrole_{{ird.eventrole.id }}" class="eventrole-list-item">
+					<span id="eventrole_{{ ird.eventrole.id }}_status_icon"
+					{% if ird.response == 'Y' %}
+						status="attending" class="icon-circle status-icon" style="color: rgb(70, 136, 71); cursor: default; margin: 0;"
+					{% else %}
+						{% if ird.response == 'N' %}
+						status="absent" class="icon-circle status-icon" style="color: rgb(185, 74, 72); cursor: default; margin: 0;"
+						{% else %}
+						status="unclear" class="icon-circle status-icon" style="color: rgb(248, 148, 6); cursor: default; margin: 0;"
+						{% endif %}
+					{% endif %}
+					></span>
+
+					{{ ird.eventrole.role }}
+
+					<span id="eventrole_{{ ird.eventrole.id }}_response_icons" class="response_icons"
+					nclick="event.stopPropagation();">
+					{% if ird.response != 'N' %}
+						<span id="absent-{{ ird.eventrole.id }}" action="absent"  class="respond-icon icon-remove-sign"></span>
+						<span id="unclea-{{ ird.eventrole.id }}" action="unclear" class="respond-icon icon-question-sign"></span>
+					{% else %}
+						{% if ird.response == 'N' %}
+						<span id="unclea-{{ ird.eventrole.id }}" action="unclear" class="respond-icon icon-question-sign"></span>
+						<span id="attend-{{ ird.eventrole.id }}" action="attend"  class="respond-icon icon-plus-sign"></span>
+						{% else %}
+						<span id="absent-{{ ird.eventrole.id }}" action="absent"  class="respond-icon icon-remove-sign"></span>
+						<span id="attend-{{ ird.eventrole.id }}" action="attend"  class="respond-icon icon-plus-sign"></span>
+						{% endif %}
+					{% endif %}
+					</span>
+				</li>
 	{% endfor %}
+			</ul>
 	</li>
 {% endfor %}
 	</ul>
--->
 </section>
 </div>
 

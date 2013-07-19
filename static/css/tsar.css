@@ -21,6 +21,7 @@ section {
 	margin: .25em; }
 section + section { margin-top: .5em; }
 
+/* Scaffolding */
 div.full-width,
 div.half-width,
 div.third-width,
@@ -40,6 +41,7 @@ div#profile-picture img { position: absolute; bottom: 0; right: 0; }
 
 td, th { padding: 0 .4em }
 
+/* Calendar */
 #dagatal tr td { height: 5em; }
 #dagatal { width: 100%; table-layout: fixed; }
 #dagatal td { width: 14%; height: 5em; border: thin solid #ddd; vertical-align: top; white-space:nowrap; overflow: visibe; }
@@ -93,12 +95,46 @@ div#profile-picture {
 	color: #ddd; }
 #event-dates-number-list { list-style: none }
 
+/* Edit icons: The little icons for editing parts of events etc. */
 .edit-icon { color: gray; margin-left: .3em; }
 .edit-icon:hover { color: black; text-decoration: none; }
-.respond { float: right; }
-.respond.icon-plus-sign,
-	.respond.icon-remove-sign,
-	.respond.icon-question-sign { cursor: pointer; color: #ddd; }
-.respond.icon-plus-sign:hover { color: rgb(70, 136, 71); }
-.respond.icon-remove-sign:hover { color: rgb(185, 74, 72); }
-.respond.icon-question-sign:hover { color: rgb(248, 148, 6); }
+
+/*****************************************
+ * My Page events list
+ *****************************************/
+/* Events */
+.events_list > li:hover { background-color: #eef; }
+.events_list > li:hover ul li:hover { background-color: #dde; }
+.events_list li:hover ul { background-color: white; }
+
+/* Roles */
+.roles_list { list-style: none; margin-left: .5em; margin-right: .5em; display: none; }
+.roles_list li { background-color: #fff; }
+.roles_list li span { padding-left: 0; margin-left: 0px; }
+
+.role_entry_header { border-bottom: 1px solid #eee; }
+.role_entry-title  { display:inline-block; }
+.role_entry-bttns  { font-size:smaller; color: gray; width: 3em; text-align: right; float: right; }
+
+.event-list-item { padding: 2px; }
+.eventrole-list-item { padding: 2px; }
+
+/* The icon indicating the response (attended, absent, unclear or uninvited). */
+
+.event-response-icon { text-align: middle; margin-left: 3px; }
+.status-icon		{ cursor: pointer; }
+.attending-icon  { color: rgb(70, 136, 71); }
+.unclear-icon    { color: rgb(248, 148, 6); }
+.absent-icon     { color: rgb(185, 74, 72); }
+.notinvited-icon { color: #ddd; }
+/* The box around the icons */
+.response_icons { float: right; padding: 2px; }
+/* The individual responce icons */
+.respond-icon { cursor: pointer; color: #ccc; float: right; margin: 0; margin-top: 2px; }
+.respond-icon.icon-plus-sign:hover { color: rgb(70, 136, 71); }
+.respond-icon.icon-remove-sign:hover { color: rgb(185, 74, 72); }
+.respond-icon.icon-question-sign:hover { color: rgb(248, 148, 6); }
+.icon-ok-circle { color: rgb(70, 136, 71); }
+.icon-ban-circle { color: rgb(185, 74, 72); }
+.icon-circle-blank.not-invited { color: #ddd; }
+.icon-circle-blank.invited { color: rgb(248, 148, 6); }

@@ -57,7 +57,7 @@ def list_events(request):
 from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
-def event_response(request, pk):
+def event_response(request):
 	print 'in event_response'
 	if not request.user.is_authenticated():
 		cm = User.objects.get(id=2)
@@ -109,8 +109,9 @@ def event_response(request, pk):
 		'user_id': cm.user.id,
 		'user_name': cm.__unicode__(),
 		'username': cm.user.username,
+		'event_id': event_role.event.id,
 		'role_id': event_role.role.id,
-		'event_role_id': event_role.id,
+		'eventrole_id': event_role.id,
 		'action': action,
 	}
 	print 'Data: {}'.format(data)
@@ -188,7 +189,7 @@ def display_event(request, pk):
 			role['cm_status'] = 'attending'
 	import pprint
 	pprint.pprint(role_data)
-	return render_to_response('events/event_page.html', { 'event': event, 'cm': cm, 'role_data': role_data, })
+	return render_to_response('events/event_page.html', { 'event': event, 'cm': cm, 'role_data': role_data, 'status_list': ['attending', 'absent', 'unclear'] })
 
 def display_or_save_event_form(request):
 	event_types = EventType.objects.all()
