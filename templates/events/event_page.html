@@ -68,9 +68,9 @@ $(document).ready(function(){
 				<span class="role_entry-title">{{ role.eventrole.role.title }}</span>
 				<span class="role_entry-bttns">{{ role.eventrole.minimum }}〜{% if role.eventrole.maximum == 0 %}∞{% else %}{{ role.eventrole.maximum }}{% endif %}</span>
 		{% if not role.cm_status == 'not invited' %}
-				<span style="float: right;">
-					<span style="float:none;" id="attend-{{ role.eventrole.id }}" class="respond-icon icon-plus-sign"></span>
-					<span style="float:none;" id="absent-{{ role.eventrole.id }}" class="respond-icon icon-remove-sign"></span>
+				<span style="float: right;" data-eventrole="{{ role.eventrole.id }}" class="response-icons">
+					<span style="float:none;" id="attend-{{ role.eventrole.id }}" data-action="attend" class="respond-icon icon-plus-sign"></span>
+					<span style="float:none;" id="absent-{{ role.eventrole.id }}" data-action="absent" class="respond-icon icon-remove-sign"></span>
 				</span>
 		{% endif %}
 			</div>

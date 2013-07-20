@@ -21,14 +21,15 @@ function respond_to_event(button, pagetype) {
 
 	// extract the action and eventrole from button
 	//action = $(button).attr('id').substring(0,6);
-	action = $(button).attr('data-action');
+	action = $(button).data('action');
 	//eventrole = $(button).attr('id').substring(7);
-	eventrole = $(button).parent().attr('data-eventrole');
+	eventrole = $(button).parent().data('eventrole');
 
 	/* More debug
-	*/
 	console.log('action: '+action);
 	console.log('eventrole: '+eventrole);
+	console.log($(button).parent().data('eventrole'));
+	*/
 
 	var node='init';
 
