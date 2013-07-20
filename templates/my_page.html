@@ -65,21 +65,21 @@ $(document).ready(function(){
 		<time datetime='{{ed.event.date_time_begin|date:"Y-m-d"}}'>{{ ed.event.date_time_begin|naturaltime }}</time>
 		<span id="event_{{ ed.event.id }}_response_icons" class="response-icons"
 	{% if ed.invitedroles_dictionaries_list|length == 1 %}
-			 nclick="event.stopPropagation();">
+			data-eventrole="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}">
 		{% if ed.positive_response %}
-			<span id="absentX{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" action="attend" class="respond-icon icon-remove-sign"></span>
-			<span id="uncleaX{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" action="unclear" class="respond-icon icon-question-sign"></span>
+			<span id="absent-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="absent" class="respond-icon icon-remove-sign"></span>
+			<span id="unclea-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="unclear" class="respond-icon icon-question-sign"></span>
 		{% else %}
 			{% if ed.unanswered_response %}
-			<span id="absentX{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" action="absent" class="respond-icon icon-remove-sign"></span>
-			<span id="attendX{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" action="attend" class="respond-icon icon-plus-sign"></span>
+			<span id="absent-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="absent" class="respond-icon icon-remove-sign"></span>
+			<span id="attend-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="attend" class="respond-icon icon-plus-sign"></span>
 			{% else %}
-			<span id="uncleaX{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" action="unclear" class="respond-icon icon-question-sign"></span>
-			<span id="attendX{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" action="attend" class="respond-icon icon-plus-sign"></span>
+			<span id="unclea-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="unclear" class="respond-icon icon-question-sign"></span>
+			<span id="attend-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="attend" class="respond-icon icon-plus-sign"></span>
 			{% endif %}
 		{% endif %}
 	{% else %}
-			onclick="">
+			>
 		{% if ed.invitedroles_dictionaries_list|length > 1 %}
 				<span style="float: right; color: #ccc;">{{ ed.invitedroles_dictionaries_list|length }} hlutverk</span>
 		{% endif %}
@@ -90,30 +90,29 @@ $(document).ready(function(){
 				<li id="eventrole_{{ird.eventrole.id }}" class="eventrole-list-item">
 					<span id="eventrole_{{ ird.eventrole.id }}_status_icon"
 					{% if ird.response == 'Y' %}
-						status="attending" class="icon-circle status-icon" style="color: rgb(70, 136, 71); cursor: default; margin: 0;"
+						data-status="attending" class="icon-circle status-icon" style="color: rgb(70, 136, 71); cursor: default; margin: 0;"
 					{% else %}
 						{% if ird.response == 'N' %}
-						status="absent" class="icon-circle status-icon" style="color: rgb(185, 74, 72); cursor: default; margin: 0;"
+						data-status="absent" class="icon-circle status-icon" style="color: rgb(185, 74, 72); cursor: default; margin: 0;"
 						{% else %}
-						status="unclear" class="icon-circle status-icon" style="color: rgb(248, 148, 6); cursor: default; margin: 0;"
+						data-status="unclear" class="icon-circle status-icon" style="color: rgb(248, 148, 6); cursor: default; margin: 0;"
 						{% endif %}
 					{% endif %}
 					></span>
 
 					{{ ird.eventrole.role }}
 
-					<span id="eventrole_{{ ird.eventrole.id }}_response_icons" class="response_icons"
-					nclick="event.stopPropagation();">
+					<span id="eventrole_{{ ird.eventrole.id }}_response_icons" data-eventrole="{{ ird.eventrole.id }}" class="response-icons">
 					{% if ird.response != 'N' %}
-						<span id="absent-{{ ird.eventrole.id }}" action="absent"  class="respond-icon icon-remove-sign"></span>
-						<span id="unclea-{{ ird.eventrole.id }}" action="unclear" class="respond-icon icon-question-sign"></span>
+						<span id="eventrole-absent-{{ ird.eventrole.id }}" data-action="absent"  class="respond-icon icon-remove-sign"></span>
+						<span id="eventrole-unclea-{{ ird.eventrole.id }}" data-action="unclear" class="respond-icon icon-question-sign"></span>
 					{% else %}
 						{% if ird.response == 'N' %}
-						<span id="unclea-{{ ird.eventrole.id }}" action="unclear" class="respond-icon icon-question-sign"></span>
-						<span id="attend-{{ ird.eventrole.id }}" action="attend"  class="respond-icon icon-plus-sign"></span>
+						<span id="eventrole-unclea-{{ ird.eventrole.id }}" data-action="unclear" class="respond-icon icon-question-sign"></span>
+						<span id="eventrole-attend-{{ ird.eventrole.id }}" data-action="attend"  class="respond-icon icon-plus-sign"></span>
 						{% else %}
-						<span id="absent-{{ ird.eventrole.id }}" action="absent"  class="respond-icon icon-remove-sign"></span>
-						<span id="attend-{{ ird.eventrole.id }}" action="attend"  class="respond-icon icon-plus-sign"></span>
+						<span id="eventrole-absent-{{ ird.eventrole.id }}" data-action="absent"  class="respond-icon icon-remove-sign"></span>
+						<span id="eventrole-attend-{{ ird.eventrole.id }}" data-action="attend"  class="respond-icon icon-plus-sign"></span>
 						{% endif %}
 					{% endif %}
 					</span>
@@ -126,22 +125,22 @@ $(document).ready(function(){
 {# HERE FOLLOWS ESSENTIALLY A COPY OF THE LIST ABOVE ######################## #}
 	<ul id="my_events" class="events_list" style="display: none;">
 {% for ed in my_events_dictionaries_list %}
-		<li id="event-{{ ed.event.id }}" class="event-list-item"
+		<li id="my_event-{{ ed.event.id }}" class="event-list-item"
  {% if ed.invitedroles_dictionaries_list %}
 			onclick="
-				if ($('#event_{{ ed.event.id }}_roles_list').is(':visible')) {
-					$('#event_{{ ed.event.id }}_roles_list').hide();
-					$('#event_{{ ed.event.id }}_response_icons').show();
+				if ($('#my_event_{{ ed.event.id }}_roles_list').is(':visible')) {
+					$('#my_event_{{ ed.event.id }}_roles_list').hide();
+					$('#my_event_{{ ed.event.id }}_response_icons').show();
 					$(this).css('padding-bottom', '0');
 					$(this).css('background-color', '#fff');
 				} else {
-					$('#event_{{ ed.event.id }}_roles_list').show();
-					$('#event_{{ ed.event.id }}_response_icons').hide();
+					$('#my_event_{{ ed.event.id }}_roles_list').show();
+					$('#my_event_{{ ed.event.id }}_response_icons').hide();
 					$(this).css('padding-bottom', '.4em');
 					$(this).css('background-color', '#eef');
 				};
 				$(this).children('span.status-icon').toggleClass('icon-circle icon-circle-blank');"{% endif %}>
-		<span id="event_{{ ed.event.id }}_status_icon" 
+		<span id="my_event_{{ ed.event.id }}_status_icon" 
 	{% if ed.invitedroles_dictionaries_list %}
 		{% if ed.positive_response %}
 			class="icon-circle status-icon attending-icon"
@@ -159,57 +158,54 @@ $(document).ready(function(){
 
 		<a href="/vidburdur/{{ ed.id }}/" onclick="event.stopPropagation()">{{ ed.event.title }}</a>
 		<time datetime='{{ed.event.date_time_begin|date:"Y-m-d"}}'>{{ ed.event.date_time_begin|naturaltime }}</time>
-		<span id="event_{{ ed.event.id }}_response_icons" class="response-icons"
+		<span id="my_event_{{ ed.event.id }}_response_icons" class="response-icons">
 	{% if ed.invitedroles_dictionaries_list|length == 1 %}
-			 nclick="event.stopPropagation();">
 		{% if ed.positive_response %}
-			<span id="absentX{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" action="attend" class="respond-icon icon-remove-sign"></span>
-			<span id="uncleaX{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" action="unclear" class="respond-icon icon-question-sign"></span>
+			<span id="my_event_absent-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="attend"  class="respond-icon icon-remove-sign"></span>
+			<span id="my_event_unclea-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="unclear" class="respond-icon icon-question-sign"></span>
 		{% else %}
 			{% if ed.unanswered_response %}
-			<span id="absentX{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" action="absent" class="respond-icon icon-remove-sign"></span>
-			<span id="attendX{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" action="attend" class="respond-icon icon-plus-sign"></span>
+			<span id="my_event_absent-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="absent"  class="respond-icon icon-remove-sign"></span>
+			<span id="my_event_attend-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="attend"  class="respond-icon icon-plus-sign"></span>
 			{% else %}
-			<span id="uncleaX{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" action="unclear" class="respond-icon icon-question-sign"></span>
-			<span id="attendX{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" action="attend" class="respond-icon icon-plus-sign"></span>
+			<span id="my_event_unclea-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="unclear" class="respond-icon icon-question-sign"></span>
+			<span id="my_event_attend-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="attend"  class="respond-icon icon-plus-sign"></span>
 			{% endif %}
 		{% endif %}
 	{% else %}
-			onclick="">
 		{% if ed.invitedroles_dictionaries_list|length > 1 %}
 				<span style="float: right; color: #ccc;">{{ ed.invitedroles_dictionaries_list|length }} hlutverk</span>
 		{% endif %}
 	{% endif %}
 			</span>
-			<ul id="event_{{ ed.event.id }}_roles_list" class="roles_list">
+			<ul id="my_event_{{ ed.event.id }}_roles_list" class="roles_list">
 	{% for ird in ed.invitedroles_dictionaries_list %}
-				<li id="eventrole_{{ird.eventrole.id }}" class="eventrole-list-item">
-					<span id="eventrole_{{ ird.eventrole.id }}_status_icon"
+				<li id="my_eventrole_{{ird.eventrole.id }}" class="eventrole-list-item">
+					<span id="my_eventrole_{{ ird.eventrole.id }}_status_icon"
 					{% if ird.response == 'Y' %}
-						status="attending" class="icon-circle status-icon" style="color: rgb(70, 136, 71); cursor: default; margin: 0;"
+						data-status="attending" class="icon-circle status-icon" style="color: rgb(70, 136, 71); cursor: default; margin: 0;"
 					{% else %}
 						{% if ird.response == 'N' %}
-						status="absent" class="icon-circle status-icon" style="color: rgb(185, 74, 72); cursor: default; margin: 0;"
+						data-status="absent" class="icon-circle status-icon" style="color: rgb(185, 74, 72); cursor: default; margin: 0;"
 						{% else %}
-						status="unclear" class="icon-circle status-icon" style="color: rgb(248, 148, 6); cursor: default; margin: 0;"
+						data-status="unclear" class="icon-circle status-icon" style="color: rgb(248, 148, 6); cursor: default; margin: 0;"
 						{% endif %}
 					{% endif %}
 					></span>
 
 					{{ ird.eventrole.role }}
 
-					<span id="eventrole_{{ ird.eventrole.id }}_response_icons" class="response_icons"
-					nclick="event.stopPropagation();">
+					<span id="my_eventrole_{{ ird.eventrole.id }}_response_icons" class="response_icons" data-eventrole="{{ ird.eventrole.id }}">
 					{% if ird.response != 'N' %}
-						<span id="absent-{{ ird.eventrole.id }}" action="absent"  class="respond-icon icon-remove-sign"></span>
-						<span id="unclea-{{ ird.eventrole.id }}" action="unclear" class="respond-icon icon-question-sign"></span>
+						<span id="my_absent-{{ ird.eventrole.id }}" data-action="absent"  class="respond-icon icon-remove-sign"></span>
+						<span id="my_unclea-{{ ird.eventrole.id }}" data-action="unclear" class="respond-icon icon-question-sign"></span>
 					{% else %}
 						{% if ird.response == 'N' %}
-						<span id="unclea-{{ ird.eventrole.id }}" action="unclear" class="respond-icon icon-question-sign"></span>
-						<span id="attend-{{ ird.eventrole.id }}" action="attend"  class="respond-icon icon-plus-sign"></span>
+						<span id="my_unclea-{{ ird.eventrole.id }}" data-action="unclear" class="respond-icon icon-question-sign"></span>
+						<span id="my_attend-{{ ird.eventrole.id }}" data-action="attend"  class="respond-icon icon-plus-sign"></span>
 						{% else %}
-						<span id="absent-{{ ird.eventrole.id }}" action="absent"  class="respond-icon icon-remove-sign"></span>
-						<span id="attend-{{ ird.eventrole.id }}" action="attend"  class="respond-icon icon-plus-sign"></span>
+						<span id="my_absent-{{ ird.eventrole.id }}" data-action="absent"  class="respond-icon icon-remove-sign"></span>
+						<span id="my_attend-{{ ird.eventrole.id }}" data-action="attend"  class="respond-icon icon-plus-sign"></span>
 						{% endif %}
 					{% endif %}
 					</span>
