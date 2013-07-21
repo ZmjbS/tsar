@@ -4,7 +4,7 @@ body { max-width: 90em; }
 h1 { margin-top: 10px; }
 h1, article { padding-left: 10px; }
 
-article { margin: 1em; }
+//article { margin: 1em; }
 #admin-links { margin: .5em; }
 #admin-links a, #navigation a { font-weight: bold; }
 #admin-links, #search-field { float: right; }
@@ -18,8 +18,11 @@ article { margin: 1em; }
 section {
 	border-radius: .5em;
 	padding: .5em;
-	margin: .25em; }
-section + section { margin-top: .5em; }
+	margin: 0;
+	margin-bottom: 1.5em;
+//	margin: .25em;
+}
+//section + section { margin-top: 1.5em; }
 
 /* Scaffolding */
 div.full-width,

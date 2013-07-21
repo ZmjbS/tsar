@@ -67,41 +67,41 @@ td.fc-sat, td.fc-sun { background-color: #eff; }
 <div class="tab-content">
 	<div class="tab-pane active" id="calendar"></div>
 
-	<div class="tab-pane" id="lists">
+	<div class="tab-pane row" id="lists">
 
-<div class="third-width">
-<section id="recent-events">
-<h2>Nýlegir viðburðir</h2>
-<ul>
+		<div class="span4">
+			<section id="recent-events">
+				<h2>Nýlegir viðburðir</h2>
+					<ul>
 {% for event in recent_events_list.all %}
-		<li><a href="/vidburdur/{{ event.id }}">{{ event.title }}</a> <date>{{ event.date_time_begin.date }}</li>
+						<li><a href="/vidburdur/{{ event.id }}">{{ event.title }}</a> <date>{{ event.date_time_begin.date }}</li>
 {% endfor %}
-</ul>
-</section>
-</div>
+					</ul>
+			</section>
+		</div>
 
-<div class="third-width">
-<section id="upcoming-events">
-<h2>Næstu viðburðir</h2>
-<ul>
+		<div class="span4">
+			<section id="upcoming-events">
+				<h2>Næstu viðburðir</h2>
+				<ul>
 {% for event in coming_events_list.all %}
-	<li><a href="/vidburdur/{{ event.id }}">{{ event.title }}</a> <date>{{ event.date_time_begin.date }}</li>
+					<li><a href="/vidburdur/{{ event.id }}">{{ event.title }}</a> <date>{{ event.date_time_begin.date }}</li>
 {% endfor %}
-</ul>
-</section>
-</div>
+				</ul>
+			</section>
+		</div>
 
-<div class="third-width">
-<section id="incidents">
-<h2>Útköll</h2>
-<ul>
+		<div class="span4">
+			<section id="incidents">
+				<h2>Útköll</h2>
+				<ul>
 {% for event in latest_event_list.all %}
-	<li><a href="/vidburdur/{{ event.id }}">{{ event.title }}</a> <date>{{ event.date_time_begin.date }}</li>
+					<li><a href="/vidburdur/{{ event.id }}">{{ event.title }}</a> <date>{{ event.date_time_begin.date }}</li>
 {% endfor %}
-</ul>
-</section>
-</div>
-
-</div>
+				</ul>
+			</section>
+		</div>
+	</div><!-- /#lists.row -->
+</div><!-- /.tab-contents -->
 
 {% endblock %}

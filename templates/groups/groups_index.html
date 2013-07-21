@@ -24,40 +24,44 @@
 {% endblock %}
 
 {% block content %}
-<div class="half-width">
-<section>
-<h2>Útkallshópar</h2>
-<ul id="test">
+
+<div class="row">
+	<div class="span6">
+		<section>
+			<h2>Útkallshópar</h2>
+			<ul id="test">
 {% for group in group_list.all %}
 	{% if group.group_type == 'UH' %}
-	<li><a href="/hopur/{{ group.slug }}">{{ group.title }}</a></li>
+				<li><a href="/hopur/{{ group.slug }}">{{ group.title }}</a></li>
 	{% endif %}
 {% endfor %}
-</ul>
-</section>
-</div>
+			</ul>
+		</section>
+	</div>
 
-<div class="half-width">
-<section>
-<h2>Starfshópar</h2>
-<ul>
+	<div class="span6">
+		<section>
+			<h2>Starfshópar</h2>
+			<ul>
 {% for group in group_list.all %}
 	{% if group.group_type == 'AH' %}
-	<li><a href="/hopur/{{ group.slug }}">{{ group.title }}</a></li>
+				<li><a href="/hopur/{{ group.slug }}">{{ group.title }}</a></li>
 	{% endif %}
 {% endfor %}
-</ul>
-</section>
+			</ul>
+		</section>
 
-<section>
-<h2>Flokkar</h2>
-<ul>
+		<section>
+			<h2>Flokkar</h2>
+			<ul>
 {% for group in group_list.all %}
 	{% if group.group_type == 'FL' %}
-	<li><a href="/hopur/{{ group.slug }}">{{ group.title }}</a></li>
+				<li><a href="/hopur/{{ group.slug }}">{{ group.title }}</a></li>
 	{% endif %}
 {% endfor %}
-</ul>
-</section>
-</div>
+			</ul>
+		</section>
+	</div>
+</div><!-- /.row -->
+
 {% endblock %}

@@ -24,7 +24,9 @@ $(document).ready(function(){
 </section>
 </div>
 
-<div class="half-width">
+<div class="">
+	<div class="row">
+		<div class="span6"><!-- 1 of 2 columns -->
 <section id="vidburdir">
 	<span class="btn pull-right" onclick="$('#my_events').toggle();$('#all_events').toggle();$(this).toggleClass('active');"><i class="icon-user"></i></span>
 	<h2>Næstu viðburðir</h2>
@@ -216,9 +218,11 @@ $(document).ready(function(){
 {% endfor %}
 	</ul>
 </section>
-</div>
+<!--</div>-->
 
-<div class="half-width">
+		</div><!-- 1 of 2 columns -->
+		<div class="span6"><!-- 2 of 2 columns -->
+
 <section>
 <h2>Hæfni í boði</h2>
 <!--Hæfnir sem eru í boði (næstu skref/námskeið í boði?).-->
@@ -250,7 +254,10 @@ $(document).ready(function(){
 	</ul>
 <!-- Skoða: http://www.b-list.org/weblog/2007/dec/09/updates/ -->
 </section>
-</div>
+
+		</div><!-- 2 of 2 columns -->
+	</div><!-- row -->
+</div><!-- -->
 
 {% endblock %}
 
