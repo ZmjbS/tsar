@@ -58,14 +58,19 @@ def my_page(request):
 
 	# Retrieve a list of upcoming events and place them in a dictionary
 	all_events_list = Event.objects.filter(date_time_begin__gte=now).order_by('date_time_begin')[:20]
-	all_events_dictionaries_list = member_events_dictionaries_list(member, all_events_list)
+	#all_events_dictionaries_list = member_events_dictionaries_list(member, all_events_list)
 
 	# Retrieve a list of upcoming events for the currently logged in user and place them in a dictionary
 	my_events_list = Event.objects.filter(date_time_begin__gte=now).filter(Q(eventrole__invited_groups__members=request.user.member)|Q(eventrole__invited_members=request.user.member)).distinct().order_by('date_time_begin')[:20]
-	my_events_dictionaries_list = member_events_dictionaries_list(member, my_events_list)
+	#my_events_dictionaries_list = member_events_dictionaries_list(member, my_events_list)
 
-	import pprint
-	pprint.pprint(all_events_dictionaries_list)
+	#tmpset = set(all_events_dictionaries_list)# my_events_dictionaries_list)
+	union_events_list = list(set(list(all_events_list) + list(my_events_list)))
+	union_events_dictionaries_list = member_events_dictionaries_list(member, union_events_list)
+	union_events_dictionaries_list = sorted(union_events_dictionaries_list, key=lambda k: k['event'].date_time_begin)
+
+	#import pprint
+	#pprint.pprint(all_events_dictionaries_list)
 	#pprint.pprint(my_events_dictionaries_list)
 
 	# Import news from defined news sites:
@@ -80,8 +85,8 @@ def my_page(request):
 #		entry['published'] = date.fromtimestamp(mktime(entry.published_parsed))
 	#return render_to_response('my_page.html', { 'events_list': all_events_list, 'invited': invited, 'hssr_entries': hssr_entries, 'sl_entries': sl_entries, 'user': request.user, })
 	return render_to_response('my_page.html', {
-		'all_events_dictionaries_list': all_events_dictionaries_list,
-		'my_events_dictionaries_list': my_events_dictionaries_list,
+		'events_dictionaries_list': union_events_dictionaries_list,
+		#'my_events_dictionaries_list': my_events_dictionaries_list,
 #		'hssr_entries': hssr_entries,
 #		'sl_entries': sl_entries,
 		'user': request.user,
