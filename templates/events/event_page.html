@@ -134,25 +134,28 @@ $(document).ready(function(){
 			<h2>{{ event.title }} – <span style="font-size: smaller; color: gray;">{{ event.event_type.title|lower }}</span></h2>
 			<div style="margin:0 .5em .5em .5em;">{{ event.description|textile }}</div>
 		</section>
-		<section style="overflow: auto;">
-			<div class="half-width">
-				<a href="merki"><span class="icon-edit edit-icon" style="float:right"></span></a>
-				<h3>Merki</h3>
-				<dl class="dl-horizontal" style="margin-top: 0">
-					<dt>Umsjón:<dt><dd>Bækistöðvarhópur</dd>
-					<dt>Verkefni:</dt><dd>Fyrsta hjálp</dd>
-					<dt>Aðstæður:</dt><dd>Innanhúss, innanbæjar</dd>
-					<dt>Tækjanotkun:</dt><dd>Reykur 1, Reykur 4</dd>
-				</dl>
-				<a href="merki"><span class="icon-edit edit-icon" style="float:right"></span></a>
-				<h3>Staðsetning</h3>
-				<table style="margin-top: 0;">
-					<tr><td>N 65°01,039'	V 21°33,029'</td><td>Söfnunarsvæði slasaðra.</td></tr>
-					<tr><td>N 64°34,392'	V 21°39,291'</td><td>Upphafsstaður æfingar.</td></tr>
-				</table>
-			</div>
-			<div class="half-width" style="float:right;">
-				<img class="pull-right span3" src="/static/img/hengill-husmuli.png" alt="kort" style="width:100%;"/>
+
+		<section style="overflow: auto; ">
+			<div class="row-fluid">
+				<div class="span6">
+					<a href="merki"><span class="icon-edit edit-icon" style="float:right"></span></a>
+					<h3>Merki</h3>
+					<dl class="dl-horizontal" style="margin-top: 0">
+						<dt>Umsjón:<dt><dd>Bækistöðvarhópur</dd>
+						<dt>Verkefni:</dt><dd>Fyrsta hjálp</dd>
+						<dt>Aðstæður:</dt><dd>Innanhúss, innanbæjar</dd>
+						<dt>Tækjanotkun:</dt><dd>Reykur 1, Reykur 4</dd>
+					</dl>
+					<a href="merki"><span class="icon-edit edit-icon" style="float:right"></span></a>
+					<h3>Staðsetning</h3>
+					<table style="margin-top: 0;">
+						<tr><td>N 65°01,039'	V 21°33,029'</td><td>Söfnunarsvæði slasaðra.</td></tr>
+						<tr><td>N 64°34,392'	V 21°39,291'</td><td>Upphafsstaður æfingar.</td></tr>
+					</table>
+				</div>
+				<div class="span6">
+					<img src="/static/img/hengill-husmuli.png" alt="kort" style="width:100%;"/>
+			</	div>
 			</div>
 		</section>
 	</div>

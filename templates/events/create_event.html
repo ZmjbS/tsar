@@ -33,7 +33,7 @@
 
 /*	#id_date_time_begin-label, #id_date_time_end-label { text-align: right; }*/
 /*	#id_date_time_begin, #id_date_time_end { display: inline; width: 8em; }*/
-	#id_title, #event_type, #id_date_time_begin, #id_date_time_end { width: 100% !important; padding-left: ; padding-right: ; }
+	#id_title, #event_type, #id_date_time_begin, #id_date_time_end { width: 100% !important; }
 	
 	.role_entry { background-color: #efefef; padding: .4em; margin-bottom: .4em; }
 	.role_entry-title { font-size: 1.6em; padding-top: .3em; }
@@ -242,16 +242,15 @@ $(document).ready(function(){
 			<div class="row-fluid">
 				<div class="span5">{{ form.title }}</div>
 				<div class="span2">
-					<select id="event_type" name="event_type">
-						<!--<option value="none">Tegund viðburðar</option>-->
+				<select id="event_type" name="event_type">
 						{% for type in event_types %}
-						<option value="{{ type.pk }}">{{ type.title }}</option>
+					<option value="{{ type.pk }}">{{ type.title }}</option>
 						{% endfor %}
-					</select>
+				</select>
 				</div>
 				<div class="span2">{{ form.date_time_begin }}</div>
 				<div class="span2">{{ form.date_time_end }}</div>
-				<a class="btn span1" id="add_dates_btn" onclick="$('#add_days').slideToggle();$('#add_days_icon').toggleClass('icon-minus');" style="idth: 100%"><i id="add_days_icon" class="icon-plus"></i></a>
+				<a class="btn span1" id="add_dates_btn" onclick="$('#add_days').slideToggle();$('#add_days_icon').toggleClass('icon-minus');"><i id="add_days_icon" class="icon-plus"></i></a>
 			</div>
 	
 			<div id="add_days" class="tabbable tabs-left" style="display:none;">

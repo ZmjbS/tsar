@@ -105,7 +105,7 @@ $(document).ready(function(){
 					{{ ird.eventrole.role }}
 
 					<span id="eventrole_{{ ird.eventrole.id }}_response_icons" data-eventrole="{{ ird.eventrole.id }}" class="response-icons">
-					{% if ird.response != 'N' %}
+					{% if ird.response == 'Y' %}
 						<span id="eventrole-absent-{{ ird.eventrole.id }}" data-action="absent"  class="respond-icon icon-remove-sign"></span>
 						<span id="eventrole-unclea-{{ ird.eventrole.id }}" data-action="unclear" class="respond-icon icon-question-sign"></span>
 					{% else %}
