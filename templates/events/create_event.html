@@ -42,14 +42,13 @@
 </style>
 <script type="text/javascript">
 
-$( "#datepicker" ).datepicker( $.datepicker.regional[ "fr" ] );
+//$( "#datepicker" ).datepicker( $.datepicker.regional[ "us" ] );
 
 $(document).ready(function(){
 // Datetimepicker
 	startDateTextBox = $('#id_date_time_begin')
 	endDateTextBox = $('#id_date_time_end')
 	$('#id_date_time_begin').datetimepicker({
-		//maxDateTime: new Date(2013, 4, 5, 8, 30),
 		onClose: function (selectedDateTime){
 			var select_dt = new Date(selectedDateTime);
 			var original_end = endDateTextBox.val();

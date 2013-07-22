@@ -18,6 +18,9 @@ jQuery(function($){
 		showMonthAfterYear: false,
 		yearSuffix: ''};
 	$.datepicker.setDefaults($.datepicker.regional['is']);
+	$.datepicker.setDefaults({
+		dateFormat: 'yy-mm-dd'
+});
 
 	$.timepicker.regional['is'] = {
 		timeOnlyTitle: 'Bara tími titi',
