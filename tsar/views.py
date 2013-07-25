@@ -56,22 +56,18 @@ def my_page(request):
 	#request.user = User.objects.get(id=2)
 	member = request.user.member
 
+	event_list_length = 10
+
 	# Retrieve a list of upcoming events and place them in a dictionary
-	all_events_list = Event.objects.filter(date_time_begin__gte=now).order_by('date_time_begin')[:20]
-	#all_events_dictionaries_list = member_events_dictionaries_list(member, all_events_list)
+	all_events_list = Event.objects.filter(date_time_begin__gte=now).order_by('date_time_begin')[:event_list_length]
 
 	# Retrieve a list of upcoming events for the currently logged in user and place them in a dictionary
-	my_events_list = Event.objects.filter(date_time_begin__gte=now).filter(Q(eventrole__invited_groups__members=request.user.member)|Q(eventrole__invited_members=request.user.member)).distinct().order_by('date_time_begin')[:20]
-	#my_events_dictionaries_list = member_events_dictionaries_list(member, my_events_list)
+	my_events_list = Event.objects.filter(date_time_begin__gte=now).filter(Q(eventrole__invited_groups__members=request.user.member)|Q(eventrole__invited_members=request.user.member)).distinct().order_by('date_time_begin')[:event_list_length]
 
 	#tmpset = set(all_events_dictionaries_list)# my_events_dictionaries_list)
 	union_events_list = list(set(list(all_events_list) + list(my_events_list)))
 	union_events_dictionaries_list = member_events_dictionaries_list(member, union_events_list)
 	union_events_dictionaries_list = sorted(union_events_dictionaries_list, key=lambda k: k['event'].date_time_begin)
-
-	#import pprint
-	#pprint.pprint(all_events_dictionaries_list)
-	#pprint.pprint(my_events_dictionaries_list)
 
 	# Import news from defined news sites:
 	import feedparser
@@ -90,4 +86,5 @@ def my_page(request):
 #		'hssr_entries': hssr_entries,
 #		'sl_entries': sl_entries,
 		'user': request.user,
+		'event_list_length': event_list_length,
 	})
