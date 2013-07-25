@@ -177,16 +177,17 @@ def display_event(request, pk):
 			cm_status = 'attending'
 		role_data.append({ 'eventrole': eventrole, 'invitedmembers': invitedmembers, 'absentmembers': absent, 'attendingmembers': attending, 'cm_status': cm_status, })
 
-	# Now let's make sure that a member who is attending a role doesn't get invited
-	# to others.
-	# TODO: Perhaps we should implement a way of attending more than one role.
-	# Perhaps a pop-up to allow members to split their time among the roles.
-	for role in role_data:
-		if role['cm_status'] == 'attending':
-			for tmprole in role_data:
-				if tmprole['cm_status'] == 'invited' or tmprole['cm_status'] == 'absent':
-					tmprole['cm_status'] = 'attending elsewhere'
-			role['cm_status'] = 'attending'
+# TODO: Currently members can sign up for multiple roles. This is probably a good thing as members may be both a driver and participant and we want to log each role.
+#	# Now let's make sure that a member who is attending a role doesn't get invited
+#	# to others.
+#	# TODO: Perhaps we should implement a way of attending more than one role.
+#	# Perhaps a pop-up to allow members to split their time among the roles.
+#	for role in role_data:
+#		if role['cm_status'] == 'attending':
+#			for tmprole in role_data:
+#				if tmprole['cm_status'] == 'invited' or tmprole['cm_status'] == 'absent':
+#					tmprole['cm_status'] = 'attending elsewhere'
+#			role['cm_status'] = 'attending'
 	import pprint
 	pprint.pprint(role_data)
 	return render_to_response('events/event_page.html', { 'event': event, 'cm': cm, 'role_data': role_data, 'status_list': ['attending', 'absent', 'unclear'] })

@@ -16,6 +16,8 @@
 .nav-pills > li > a.warning:hover { color: rgb(155, 93, 4); }
 /*.nav-pills > .active > a.info, .nav-pills > .active > a.info:hover { background-color: rgb(); }*/
 
+#id_title, #event_type, #id_date_time_begin, #id_date_time_end {width: 100% !important; }
+
 </style>
 <script type="text/javascript">
 $(document).ready(function(){
@@ -45,21 +47,22 @@ $(document).ready(function(){
 {# Create a tab pane for each status: #}
 {% for status in status_list %} {# attending absent unclear #}
 <div  class="tab-pane {% if status == "attending" %}active{% endif %}" id="{{ status }}">
-	{# List each role for this particular status #}
 	<ul id="{{ status }}_roles" style="list-style: none; margin-left:0;">
+	{# List each role for this particular status #}
 	{% for role in role_data %}
 		<li id="role_{{ role.eventrole.role.id }}_entry" style="margin: 0 1em;">
 			<div class="role_entry_header">
+		{# Display an icon to indicate whether the member is invited and attending or not. #}
 		{% if role.cm_status == "not invited" %}
 				<span id="role_{{ role.eventrole.role.id}}_status_icon" class="icon-circle-blank not-invited"></span>
 		{% else %}
 			{% if role.cm_status == "attending" %}
 				<span id="role_{{ role.eventrole.role.id}}_status_icon" class="icon-ok-circle"></span>
 			{% else %}
-				{% if role.cm_status == "absent" or role.cm_status == "attending elsewhere" %}
+				{% if role.cm_status == "absent" %}{#or role.cm_status == "attending elsewhere" %#}
 				<span id="role_{{ role.eventrole.role.id}}_status_icon" class="icon-ban-circle"></span>
 				{% else %}
-				{# invited #}
+				{# role.cm_status == "invited" #}
 				<span id="role_{{ role.eventrole.role.id}}_status_icon" class="icon-circle-blank invited"></span>
 				{% endif %}
 			{% endif %}
@@ -129,33 +132,70 @@ $(document).ready(function(){
 
 	<div class="span8">
 		<section id="event_description">
-		<a href="lysing"><span class="icon-edit edit-icon" style="float:right"></span></a>
-			<date class="pull-right">{{ event.date_time_begin }}〜{{ event.date_time_end }}</date>
-			<h2>{{ event.title }} – <span style="font-size: smaller; color: gray;">{{ event.event_type.title|lower }}</span></h2>
-			<div style="margin:0 .5em .5em .5em;">{{ event.description|textile }}</div>
+	{% if "has_permission" == "has_permission" %}
+			<button class="btn pull-right btn-small icon-edi" alue="Sýsla" style="vertical-align: bottom; padding-right: .4em; padding-left: .4em; margin-left: 1em;" onclick="$(this).toggleClass('btn-primary');$('#event_description-form').toggle();$('#event_description-data').toggle();"><i class="icon-edit"></i></button>
+			<div id="event_description-form" style="display: none">
+				<input type="hidden" name="event_id" id="event_id" value="" />
+	
+				<div class="row-fluid">
+					<div class="span5">Titill{{ form.title }}</div>
+					<div class="span2">
+						<select id="event_type" name="event_type">
+		{% for type in event_types %}
+							<option value="{{ type.pk }}">{{ type.title }}</option>
+		{% endfor %}
+						</select>
+					</div>
+					<div class="span2">upphaf{{ form.date_time_begin }}</div>
+					<div class="span2">endir{{ form.date_time_end }}</div>
+					<!-- Possibly allow duplication, but multiple events is probably overdoing it ...
+					<a class="btn span1" id="add_dates_btn" onclick="$('#add_days').slideToggle();$('#add_days_icon').toggleClass('icon-minus');"><i id="add_days_icon" class="icon-plus"></i></a>
+					-->
+				</div><!-- /.row-fluid -->
+	
+				<div class="row-fluid">
+					Lýsing
+					{{ form.description }}
+				</div><!-- /.row-fluid -->
+			</div><!-- /#event_description-form -->
+	{% endif %}
+			<div id="event_description-data">
+				<date class="pull-right">{{ event.date_time_begin }}〜{{ event.date_time_end }}</date>
+				<h2>{{ event.title }} – <span style="font-size: smaller; color: gray;">{{ event.event_type.title|lower }}</span></h2>
+				<div style="margin:0 .5em .5em .5em;">{{ event.description|textile }}</div>
+			</div>
 		</section>
 
 		<section style="overflow: auto; ">
 			<div class="row-fluid">
 				<div class="span6">
-					<a href="merki"><span class="icon-edit edit-icon" style="float:right"></span></a>
-					<h3>Merki</h3>
-					<dl class="dl-horizontal" style="margin-top: 0">
-						<dt>Umsjón:<dt><dd>Bækistöðvarhópur</dd>
-						<dt>Verkefni:</dt><dd>Fyrsta hjálp</dd>
-						<dt>Aðstæður:</dt><dd>Innanhúss, innanbæjar</dd>
-						<dt>Tækjanotkun:</dt><dd>Reykur 1, Reykur 4</dd>
-					</dl>
-					<a href="merki"><span class="icon-edit edit-icon" style="float:right"></span></a>
-					<h3>Staðsetning</h3>
-					<table style="margin-top: 0;">
-						<tr><td>N 65°01,039'	V 21°33,029'</td><td>Söfnunarsvæði slasaðra.</td></tr>
-						<tr><td>N 64°34,392'	V 21°39,291'</td><td>Upphafsstaður æfingar.</td></tr>
-					</table>
+	{% if "has_permission" == "has_permission" %}
+					<button class="btn pull-right btn-small" alue="Sýsla" style="vertical-align: bottom; padding-right: .4em; padding-left: .4em; margin-left: 1em;" onclick="$(this).toggleClass('btn-primary');$('#event_tag-form').toggle();$('#event_tag-data').toggle();"><i class="icon-edit"></i></button>
+					<div id="event_tag-form" style="display: none">
+						<h3>Merki</h3>
+					</div><!-- /#event_description-form -->
+	{% endif %}
+					<div id="event_tag-data" style="display: none">
+						<h3>Merki</h3>
+						<dl class="dl-horizontal" style="margin-top: 0">
+							<dt>Umsjón:<dt><dd>Bækistöðvarhópur</dd>
+							<dt>Verkefni:</dt><dd>Fyrsta hjálp</dd>
+							<dt>Aðstæður:</dt><dd>Innanhúss, innanbæjar</dd>
+							<dt>Tækjanotkun:</dt><dd>Reykur 1, Reykur 4</dd>
+						</dl>
+					</div><!-- /#event_tag-data -->
+
+					<div id="event_map-data" style="display: none">
+						<h3>Staðsetning</h3>
+						<table style="margin-top: 0;">
+							<tr><td>N 65°01,039'	V 21°33,029'</td><td>Söfnunarsvæði slasaðra.</td></tr>
+							<tr><td>N 64°34,392'	V 21°39,291'</td><td>Upphafsstaður æfingar.</td></tr>
+						</table>
+					</div>
+					<div id="event_location-map" class="span6">
+						<img src="/static/img/hengill-husmuli.png" alt="kort" style="width:100%;"/>
+					</div><!-- /#event_location-map -->
 				</div>
-				<div class="span6">
-					<img src="/static/img/hengill-husmuli.png" alt="kort" style="width:100%;"/>
-			</	div>
 			</div>
 		</section>
 	</div>
