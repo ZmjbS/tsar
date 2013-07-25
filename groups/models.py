@@ -25,6 +25,9 @@ class Membership(models.Model):
 	date_joined = models.DateField(default=datetime.now)
 	is_leader = models.BooleanField(default=False)
 
+	def __unicode__(self):
+		return self.group.title + ': ' + self.member.user.first_name + ' ' + self.member.user.last_name
+
 #class Qualify(models.Model):
 #	qualification = models.ForeignKey(Qualification)
 #	group = models.ForeignKey(Group)
