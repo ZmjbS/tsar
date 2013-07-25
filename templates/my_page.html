@@ -33,7 +33,7 @@ $(document).ready(function(){
 	<h2>Næstu viðburðir</h2>
 	<ul id="events" class="events_list">
 {% for ed in events_dictionaries_list %}
-		<li id="event-{{ ed.event.id }}" class="event-list-item{% if not ed.invitedroles_dictionaries_list %} notinvited{% else %}{%if forloop.counter > 20 %} overflow{% endif %}{% endif %}"
+		<li id="event-{{ ed.event.id }}" class="event-list-item{% if not ed.invitedroles_dictionaries_list %} notinvited{% else %}{%if forloop.counter > event_list_length %} overflow{% endif %}{% endif %}"
 	{% if ed.invitedroles_dictionaries_list %}
 			onclick="
 				if ($('#event_{{ ed.event.id }}_roles_list').is(':visible')) {
