@@ -22,6 +22,14 @@
 <script type="text/javascript">
 $(document).ready(function(){
    $('body').delegate('.respond-icon', 'click', function() { respond_to_event(this, 'Event page') } );
+	// Capture click events on edit icons and toggle to the edit form.
+	$('.toggle-form').click(function() {
+		//console.log('event caught');
+		//console.log($(this).data('form_id-prefix')+'-data');
+		prefix = $(this).data('form_id-prefix');
+		$('#'+prefix+'-data').toggle();
+		$('#'+prefix+'-form').toggle();
+	});
 });
 </script>
 
@@ -132,8 +140,13 @@ $(document).ready(function(){
 
 	<div class="span8">
 		<section id="event_description">
-	{% if "has_permission" == "has_permission" %}
-			<button class="btn pull-right btn-small icon-edi" alue="Sýsla" style="vertical-align: bottom; padding-right: .4em; padding-left: .4em; margin-left: 1em;" onclick="$(this).toggleClass('btn-primary');$('#event_description-form').toggle();$('#event_description-data').toggle();"><i class="icon-edit"></i></button>
+			<div id="event_description-data">
+				<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_description"></i>
+				<date class="pull-right">{{ event.date_time_begin }}〜{{ event.date_time_end }}</date>
+				<h2>{{ event.title }} – <span style="font-size: smaller; color: gray;">{{ event.event_type.title|lower }}</span></h2>
+				<div style="margin:0 .5em .5em .5em;">{{ event.description|textile }}</div>
+			</div>
+	{# TODO: Should we add some permissions to access the edit form, or do we trust people not to mess things up too much? #}
 			<div id="event_description-form" style="display: none">
 				<input type="hidden" name="event_id" id="event_id" value="" />
 	
@@ -157,25 +170,21 @@ $(document).ready(function(){
 					Lýsing
 					{{ form.description }}
 				</div><!-- /.row-fluid -->
+				<div style="text-align: right">
+					{# TODO: The cancel button should reset the form and toggle back to displaying the data #}
+					<input type="button" value="Hætta við" class="span2 btn toggle-form toggle-form" data-form_id-prefix="event_description" />
+					{# TODO: The submit button should post the data and only on success toggle back to displaying the data #}
+					<input type="button" value="Vista" class="span2 btn btn-primary toggle-form" data-form_id-prefix="event_description" />
+				</div>
 			</div><!-- /#event_description-form -->
-	{% endif %}
-			<div id="event_description-data">
-				<date class="pull-right">{{ event.date_time_begin }}〜{{ event.date_time_end }}</date>
-				<h2>{{ event.title }} – <span style="font-size: smaller; color: gray;">{{ event.event_type.title|lower }}</span></h2>
-				<div style="margin:0 .5em .5em .5em;">{{ event.description|textile }}</div>
-			</div>
 		</section>
 
 		<section style="overflow: auto; ">
 			<div class="row-fluid">
 				<div class="span6">
-	{% if "has_permission" == "has_permission" %}
-					<button class="btn pull-right btn-small" alue="Sýsla" style="vertical-align: bottom; padding-right: .4em; padding-left: .4em; margin-left: 1em;" onclick="$(this).toggleClass('btn-primary');$('#event_tag-form').toggle();$('#event_tag-data').toggle();"><i class="icon-edit"></i></button>
-					<div id="event_tag-form" style="display: none">
-						<h3>Merki</h3>
-					</div><!-- /#event_description-form -->
-	{% endif %}
-					<div id="event_tag-data" style="display: none">
+
+					<div id="event_tag-data">
+						<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_tag"></i>
 						<h3>Merki</h3>
 						<dl class="dl-horizontal" style="margin-top: 0">
 							<dt>Umsjón:<dt><dd>Bækistöðvarhópur</dd>
@@ -185,17 +194,39 @@ $(document).ready(function(){
 						</dl>
 					</div><!-- /#event_tag-data -->
 
-					<div id="event_map-data" style="display: none">
+					<div id="event_tag-form" style="display: none">
+						<h3>Merki</h3>
+						<div style="text-align: right">
+							{# TODO: The cancel button should reset the form and toggle back to displaying the data #}
+							<input type="button" value="Hætta við" class="span4 btn toggle-form toggle-form" data-form_id-prefix="event_tag" />
+							{# TODO: The submit button should post the data and only on success toggle back to displaying the data #}
+							<input type="button" value="Vista" class="span4 btn btn-primary toggle-form" data-form_id-prefix="event_tag" />
+						</div>
+					</div><!-- /#event_description-form -->
+
+					<div id="event_location-data">
+						<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_location"></i>
 						<h3>Staðsetning</h3>
 						<table style="margin-top: 0;">
 							<tr><td>N 65°01,039'	V 21°33,029'</td><td>Söfnunarsvæði slasaðra.</td></tr>
 							<tr><td>N 64°34,392'	V 21°39,291'</td><td>Upphafsstaður æfingar.</td></tr>
 						</table>
-					</div>
-					<div id="event_location-map" class="span6">
-						<img src="/static/img/hengill-husmuli.png" alt="kort" style="width:100%;"/>
-					</div><!-- /#event_location-map -->
-				</div>
+					</div><!-- /#event_location-data -->
+					<div id="event_location-form" style="display: none">
+						<h3>Staðsetning</h3>
+						<div style="text-align: right">
+							{# TODO: The cancel button should reset the form and toggle back to displaying the data #}
+							<input type="button" value="Hætta við" class="span4 btn toggle-form toggle-form" data-form_id-prefix="event_location" />
+							{# TODO: The submit button should post the data and only on success toggle back to displaying the data #}
+							<input type="button" value="Vista" class="span4 btn btn-primary toggle-form" data-form_id-prefix="event_location" />
+						</div>
+					</div><!-- /#event_location-form -->
+				</div><!-- /.span6 -->
+
+				<div id="event_location-map" class="span6">
+					<img src="/static/img/hengill-husmuli.png" alt="kort" style="width:100%;"/>
+				</div><!-- /#event_location-map -->
+
 			</div>
 		</section>
 	</div>
