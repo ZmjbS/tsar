@@ -1,63 +1,109 @@
 {% extends "tsar.html" %}
 
+{% block head %}
+	<script type="text/javascript" src="/static/js/chosen.jquery.min.js"></script>
+	<link type="text/css" rel="stylesheet" href="/static/css/chosen.css" />
+<style type="text/css">
+.edit-interface { display: none; }
+</style>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#missing-qualifications-list').chosen();
+	$('#missing-groups-list').chosen();
+});
+</script>
+{% endblock %}
+
 {% block content %}
-<div class="half-width">
-<section id="member-details">
-<h2>{{ member.user.first_name }} {{ member.user.last_name }}</h2>
-<div id="profile-picture"><img src="/static/img/tsar_background.png" alt="Member profile picture" /></div>
-<dl>
-<dt>Nafn:</dt>
-<dd>{{ member.user.first_name }} {{ member.user.last_name }}</dd>
-<dt>Kennitala:</dt>
-<dd>{{ member.member_id }}</dd>
-<dt>Símanúmer:</dt>
-<dd>555-1234</dd>
-<dd>789-1234</dd>
-<dt>Tölvupóstfang</dt>
-<dd>dæmi@dæmi.is</dd>
-<dt>Heimilisfang:</dt><dd>{{ member.address }}</dd>
-<dt>Staða:</dt>
-<dd>{{ member.position }}</dd>
-</dl>
-</section>
-</div>
+<div class="row">
+	<div class="span4">
+		<section id="member-details">
+			<h2>{{ member.user.first_name }} {{ member.user.last_name }}</h2>
+			<div class="row-fluid">
+				<div class="span8">
+			<dl>
+				<dt>Nafn:</dt>
+				<dd>{{ member.user.first_name }} {{ member.user.last_name }}</dd>
+				<dt>Kennitala:</dt>
+				<dd>{{ member.member_id }}</dd>
+				<dt>Símanúmer:</dt>
+				<dd>555-1234</dd>
+				<dd>789-1234</dd>
+				<dt>Tölvupóstfang</dt>
+				<dd>dæmi@dæmi.is</dd>
+				<dt>Heimilisfang:</dt><dd>{{ member.address }}</dd>
+				<dt>Staða:</dt>
+				<dd>{{ member.position }}</dd>
+			</dl>
+				</div>
+				<div class="span4">
+			<div id="profile-picture"><img src="/static/img/tsar_background.png" alt="Member profile picture" /></div>
+				</div>
+			</div>
+		</section>
+	</div>
 
-<div class="half-width">
-<section id="member-groups">
-<h2>Hópar</h2>
-<ul>
+	<div class="span4">
+		<section id="member-groups">
+			<h2>Hópar
+				<input type="button" class="btn pull-right btn-small" value="Sýsla" style="vertical-align: bottom;" onclick="$('#member-groups-edit').toggle('600');$(this).toggleClass('btn-primary');($(this).val()=='Lokið')?$(this).val('Sýsla'):$(this).val('Lokið');" />
+			</h2>
+			<ul>
 {% for group in member.group_set.all %}
-	<li><a href="/hopur/{{ group.slug }}">{{ group.title }}</a></li>
+				<li><a href="/hopur/{{ group.slug }}">{{ group.title }}</a></li>
 {% endfor %}
-</ul>
-<input type="button" value="bæta við hóp">
-</section>
-<section id="member-qualifications">
-<h2>Hæfnir</h2>
-<ul>
-	<li>Frímerkjasöfnun (rennur út <time datetime="2028-11-22">eftir 49 mánúði</time>)</li>
-	<li>Réttritun (rennur út <time datetime="2028-11-22">á morgun</time></li>
-	<li>Heilaskurðlæknignar</li>
-</ul>
-<input type="button" value="bæta við hæfni">
-</section>
-</div>
+			</ul>
+			<div id="member-groups-edit" class="input-append edit-interface">
+				<select id="missing-groups-list" multiple data-placeholder="Nafn">
+			{% for q in missing_groups_list %}
+					<option>{{ q }}</option>
+			{% endfor %}
+				</select>
+	<!--<input type="text" value="Nafn" />-->
+				<input type="button" class="btn" value="Bæta við" />
+			</div>
+		</section>
 
-<div class="third-width" style="clear:both">
-<section id="member-events">
-<!-- TODO: This must be modified to list events that the member actually attended. -->
-<h2>Seinustu viðburðir</h2>
-<ul>
+		<section id="member-qualifications">
+			<h2>Hæfnir
+				<input type="button" class="btn pull-right btn-small" value="Sýsla" style="vertical-align: bottom;" onclick="$('#member-qualifications-edit').toggle('600');$(this).toggleClass('btn-primary');($(this).val()=='Lokið')?$(this).val('Sýsla'):$(this).val('Lokið');" />
+			</h2>
+			<ul>
+				<li>Frímerkjasöfnun (rennur út <time datetime="2028-11-22">eftir 49 mánúði</time>)</li>
+				<li>Réttritun (rennur út <time datetime="2028-11-22">á morgun</time>)</li>
+				<li>Heilaskurðlæknignar</li>
+			</ul>
+			<div id="member-qualifications-edit" class="input-append edit-interface">
+				<select id="missing-qualifications-list" multiple data-placeholder="Nafn">
+			{% for q in missing_qualifications_list %}
+					<option>{{ q }}</option>
+			{% endfor %}
+				</select>
+	<!--<input type="text" value="Nafn" />-->
+				<input type="button" class="btn" value="Bæta við" />
+			</div>
+		</section>
+	</div>
+
+	<div class="span4">
+		<section id="member-events">
+			<!-- TODO: This must be modified to list events that the member actually attended. -->
+			<h2>Seinustu viðburðir</h2>
+			<ul>
 {% for invitation in member.memberinvitation_set.all %}
-	<li><a href="/vidburdur/{{ invitation.event_role.event.id }}">{{ invitation.event_role.event.title }}</a></li>
+				<li><a href="/vidburdur/{{ invitation.event_role.event.id }}">{{ invitation.event_role.event.title }}</a></li>
 {% endfor %}
-</ul>
-</section>
-</div>
+			</ul>
+		</section>
+	</div>
+		
+</div><!-- /.row -->
 
-<div class="twothird-width">
-<section id="tolfraedi">
-<h2>Tölfræði</h2>
-</section>
-</div>
+<div class="row">
+	<div class="span12">
+		<section id="tolfraedi">
+			<h2>Tölfræði</h2>
+		</section>
+	</div>
+</div><!-- /.row -->
 {% endblock %}
