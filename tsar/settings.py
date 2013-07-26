@@ -134,7 +134,6 @@ INSTALLED_APPS = (
     'django_evolution',
     'django.contrib.humanize',
 #	'native_tags',
-    'bootstrap_toolkit',
 	'django.contrib.markup',
 )
 
