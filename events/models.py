@@ -115,7 +115,6 @@ class MemberInvitation(models.Model):
 	def __unicode__(self):
 		return self.event_role.__unicode__() +'>'+ self.member.user.username
 
-# TODO: Need to implement some sort of confirmation/response class.
 class MemberResponse(models.Model):
 	event_role = models.ForeignKey(EventRole)
 	member = models.ForeignKey(Member)
@@ -131,6 +130,18 @@ class MemberResponse(models.Model):
 
 	def __unicode__(self):
 		return self.event_role.__unicode__() +'>'+ self.member.user.username
+
+# TODO: Need to implement some sort of confirmation/response class. Maybe something like:
+#class Attendance(models.Model):
+#	# Logs whether a member attends an eventrole.
+#	# TODO: Do we want to have people attend event_roles or events?!? Hmmm...
+#	event_role = models.ForeignKey(EventRole)
+#	member = models.ForeignKey(Member)
+#	time_responded = models.DateTimeField(auto_now_add=True) #auto_now_add hides this field from the admin
+#	start = models.DateTimeField(default=datetime.now)
+#	from datetime import timedelta
+#	finish = models.DateTimeField(default=obj.start += timedelta(hours=2), blank=True)
+	
 
 class EventCreation(ModelForm):
 	class Meta:
