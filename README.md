@@ -21,13 +21,14 @@ Then move into the repository and install the necessary packages:
 cd tsar
 pip install -r requirements.txt
 ```
-You're now ready to run the code, though you're still missing the database. You can start your own or download the showcase one:
+You're now ready to generate the database (you want to use this opportunity to create an admin user) and load some initial data from the available fixtures:
 ```bash
-wget http://tsar.swift.is/sqlite3.db
+python manage.py syncdb
+python manage.py loaddata fixtures/showcase-groups-events.json;
 ```
 
 Now you're ready to fire up the development server and play around. Run:
 ```bash
 python manage.py runserver
 ```
-and open a browser at http://127.0.0.1:8000
+and open a browser at http://127.0.0.1:8000/admin/ . Log in, create a member that points to the user you created when you sync-ed the database. Then point the browser to http://127.0.0.1:8000/ and off you go...
