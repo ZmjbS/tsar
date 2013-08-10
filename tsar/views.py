@@ -48,12 +48,9 @@ def member_events_dictionaries_list(member, events_list):
 		})
 	return events_dictionaries_list
 
-#@login_required
+from django.contrib.auth.decorators import login_required
+@login_required
 def my_page(request):
-	# TODO: Remove the hardcoded user once we have anonymous test users!
-	if not request.user.is_authenticated():
-		request.user = User.objects.get(id=9)
-	#request.user = User.objects.get(id=2)
 	member = request.user.member
 
 	event_list_length = 10
