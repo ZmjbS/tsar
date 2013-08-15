@@ -5,7 +5,7 @@ from members.models import Member
 from groups.models import Group
 from events.models import Role, EventType, Event, EventRole, EventCreation, EventRoleForm, GroupInvitation, MemberInvitation, MemberResponse
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import get_object_or_404, render_to_response
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 
 from django.utils import timezone
@@ -141,31 +141,40 @@ def display_event(request, pk):
 	#			add member to the list
 	role_data = []
 	
+	total_attending = set()
+	total_absent    = set()
+	total_invited   = set()
+
 	for eventrole in EventRole.objects.filter(event=event):
-		print 'On EventRole {}:'.format(eventrole)
+	#	print 'On EventRole {}:'.format(eventrole)
 		attending = []
 		absent = []
 		for memberresponse in eventrole.memberresponse_set.all():
-			print '> memberresponse: {}'.format(memberresponse)
+	#		print '> memberresponse: {}'.format(memberresponse)
 			if memberresponse.response == 'Y':
 				attending.append(memberresponse.member)
 			if memberresponse.response == 'N':
 				absent.append(memberresponse.member)
-		print '> Attending members {}:'.format(attending)
-		print '> Absent members: {}'.format(absent)
+	#	print '> Attending members {}:'.format(attending)
+	#	print '> Absent members: {}'.format(absent)
 		invitedmembers = []
-		print '>> Members invited through groups'
+	#	print '>> Members invited through groups'
 		for member in Member.objects.filter(group__groupinvitation__event_role=eventrole).filter(group__groupinvitation__event_role__event=event):
-			print '>>   {}'.format(member.user.username)
+	#		print '>>   {}'.format(member.user.username)
 			if member not in invitedmembers and member not in attending and member not in absent:
 				invitedmembers.append(member)
-				print '++   {}'.format(member)
-		print '>> Members invited directly'
+	#			print '++   {}'.format(member)
+	#	print '>> Members invited directly'
 		for member in Member.objects.filter(memberinvitation__event_role=eventrole).filter(memberinvitation__event_role__event=event):
-			print '>>   {}'.format(member)
+	#		print '>>   {}'.format(member)
 			if member not in invitedmembers and member not in attending and member not in absent:
 				invitedmembers.append(member)
-				print '++   {}'.format(member)
+	#			print '++   {}'.format(member)
+
+		# Add these to the total:
+		total_attending.update(attending)
+		total_absent.update(absent)
+		total_invited.update(invitedmembers)
 
 		# Check to see whether the current member has responded or is invited to a particular role.
 		cm_status = 'not invited'
@@ -176,6 +185,15 @@ def display_event(request, pk):
 		if cm in attending:
 			cm_status = 'attending'
 		role_data.append({ 'eventrole': eventrole, 'invitedmembers': invitedmembers, 'absentmembers': absent, 'attendingmembers': attending, 'cm_status': cm_status, })
+
+	# Pass possible roles and event types so that we can edit the event.
+	event_types = EventType.objects.all()
+	#print 'EVNTTYPES: {}'.format(event_types)
+	#for etype in event_types:
+		#print etype.title
+		#print etype.pk
+	event_roles = Role.objects.all()
+	#print 'EVENTROLES: {}'.format(event_roles)
 
 # TODO: Currently members can sign up for multiple roles. This is probably a good thing as members may be both a driver and participant and we want to log each role.
 #	# Now let's make sure that a member who is attending a role doesn't get invited
@@ -188,9 +206,9 @@ def display_event(request, pk):
 #				if tmprole['cm_status'] == 'invited' or tmprole['cm_status'] == 'absent':
 #					tmprole['cm_status'] = 'attending elsewhere'
 #			role['cm_status'] = 'attending'
-	import pprint
-	pprint.pprint(role_data)
-	return render_to_response('events/event_page.html', { 'event': event, 'cm': cm, 'role_data': role_data, 'status_list': ['attending', 'absent', 'unclear'] })
+	#import pprint
+	#pprint.pprint(role_data)
+	return render_to_response('events/event_page.html', { 'event': event, 'cm': cm, 'role_data': role_data, 'status_list': ['attending', 'absent', 'unclear'], 'event_types': event_types, 'event_roles': event_roles, 'total_attending': len(total_attending), 'total_absent': len(total_absent), 'total_invited': len(total_invited), })
 
 def display_or_save_event_form(request):
 	event_types = EventType.objects.all()
@@ -392,17 +410,7 @@ def save_event(request):
 		except:
 			return HttpResponse("Hello, world. Could not create event.")
 		return HttpResponse(event.id)
+		#return render_to_response('events/event_page.html', { 'event': event, })
+		#return HttpResponseRedirect('/vidburdur/'+str(event.id))
 	else:
 		return HttpResponse("Hello, world. Not AJAX request.")
-
-#def group_save(request):
-#	if request.is_ajax():
-#		eventId = request.POST['eid']
-#		roleId = request.POST['rid']
-#		group = request.POST['grp']
-#		member = request.POST['grp']
-#		mininum = request.POST['min']
-#		maximum = request.POST['max']
-#	else:
-#		# Perhaps just merge this with the standard view response.
-#		return HttpResponse("Group save request isn't an AJAX request.")

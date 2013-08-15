@@ -22,6 +22,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
    $('body').delegate('.respond-icon', 'click', function() { respond_to_event(this, 'Event page') } );
+
 	// Capture click events on edit icons and toggle to the edit form.
 	$('.toggle-form').click(function() {
 		//console.log('event caught');
@@ -29,7 +30,12 @@ $(document).ready(function(){
 		prefix = $(this).data('form_id-prefix');
 		$('#'+prefix+'-data').toggle();
 		$('#'+prefix+'-form').toggle();
+
+		// TODO: Not needed on all, but this is a useful hack to force the initial resizing...
+		$('#event_description-textarea').trigger('autosize.resize');
 	});
+
+	$('#event_description-textarea').autosize({append: "\n"});
 });
 </script>
 
@@ -41,16 +47,18 @@ $(document).ready(function(){
 
 <div class="row">
 	<div class="span4">
-		<section>
-			<a href="bodun"><span class="icon-edit edit-icon" style="float:right"></span></a>
-			<ul class="nav nav-pills">
-				<li class="active"><a class="success" href="#attending" data-toggle="tab">Mæting</a></li>
-				<li><a class="important" href="#absent" data-toggle="tab">Fjarri</a></li>
-				<li><a class="warning" href="#unclear" data-toggle="tab">Óvíst</a></li>
-				<li><a href="#invitation" data-toggle="tab">Boðun</a></li>
-			</ul><!-- nav-pills -->
+		<section id="event_roles">
+			<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_roles"></i>
+
+			<div id="event_roles-data">
+				<ul class="nav nav-pills">
+					<li class="active"><a class="success" href="#attending" data-toggle="tab">Mæting {{ total_attending }}</a></li>
+					<li><a class="important" href="#absent" data-toggle="tab">Fjarri {{ total_absent }}</a></li>
+					<li><a class="warning" href="#unclear" data-toggle="tab">Óvíst {{ total_invited }}</a></li>
+					<li><a href="#invitation" data-toggle="tab">Boðun</a></li>
+				</ul><!-- nav-pills -->
 	
-			<div class="tab-content">
+				<div class="tab-content">
 
 {# Create a tab pane for each status: #}
 {% for status in status_list %} {# attending absent unclear #}
@@ -134,7 +142,22 @@ $(document).ready(function(){
 	</ul>
 </div>
 
-			</div><!-- class="tab-content" -->
+				</div><!-- class="tab-content" -->
+			</div><!-- id="event_roles-data" -->
+
+			<form id="event_roles-form" style="display: none">
+				<div class="btn-group pull-right" id="event-invite-button">
+				<button class="btn dropdown-toggle" data-toggle="dropdown">Bæta við hlutverki <span class="caret"></span> </button>
+				<ul id="role-dropdown" class="dropdown-menu">
+   {% for role in event_roles %}
+					<li class="role-tmp" id="{{ role.id}}"><a>{{ role.title }}</a></li>
+   {% endfor %}
+				</ul>
+			</div><!-- /#event-invite-button -->
+      
+         <div id="invite-role-list">
+         </div><!--invite-role-list-->
+			</form>
 		</section>
 	</div><!-- class="span4" -->
 
@@ -142,33 +165,38 @@ $(document).ready(function(){
 		<section id="event_description">
 			<div id="event_description-data">
 				<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_description"></i>
-				<date class="pull-right">{{ event.date_time_begin }}〜{{ event.date_time_end }}</date>
+				<date class="pull-right">{{ event.date_time_begin|date:"Y-m-d H:i" }}〜{{ event.date_time_end|date:"Y-m-d H:i" }}</date>
+<div>
 				<h2>{{ event.title }} – <span style="font-size: smaller; color: gray;">{{ event.event_type.title|lower }}</span></h2>
 				<div style="margin:0 .5em .5em .5em;">{{ event.description|textile }}</div>
+</div>
 			</div>
 	{# TODO: Should we add some permissions to access the edit form, or do we trust people not to mess things up too much? #}
-			<div id="event_description-form" style="display: none">
-				<input type="hidden" name="event_id" id="event_id" value="" />
+			<form id="event_description-form" style="display: none">
+				<input type="hidden" name="event_id" id="event_id" value=" {{ event.id }}" />
 	
 				<div class="row-fluid">
-					<div class="span5">Titill{{ form.title }}</div>
-					<div class="span2">
+					<div class="span5"><input class="span12" type="text" value="{{ event.title }}"></input></div>
+						<div class="span2">
 						<select id="event_type" name="event_type">
 		{% for type in event_types %}
-							<option value="{{ type.pk }}">{{ type.title }}</option>
+							<option value="{{ type.pk }}"{% if type.pk == event.event_type.id %} selected="selected"{% endif %}>{{ type.title }}</option>
 		{% endfor %}
 						</select>
 					</div>
-					<div class="span2">upphaf{{ form.date_time_begin }}</div>
-					<div class="span2">endir{{ form.date_time_end }}</div>
+					<div class="span2">
+						<input id="id_date_time_begin" class="hasDatepicker" type="text" name="date_time_begin" placeholder="Upphaf" value="{{ event.date_time_begin|date:"Y-m-d H:i" }}"></input>
+					</div>
+					<div class="span2">
+						<input id="id_date_time_begin" class="hasDatepicker" type="text" name="date_time_begin" placeholder="Upphaf" value="{{ event.date_time_end|date:"Y-m-d H:i" }}"></input>
+					</div>
 					<!-- Possibly allow duplication, but multiple events is probably overdoing it ...
 					<a class="btn span1" id="add_dates_btn" onclick="$('#add_days').slideToggle();$('#add_days_icon').toggleClass('icon-minus');"><i id="add_days_icon" class="icon-plus"></i></a>
 					-->
 				</div><!-- /.row-fluid -->
 	
 				<div class="row-fluid">
-					Lýsing
-					{{ form.description }}
+					<textarea class="span12" id="event_description-textarea">{{ event.description }}</textarea>
 				</div><!-- /.row-fluid -->
 				<div style="text-align: right">
 					{# TODO: The cancel button should reset the form and toggle back to displaying the data #}
@@ -176,7 +204,7 @@ $(document).ready(function(){
 					{# TODO: The submit button should post the data and only on success toggle back to displaying the data #}
 					<input type="button" value="Vista" class="span2 btn btn-primary toggle-form" data-form_id-prefix="event_description" />
 				</div>
-			</div><!-- /#event_description-form -->
+			</form><!-- /#event_description-form -->
 		</section>
 
 		<section style="overflow: auto; ">
@@ -194,7 +222,7 @@ $(document).ready(function(){
 						</dl>
 					</div><!-- /#event_tag-data -->
 
-					<div id="event_tag-form" style="display: none">
+					<form id="event_tag-form" style="display: none">
 						<h3>Merki</h3>
 						<div style="text-align: right">
 							{# TODO: The cancel button should reset the form and toggle back to displaying the data #}
@@ -202,7 +230,7 @@ $(document).ready(function(){
 							{# TODO: The submit button should post the data and only on success toggle back to displaying the data #}
 							<input type="button" value="Vista" class="span4 btn btn-primary toggle-form" data-form_id-prefix="event_tag" />
 						</div>
-					</div><!-- /#event_description-form -->
+					</form><!-- /#event_description-form -->
 
 					<div id="event_location-data">
 						<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_location"></i>
@@ -212,7 +240,7 @@ $(document).ready(function(){
 							<tr><td>N 64°34,392'	V 21°39,291'</td><td>Upphafsstaður æfingar.</td></tr>
 						</table>
 					</div><!-- /#event_location-data -->
-					<div id="event_location-form" style="display: none">
+					<form id="event_location-form" style="display: none">
 						<h3>Staðsetning</h3>
 						<div style="text-align: right">
 							{# TODO: The cancel button should reset the form and toggle back to displaying the data #}
@@ -220,7 +248,7 @@ $(document).ready(function(){
 							{# TODO: The submit button should post the data and only on success toggle back to displaying the data #}
 							<input type="button" value="Vista" class="span4 btn btn-primary toggle-form" data-form_id-prefix="event_location" />
 						</div>
-					</div><!-- /#event_location-form -->
+					</form><!-- /#event_location-form -->
 				</div><!-- /.span6 -->
 
 				<div id="event_location-map" class="span6">

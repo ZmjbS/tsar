@@ -8,6 +8,7 @@
 <link type="text/css" rel="stylesheet" href="/static/js/css/ui-lightness/jquery-ui-1.8.21.custom.css" />
 <script type="text/javascript" src="/static/js/chosen.jquery.min.js"></script>
 <link type="text/css" rel="stylesheet" href="/static/css/chosen.css" />
+<script type="text/javascript" src="/static/js/tsar.events.js"></script>
 <style>
 	/* css for timepicker */
 	.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
@@ -37,11 +38,8 @@
 	.role_entry { background-color: #efefef; padding: .4em; margin-bottom: .4em; }
 	.role_entry-title { font-size: 1.6em; padding-top: .3em; }
 
-	//#invite-role-list { width: 00p; }
 </style>
 <script type="text/javascript">
-
-//$( "#datepicker" ).datepicker( $.datepicker.regional[ "us" ] );
 
 $(document).ready(function(){
 // Datetimepicker
@@ -65,10 +63,6 @@ $(document).ready(function(){
   	      }
 		}
 
-	//	onClose: function( selectedDate ) {
-	//		$( "#id_date_time_end" ).datetimepicker( "option", "minDate", selectedDate );
-	//		//$( "#id_date_time_end" ).datetimepicker( "option", "minDateTime", new Date($(this).datepicker('getDate').getTime()));
-	//	}
 	});
 	$('#id_date_time_end').datetimepicker({
 		onClose: function (selectedDateTime){
@@ -87,17 +81,7 @@ $(document).ready(function(){
 				startDateTextBox.val(selectedDateTime);
 			}
 		}
-//		onClose: function( selectedDate ) {
-//			console.log(selectedDate);
-//			test = new Date(selectedDate);
-//			console.log(test);
-//			$( "#id_date_time_begin" ).datetimepicker( "option", "maxDateTime", test );
-//			//$( "#id_date_time_begin" ).datetimepicker( "option", "maxDateTime", selectedDate );
-//			//$( "#id_date_time_begin" ).datetimepicker( "option", "maxDateTime", new Date($(this).datepicker('getDate').getTime()));
-//		}
 	});
-//onClose: function( selectedDateTime ) { $( "#id_date_time_begin" ).datetimepicker( "option", "maxDateTime", selectedDateTime );} });
-//onClose: function( selectedDateTime ) { $( "#id_date_time_end" ).datetimepicker( "option", "minDateTime", selectedDateTime );} });
 
 // Chosen UI
 	$('#role-groups-id_template').chosen();
@@ -107,34 +91,10 @@ $(document).ready(function(){
 	$('#tag-location').chosen();
 	$('#tag-equipment').chosen();
 
-// Bootstrap styling
-	//$('#id_title').addClass('span6');
-	//$('#event_type').addClass('span2');
-	//$('#id_date_time_begin').addClass('span2');
-	//$('#id_date_time_end').addClass('span2');
-
-//	$('#add_days').addClass('span6');
-
 	$('#id_description').addClass('span12');
 
-
-// Serialise the input data and submit the form.
-	$('form').submit(function() {
+// Place the CSRF token in a js variable so that the form handler can send it to the view.
 		csrf = "{{ csrf_token|escapejs }}"
-		console.log('serialising');
-		json = JSON.stringify($(this).serializeJSON());
-		//console.log(json);
-		var posting = $.post("/vidburdur/nyskraning/vista", {'csrfmiddlewaretoken': csrf, 'data': json});
-		posting.done(function(data) {
-			if (isNaN(parseInt(data))) {
-				print_result('Error: '+data,'alert-error');
-			} else {
-				$('#event_id').val(data);
-				print_result('Viðburður númer '+data+' búinn til. Sjá <a href="/vidburdur/'+data+'">síðu viðburðarins</a>','alert-success');
-			}
-		});
-		return false;
-	});
 
 	function print_results(message){
 		$('#results').show()
