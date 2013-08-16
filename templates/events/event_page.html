@@ -19,9 +19,17 @@
 #id_title, #event_type, #id_date_time_begin, #id_date_time_end {width: 100% !important; }
 
 </style>
+<script type="text/javascript" src="/static/js/tsar.events.js"></script>
+<script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
 <script type="text/javascript">
+
 $(document).ready(function(){
    $('body').delegate('.respond-icon', 'click', function() { respond_to_event(this, 'Event page') } );
+
+// Place the CSRF token in a js variable so that the form handler can send it to the view.
+	//CSRF = "{{ csrf_token|escapejs }}";
+	var csrftoken = $.cookie('csrftoken');
+	console.log('CSRF (on page):'+csrftoken);
 
 	// Capture click events on edit icons and toggle to the edit form.
 	$('.toggle-form').click(function() {
@@ -36,6 +44,7 @@ $(document).ready(function(){
 	});
 
 	$('#event_description-textarea').autosize({append: "\n"});
+
 });
 </script>
 
@@ -176,7 +185,7 @@ $(document).ready(function(){
 				<input type="hidden" name="event_id" id="event_id" value=" {{ event.id }}" />
 	
 				<div class="row-fluid">
-					<div class="span5"><input class="span12" type="text" value="{{ event.title }}"></input></div>
+					<div class="span5"><input name="title"class="span12" type="text" value="{{ event.title }}"></input></div>
 						<div class="span2">
 						<select id="event_type" name="event_type">
 		{% for type in event_types %}
@@ -188,7 +197,7 @@ $(document).ready(function(){
 						<input id="id_date_time_begin" class="hasDatepicker" type="text" name="date_time_begin" placeholder="Upphaf" value="{{ event.date_time_begin|date:"Y-m-d H:i" }}"></input>
 					</div>
 					<div class="span2">
-						<input id="id_date_time_begin" class="hasDatepicker" type="text" name="date_time_begin" placeholder="Upphaf" value="{{ event.date_time_end|date:"Y-m-d H:i" }}"></input>
+						<input id="id_date_time_end" class="hasDatepicker" type="text" name="date_time_end" placeholder="Lok" value="{{ event.date_time_end|date:"Y-m-d H:i" }}"></input>
 					</div>
 					<!-- Possibly allow duplication, but multiple events is probably overdoing it ...
 					<a class="btn span1" id="add_dates_btn" onclick="$('#add_days').slideToggle();$('#add_days_icon').toggleClass('icon-minus');"><i id="add_days_icon" class="icon-plus"></i></a>
@@ -196,13 +205,13 @@ $(document).ready(function(){
 				</div><!-- /.row-fluid -->
 	
 				<div class="row-fluid">
-					<textarea class="span12" id="event_description-textarea">{{ event.description }}</textarea>
+					<textarea class="span12" id="event_description-textarea" name="description">{{ event.description }}</textarea>
 				</div><!-- /.row-fluid -->
 				<div style="text-align: right">
 					{# TODO: The cancel button should reset the form and toggle back to displaying the data #}
 					<input type="button" value="Hætta við" class="span2 btn toggle-form toggle-form" data-form_id-prefix="event_description" />
 					{# TODO: The submit button should post the data and only on success toggle back to displaying the data #}
-					<input type="button" value="Vista" class="span2 btn btn-primary toggle-form" data-form_id-prefix="event_description" />
+					<button value="Vista" class="span2 btn btn-primary toggle-form" data-form_id-prefix="event_description">Vista</button>
 				</div>
 			</form><!-- /#event_description-form -->
 		</section>

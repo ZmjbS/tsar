@@ -8,6 +8,7 @@
 <link type="text/css" rel="stylesheet" href="/static/js/css/ui-lightness/jquery-ui-1.8.21.custom.css" />
 <script type="text/javascript" src="/static/js/chosen.jquery.min.js"></script>
 <link type="text/css" rel="stylesheet" href="/static/css/chosen.css" />
+<script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
 <script type="text/javascript" src="/static/js/tsar.events.js"></script>
 <style>
 	/* css for timepicker */
@@ -94,12 +95,14 @@ $(document).ready(function(){
 	$('#id_description').addClass('span12');
 
 // Place the CSRF token in a js variable so that the form handler can send it to the view.
-		csrf = "{{ csrf_token|escapejs }}"
+	//csrf = "{{ csrf_token|escapejs }}";
+	var csrftoken = $.cookie('csrftoken');
+	console.log('CSRF (on page):'+csrftoken);
 
 	function print_results(message){
 		$('#results').show()
 		$('#results').html(message)
-	}
+	};
 
 }); //END READY -----------------------
 
@@ -192,7 +195,7 @@ $(document).ready(function(){
 	<div class="span8"><!-- Contains the next three sections: #description, #tags, #location -->
 		<section id="description" tyle="overflow: visible">
 	
-			<input type="hidden" name="event_id" id="event_id" value="" />
+			<input type="hidden" name="event_id" id="event_id" value="{{ event.pk }}" />
 	
 	<!--
 		<h2>Lýsing</h2>

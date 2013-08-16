@@ -227,6 +227,7 @@ def display_or_save_event_form(request):
 #TODO: Do we need to remove orphaned invitations once an EventRole has been removed?
 #TODO: Reorder these try-s to shorten them so that the exceptions make more sense.
 def save_event(request):
+	print 'Saving event'
 	if request.is_ajax() or True:
 		print 'Is AJAX'
 		# TODO: Add handler for these below. They are required and must be submitted or else the form will not validate. Or perhaps the clean_fields() exception is enough...?
@@ -236,11 +237,13 @@ def save_event(request):
 		print 'Hér kemur JSON útgáfan:'
 		data = json.loads(request.POST['data'])
 		pprint.pprint(data)
+		print 'Hæ'
 		t = data['title']
 		d = data['description']
 		dtb = timezone.make_aware(parser.parse(data['date_time_begin']),timezone.get_default_timezone())
 		dte = timezone.make_aware(parser.parse(data['date_time_end']),timezone.get_default_timezone())
 		et_id = data['event_type']
+		print 'Nú eru öll gögnin komin. Athugum hvort event_id sé gefið.'
 		try:
 			event_id = data['event_id']
 			if event_id == '':
