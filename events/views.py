@@ -257,7 +257,7 @@ def save_event(request):
 				event.date_time_begin = dtb
 				event.date_time_end = dte
 				event.event_type_id = et_id
-				#return HttpResponse('Event fields updated.')
+
 			# Now save the event
 			try:
 				event.clean_fields()
@@ -266,7 +266,7 @@ def save_event(request):
 				print (vars(event))
 				print '--------------------'
 			except:
-				return HttpResponse ("Hello, world. Could not save event.")
+				return HttpResponse (json.dumps({ 'type': 'error', 'message': 'Could not save event.'}))
 
 			# Now that the event has been taken care of, let's sort out the event roles etc.
 			# Flow:
@@ -345,7 +345,7 @@ def save_event(request):
 								eventrole.save()
 								print 'eventrole saved: {}.'.format(eventrole)
 							except:
-								return HttpResponse('Hello, world. Could not update eventrole max/min numbers.')
+								return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not update eventrole max/min numbers.' }))
 					except: #else
 						# Since there is no existing EventRole, we need to:
 						#  1. Create an EventRole, and save it as eventrole.
@@ -358,7 +358,7 @@ def save_event(request):
 							eventrole.save()
 							print 'eventrole saved: {}.'.format(eventrole)
 						except:
-							return HttpResponse('Hello, world. Could not save eventrole.')
+							return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not save eventrole.' }))
 
 					# Now that we have the eventrole and it has been stripped of its
 					# unwanted participatns, let's add the wanted ones.
@@ -411,9 +411,7 @@ def save_event(request):
 						print 'No role exists. All good.'
 				print ' ..... '
 		except:
-			return HttpResponse("Hello, world. Could not create event.")
-		return HttpResponse(event.id)
-		#return render_to_response('events/event_page.html', { 'event': event, })
-		#return HttpResponseRedirect('/vidburdur/'+str(event.id))
+			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not create event', }))
+		return HttpResponse(json.dumps({ 'type': 'success', 'event_id': event.id }))
 	else:
-		return HttpResponse("Hello, world. Not AJAX request.")
+		return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Hello, world. Not AJAX request.'}))
