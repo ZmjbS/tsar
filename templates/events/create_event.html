@@ -99,31 +99,9 @@ $(document).ready(function(){
 	var csrftoken = $.cookie('csrftoken');
 	console.log('CSRF (on page):'+csrftoken);
 
-	function print_results(message){
-		$('#results').show()
-		$('#results').html(message)
-	};
-
 }); //END READY -----------------------
 
-	function print_result(message,type){
-		$('#results').slideDown()
-		$('#results').html(message)
-		if (type) {
-			$('#results').removeClass()
-			$('#results').addClass('alert '+type)
-		}
-	}
-
-	$('.delete-role-entry').live('click',(function(){
-		role_id = $(this).attr('id');
-		role_title = $(this).parents('.role_entry').find('.role_entry-title').html();
-		$(this).parents('.role_entry').fadeOut(300).slideUp({ duration: 500, queue: false });
-		$(this).parents('.role_entry').remove();
-		$('#role-dropdown').append('<li id="'+role_id+'" class="role-tmp"><a>'+role_title+'</a></li>');
-	}));
-
-	$('.role-tmp').live('click',(function(){
+	$('.role-dropdown-item').live('click',(function(){
 		role_id = $(this).attr('id');
 		role_title = $(this).children('a').html();
 		$(this).remove();
@@ -157,6 +135,7 @@ $(document).ready(function(){
 		//$('#invite-role-list').append(node).children(':last').stop(true, true).hide().slideDown(500).fadeIn({ duration: 400, queue: false });
 		$('.select-participants').chosen();
 	}));
+
 </script>
 {% endblock %}
 
@@ -180,7 +159,7 @@ $(document).ready(function(){
 				<button class="btn dropdown-toggle" data-toggle="dropdown">Bæta við hlutverki <span class="caret"></span> </button>
 				<ul id="role-dropdown" class="dropdown-menu">
 	{% for role in event_roles %}
-					<li class="role-tmp" id="{{ role.id}}"><a>{{ role.title }}</a></li>
+					<li class="role-dropdown-item" id="{{ role.id}}"><a>{{ role.title }}</a></li>
 	{% endfor %}
 				</ul>
 			</div><!-- /#event-invite-button -->
