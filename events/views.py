@@ -184,6 +184,7 @@ def display_event(request, pk):
 			cm_status = 'absent'
 		if cm in attending:
 			cm_status = 'attending'
+
 		role_data.append({ 'eventrole': eventrole, 'invitedmembers': invitedmembers, 'absentmembers': absent, 'attendingmembers': attending, 'cm_status': cm_status, })
 
 	# Pass possible roles and event types so that we can edit the event.
@@ -208,7 +209,12 @@ def display_event(request, pk):
 #			role['cm_status'] = 'attending'
 	#import pprint
 	#pprint.pprint(role_data)
-	return render_to_response('events/event_page.html', { 'event': event, 'cm': cm, 'role_data': role_data, 'status_list': ['attending', 'absent', 'unclear'], 'event_types': event_types, 'event_roles': event_roles, 'total_attending': len(total_attending), 'total_absent': len(total_absent), 'total_invited': len(total_invited), })
+
+	# Add the groups and members.
+	members = Member.objects.all()
+	groups = Group.objects.all()
+
+	return render_to_response('events/event_page.html', { 'event': event, 'cm': cm, 'role_data': role_data, 'status_list': ['attending', 'absent', 'unclear'], 'event_types': event_types, 'event_roles': event_roles, 'total_attending': len(total_attending), 'total_absent': len(total_absent), 'total_invited': len(total_invited), 'members': members, 'groups': groups, })
 
 def display_or_save_event_form(request):
 	event_types = EventType.objects.all()
@@ -237,12 +243,35 @@ def save_event(request):
 		print 'Hér kemur JSON útgáfan:'
 		data = json.loads(request.POST['data'])
 		pprint.pprint(data)
-		print 'Hæ'
+
+		# Sanitise some of the data and return messages if it fails.
+		# The title must be non-zero and no longer than ... TODO!!
 		t = data['title']
+		if t == "":
+			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Title missing.', }))
+		# There are no restrictions on the description field other than being cleaned. It may be blank and arbitrarily long.
 		d = data['description']
+		# The dates must be supplied and the beginning must precede the end.
+		if data['date_time_begin'] == "":
+			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Beginning date missing.', }))
 		dtb = timezone.make_aware(parser.parse(data['date_time_begin']),timezone.get_default_timezone())
-		dte = timezone.make_aware(parser.parse(data['date_time_end']),timezone.get_default_timezone())
+		if data['date_time_end'] == "":
+			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'End date missing.', }))
+		try:
+			dte = timezone.make_aware(parser.parse(data['date_time_end']),timezone.get_default_timezone())
+			print 'Hæ'
+		except:
+			return HttpResponse(jseon.dumps({ 'type': 'error', 'message': 'Not a valid datetime', }))
+		print 'XXX'
+		print dte
+		print 'XXX'
+		if dte <= dtb:
+			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'The event start time must precede the end.', }))
+		# The event-type must be supplied.
 		et_id = data['event_type']
+		if et_id== "":
+			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'No event type supplied.', }))
+
 		print 'Nú eru öll gögnin komin. Athugum hvort event_id sé gefið.'
 		try:
 			event_id = data['event_id']
