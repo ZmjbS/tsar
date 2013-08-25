@@ -1,46 +1,9 @@
 /* Layout */
-body { max-width: 90em; }
 #navigation { padding: .4em; }
 h1 { margin-top: 10px; }
 h1, article { padding-left: 10px; }
 
-//article { margin: 1em; }
-#admin-links { margin: .5em; }
-#admin-links a, #navigation a { font-weight: bold; }
 #admin-links, #search-field { float: right; }
-/*#admin-links { position: absolute; right: .5em; top: .5em; }
-#search-field {
-	position: absolute;
-	top: 35px;
-	right: 30px;
-}
-*/
-section {
-	border-radius: .5em;
-	padding: .5em;
-	margin: 0;
-	margin-bottom: 1.5em;
-//	margin: .25em;
-}
-//section + section { margin-top: 1.5em; }
-
-/* Scaffolding */
-div.full-width,
-div.half-width,
-div.third-width,
-div.twothird-width { float: left; margin: 0em; padding: 0; }
-div.full-width { width: 98%; }
-div.half-width { width: 49%; }
-div.third-width { width: 32.7%; }
-div.twothird-width { width: 65.3%; }
-//div#profile-picture {
-//	float: right;
-//	width: 120px;
-//	height: 160px;
-//	margin: 6px 2px 4px .2em;
-//	position: relative;
-//	text-align: right; }
-//div#profile-picture img { position: absolute; bottom: 0; right: 0; }
 
 td, th { padding: 0 .4em }
 
@@ -71,26 +34,26 @@ h1, h2, h3 {
 	font-family: "Times New Roman", serif;
 }
 h2 {
-	font-weight: bol; ont-size: normal;
+	//font-weight: bol; ont-size: normal;
 	font-size: 1.54em;
 }
 h3 {
-	font-weight: bol; ont-size: normal;
+	//font-weight: bol; ont-size: normal;
 	font-size: 1.4em;
 	margin-left: .5em;
 }
 #navigation {
 	background-color: #eee; }
-/*#admin-links a, #navigation a {
-	color: #a33; }*/
 #search-field {
 	border: thin solid white;
 }
 date, time {	color: gray; font-size: smaller; }
 section {
 	background-color: rgba(255,255,255,0.75);
-/*	border: thin solid #eeb; */
 	border: thin solid #dde;
+	border-radius: .5em;
+	padding: .5em;
+	margin-bottom: 1.5em;
 }
 div#profile-picture {
 	background-color: #eee;
