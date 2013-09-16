@@ -191,23 +191,25 @@ $(document).ready(function(){
 
 <!-- Invitations -->
 <div class="tab-pane" id="invitation">
-	<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_invitations"></i><br />
-	<ul style="list-style: none; margin-left:0;">
+	<div id="event_invitations-data">
+		<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_invitations"></i><br />
+		<ul style="list-style: none; margin-left:0;">
 {% for event_role in event.eventrole_set.all %}
-		<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;">{{ event_role.role.title }} <span style="font-size:smaller; color: gray; float: right;">{{ event_role.minimum }}〜{% if event_role.maximum == 0 %}∞{% else %}{{ event_role.maximum }}{% endif %}</span></div>
-			<ul>
+			<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;"><span class="role_entry-title">{{ event_role.role.title }}</span> <span style="font-size:smaller; color: gray; float: right;">{{ event_role.minimum }}〜{% if event_role.maximum == 0 %}∞{% else %}{{ event_role.maximum }}{% endif %}</span></div>
+				<ul>
 	{% for group in event_role.invited_groups.all %}
-				<li><a href="/hopur/{{ group.slug }}">{{ group.title }}</a></li>
+					<li><a href="/hopur/{{ group.slug }}">{{ group.title }}</a></li>
 	{% endfor %}
-			</ul>
-			<ul>
+				</ul>
+				<ul>
 	{% for member in event_role.invited_members.all %}
-				<li><a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a></li>
+					<li><a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a></li>
 	{% endfor %}
-			</ul>
-		</li>
+				</ul>
+			</li>
 {% endfor %}
-	</ul>
+		</ul>
+	</div><!-- /#event_invitations-data -->
 
 				</div><!-- class="tab-content" -->
 			</div><!-- id="event_roles-data" -->
@@ -221,7 +223,7 @@ $(document).ready(function(){
    {% endfor %}
 					</ul>
 				</div><!-- /#event-invite-button -->
-         	<div id="invite-role-list">
+         	<div id="invite-role-list" style="clear:both">
 
 	{% for event_role in event.eventrole_set.all %}
 					<div class="role_entry">
