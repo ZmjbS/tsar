@@ -31,7 +31,7 @@ h1 {
 h1, h2, h3 {
 	margin: 0;
 	color: #a33;
-	font-family: "Times New Roman", serif;
+	//font-family: "Times New Roman", serif;
 }
 h2 {
 	//font-weight: bol; ont-size: normal;
@@ -107,3 +107,8 @@ div#profile-picture {
 
 /* Form editing */
 .form-edit-icon { cursor: pointer; }
+.edit-interface { cursor: pointer; }
+
+.role_entry { background-color: #efefef; padding: .4em; margin-bottom: .4em; }
+.role_entry-title { font-size: 1.6em; padding-top: .3em; }
+
