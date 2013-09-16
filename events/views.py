@@ -50,6 +50,8 @@ def list_events(request):
 	# Otherwise it's just a normal request for the events page.
 	recent_events_list = Event.objects.filter(date_time_begin__lte=now).order_by('-date_time_begin')[:20]
 	coming_events_list = Event.objects.filter(date_time_begin__gte=now).order_by('date_time_begin')[:20]
+	#import pprint
+	#pprint.pprint(coming_events_list)
 	# TODO: Add incidents?
 	# recent_incidents_list = Incident.objects.filter(date_time_begin__lte=now).order_by('-date_time_begin')[:20]
 	return render_to_response('events/events_index.html', { 'recent_events_list': recent_events_list, 'coming_events_list': coming_events_list })
@@ -159,13 +161,13 @@ def display_event(request, pk):
 	#	print '> Absent members: {}'.format(absent)
 		invitedmembers = []
 	#	print '>> Members invited through groups'
-		for member in Member.objects.filter(group__groupinvitation__event_role=eventrole).filter(group__groupinvitation__event_role__event=event):
+		for member in Member.objects.filter(group__groupinvitation__event_role=eventrole):#filter(group__groupinvitation__event_role__event=event):
 	#		print '>>   {}'.format(member.user.username)
 			if member not in invitedmembers and member not in attending and member not in absent:
 				invitedmembers.append(member)
 	#			print '++   {}'.format(member)
 	#	print '>> Members invited directly'
-		for member in Member.objects.filter(memberinvitation__event_role=eventrole).filter(memberinvitation__event_role__event=event):
+		for member in Member.objects.filter(memberinvitation__event_role=eventrole):#filter(memberinvitation__event_role__event=event):
 	#		print '>>   {}'.format(member)
 			if member not in invitedmembers and member not in attending and member not in absent:
 				invitedmembers.append(member)
@@ -173,6 +175,7 @@ def display_event(request, pk):
 
 		# Add these to the total:
 		total_attending.update(attending)
+		print 'Total attending: {}'.format(total_attending)
 		total_absent.update(absent)
 		total_invited.update(invitedmembers)
 
