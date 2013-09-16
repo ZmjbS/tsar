@@ -36,9 +36,6 @@
 /*	#id_date_time_begin, #id_date_time_end { display: inline; width: 8em; }*/
 	#id_title, #event_type, #id_date_time_begin, #id_date_time_end { width: 100% !important; }
 	
-	.role_entry { background-color: #efefef; padding: .4em; margin-bottom: .4em; }
-	.role_entry-title { font-size: 1.6em; padding-top: .3em; }
-
 </style>
 <script type="text/javascript">
 
@@ -164,7 +161,7 @@ $(document).ready(function(){
 				</ul>
 			</div><!-- /#event-invite-button -->
 		
-			<h2 id="event-invite-header">Boðun</h2>
+			<h3 id="event-invite-header">Boðun</h3>
 		
 			<div id="invite-role-list">
 			</div><!--invite-role-list-->
@@ -233,7 +230,7 @@ $(document).ready(function(){
 	<!-- TAGS -->
 		<section id="tags" style="overflow: visible">
 			<input id="event-tag-button" type="button" class="btn" style="float: right" value="Merkja" data-toggle="button" onclick="$(this).toggleClass('active');$('#merki-content').slideToggle();" />
-			<h2 id="event-tag-header">Merki</h2>
+			<h3 id="event-tag-header">Merki</h3>
 			<div id="merki-content" style="display:none">
 				<table style="width: 100%">
 					<tr>
@@ -311,7 +308,7 @@ $(document).ready(function(){
 			<div style="float:right; vertical-align: bottom;">
 				<input id="event-geo-button" type="button" class="btn" data-toggle="button" onclick="$(this).toggleClass('active');$('#stadsetning-content').slideToggle();" value="Staðsetja" />
 			</div>
-			<h2 id="event-geo-header">Staðsetning</h2>
+			<h3 id="event-geo-header">Staðsetning</h3>
 			<div id="stadsetning-content" style="display:none">
 		
 				<div style="float:right;"><img src="/static/img/hengill-husmuli.png" width="200" height="200" alt="Kort af svæðinu." /></div>
