@@ -221,35 +221,37 @@ $(document).ready(function(){
    {% endfor %}
 					</ul>
 				</div><!-- /#event-invite-button -->
-{% for event_role in event.eventrole_set.all %}
-	<div class="role_entry">
-		<div class="role_entry-title" style="float:left">{{ event_role.role.title }}</div>
-		<input type="hidden" name="role[{{ event_role.role.id }}][id]" value="{{ event_role.id }}" />
-		<div style="float:right"><i id="{{ event_role.role.id }}" class="delete-role-entry icon-remove-sign pull-right" style="cursor: pointer"></i></div>
-		<div style="float:right; margin-right: .5em;">mest:   <input name="role[{{ event_role.id }}][max]" class="span6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>
-		<div style="float:right; margin-right: .5em;">minnst: <input name="role[{{ event_role.id }}][min]" class="span6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>
-	<div>
-	<select name="role[{{ event_role.role.id }}][participants][]" multiple data-placeholder="Veldu þáttakendur" class="select-participants">
-		<optgroup label="Hópar og flokkar">
-	{% for group in groups %}
-			<option value="g{{ group.id }}">{{ group.title }}</option>
-	{% endfor %}
-		</optgroup>
-		<optgroup label="Meðlimir">
-			<option value="m0" selected="selected">prufugaur</option>
-	{% for member in members %}
-			<option value="m{{ member.id }}" selected="selected">{{ member }}</option>
-	{% endfor %}
-		</optgroup>
-	</select>
-{% endfor %}
-
-      
          	<div id="invite-role-list">
+
+	{% for event_role in event.eventrole_set.all %}
+					<div class="role_entry">
+						<div class="role_entry-title" style="float:left">{{ event_role.role.title }}</div>
+						<input type="hidden" name="role[{{ event_role.role.id }}][id]" value="{{ event_role.role.id }}" />
+						<div style="float:right"><i id="{{ event_role.role.id }}" class="delete-role-entry icon-remove-sign pull-right" style="cursor: pointer"></i></div>
+						<div style="float:right; margin-right: .5em;">mest:   <input name="role[{{ event_role.role.id }}][max]" class="span6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>
+						<div style="float:right; margin-right: .5em;">minnst: <input name="role[{{ event_role.role.id }}][min]" class="span6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>
+						<div>
+							<select name="role[{{ event_role.role.id }}][participants][]" multiple data-placeholder="Veldu þáttakendur" class="select-participants">
+								<optgroup label="Hópar og flokkar">
+		{% for group in groups %}
+									<option value="g{{ group.id }}"{% if group in event_role.invited_groups.all %} selected="selected"{% endif %}>{{ group.title }}</option>
+		{% endfor %}
+								</optgroup>
+								<optgroup label="Meðlimir">
+		{% for member in members %}
+									<option value="m{{ member.id }}"{% if member in event_role.invited_members.all %} selected="selected"{% endif %}>{{ member }}</option>
+		{% endfor %}
+								</optgroup>
+							</select>
+						</div>
+         		</div><!--/#role-entry-->
+	{% endfor %}
+
          	</div><!--invite-role-list-->
+      
 				<input type="reset" value="Hætta við" class="span2 btn toggle-form" data-form_id-prefix="event_invitations" onclick="$('#results').slideUp();" />
 				<input type="submit" value="Vista" class="span2 btn btn-primary oggle-form" data-form_id-prefix="event_invitations" />
-			</div>
+			</div><!-- /#event_invitations-form -->
 		</section>
 	</div><!-- class="span4" -->
 
