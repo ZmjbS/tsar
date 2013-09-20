@@ -15,13 +15,89 @@
 .nav-pills > li > a.warning{ color: rgb(248, 148, 6); }
 .nav-pills > li > a.warning:hover { color: rgb(155, 93, 4); }
 /*.nav-pills > .active > a.info, .nav-pills > .active > a.info:hover { background-color: rgb(); }*/
-
+]
 #id_title, #event_type, #id_date_time_begin, #id_date_time_end {width: 100% !important; }
 
 </style>
+<script type="text/javascript" src="/static/js/tsar.events.js"></script>
+<script type="text/javascript" src="/static/js/chosen.jquery.min.js"></script>
+<link type="text/css" rel="stylesheet" href="/static/css/chosen.css" />
+<script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
 <script type="text/javascript">
+
+function change_event_response(button) {
+	member_id    = $(button).data('member_id');
+	eventrole_id = $(button).data('eventrole_id');
+	action       = $(button).data('action');
+
+	console.log('member_id:    '+member_id);
+	console.log('eventrole_id: '+eventrole_id);
+	console.log('action:       '+action);
+
+	console.log('posting');
+	var posting = $.post("/vidburdur/svaranytt", {'member_id': member_id, 'eventrole_id': eventrole_id, 'action': action, });
+	console.log('posted');
+
+	posting.done(function(data, node) {
+		console.log('posting done:');
+
+		// Retrieve the data object from the view:
+		obj = JSON && JSON.parse(data) || $.parseJSON(data);
+
+		// Remove the entry from the old list
+		$('#role_'+obj.role_id+'_member_'+obj.user_id+'_entry').remove();
+
+		// Add an entry to the new list
+		if (action == 'attend') {
+			$('#role_'+obj.role_id+'_attending_members').prepend('<li id="role_'+obj.role_id+'_member_'+obj.user_id+'_entry"><a href="/felagi/'+obj.username+'">'+obj.user_name+'</a><span class="change-response attending edit-interface icon-remove-sign pull-right" data-member_id="'+obj.user_id+'" data-eventrole_id="'+obj.eventrole_id+'" data-action="absent" data-status="attending"></span></li>')
+			if ($('#attending_roles').siblings('.form-edit-icon').data('toggle_state') == 'hidden') {
+				$('#role_'+obj.role_id+'_member_'+obj.user_id+'_entry').children('.change-response.edit-interface').css('display','none');
+			}
+// TODO: Update the attendance icons if the response belongs to the current member
+//			$('#role_'+obj.role_id+'_status_icon').removeClass('icon-ban-circle icon-circle-blank invited');
+//			$('#role_'+obj.role_id+'_status_icon').addClass('icon-ok-circle');
+		} else {
+			$('#role_'+obj.role_id+'_absent_members').prepend('<li id="role_'+obj.role_id+'_member_'+obj.user_id+'_entry"><a href="/felagi/'+obj.username+'">'+obj.user_name+'</a><span class="change-response absent edit-interface icon-plus-sign pull-right" data-member_id="'+obj.user_id+'" data-eventrole_id="'+obj.eventrole_id+'" data-action="attend" data-status="absent"></span></li></li>')
+			if ($('#absent_roles').siblings('.form-edit-icon').data('toggle_state') == 'hidden') {
+				$('#role_'+obj.role_id+'_member_'+obj.user_id+'_entry').children('.change-response.edit-interface').css('display','none');
+			}
+// TODO: Update the attendance icons if the response belongs to the current member
+//			$('#role_'+obj.role_id+'_status_icon').removeClass('icon-ok-circle icon-circle-blank invited');
+//			$('#role_'+obj.role_id+'_status_icon').addClass('icon-ban-circle');
+		}
+		
+		// Fix the total number of attendees.
+		status=$(button).data('status');
+		$('#total_'+status).text(parseInt($('#total_'+status).text()-1));
+
+		switch (action) {
+			case 'attend':
+				number=parseInt($('#total_attending').text());
+				number++
+				$('#total_attending').text(number);
+				break;
+			case 'absent':
+				number=parseInt($('#total_absent').text());
+				number++
+				$('#total_absent').text(number);
+				break;
+		}
+		
+
+	});
+
+};
+
 $(document).ready(function(){
    $('body').delegate('.respond-icon', 'click', function() { respond_to_event(this, 'Event page') } );
+
+	$('body').delegate('.change-response', 'click', function() { change_event_response(this) } );
+
+// Place the CSRF token in a js variable so that the form handler can send it to the view.
+	//CSRF = "{{ csrf_token|escapejs }}";
+	var csrftoken = $.cookie('csrftoken');
+	console.log('CSRF (on page):'+csrftoken);
+
 	// Capture click events on edit icons and toggle to the edit form.
 	$('.toggle-form').click(function() {
 		//console.log('event caught');
@@ -29,7 +105,50 @@ $(document).ready(function(){
 		prefix = $(this).data('form_id-prefix');
 		$('#'+prefix+'-data').toggle();
 		$('#'+prefix+'-form').toggle();
+
+		// TODO: Not needed on all, but this is a useful hack to force the initial resizing...
+		$('#event_description-textarea').trigger('autosize.resize');
 	});
+
+	$('#event_description-textarea').autosize({append: "\n"});
+
+	$('.role-dropdown-item').live('click',(function(){
+		role_id = $(this).attr('id');
+		role_title = $(this).children('a').html();
+		$(this).remove();
+	node=	'<div class="role_entry">'
+		+			'<div class="role_entry-title" style="float:left">'+role_title+'</div>'
+		+			'<input type="hidden" name="role['+role_id+'][id]" value="'+role_id+'" />'
+		+					'<div style="float:right"><i id="'+role_id+'" class="delete-role-entry icon-remove-sign pull-right" style="cursor: pointer"></i></div>'
+		+					'<div style="float:right; margin-right: .5em;">mest:   <input name="role['+role_id+'][max]" class="span6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>'
+		+					'<div style="float:right; margin-right: .5em;">minnst: <input name="role['+role_id+'][min]" class="span6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>'
+//		+					'<div>'
+//		+						'<input name="role['+role_id+'][closed]" class="btn btn-danger span12" type="button" value="lokað" onclick="$(this).toggleClass(\'btn-danger btn-success\');($(this).val()==\'lokað\')?$(this).val(\'opið\'):$(this).val(\'lokað\');" />'
+//		+					'</div>'
+		+		'<div>'
+		+			'<select name="role['+role_id+'][participants][]" multiple data-placeholder="Veldu þáttakendur" class="select-participants">'
+		+				'<optgroup label="Hópar og flokkar">'
+		+					'{% for group in groups %}'
+		+					'<option value="g{{ group.id }}">{{ group.title }}</option>'
+		+					'{% endfor %}'
+		+				'</optgroup>'
+		+				'<optgroup label="Meðlimir">'
+		+					'{% for member in members %}'
+		+					'<option value="m{{ member.id }}">{{ member }}</option>'
+		+					'{% endfor %}'
+		+				'</optgroup>'
+		+			'</select>'
+		+		'</div>'
+		+	'</div>'
+		+'</div>'; 
+		$('#invite-role-list').append(node).children(':last').hide().fadeIn({ duration: 400, queue: false });
+		// Causes a jump at the end of the slide:
+		//$('#invite-role-list').append(node).children(':last').stop(true, true).hide().slideDown(500).fadeIn({ duration: 400, queue: false });
+		$('.select-participants').chosen();
+	}));
+
+	$('.select-participants').chosen();
+	$('.chosen').chosen();
 });
 </script>
 
@@ -40,72 +159,89 @@ $(document).ready(function(){
 <div id="response"></div>
 
 <div class="row">
+	<div class="span12">
+		<div class="alert" style="padding-top: 4px; padding-bottom: 4px; display:none" id="results"></div>
+	</div>
+</div>
+<div class="row">
 	<div class="span4">
-		<section>
-			<a href="bodun"><span class="icon-edit edit-icon" style="float:right"></span></a>
-			<ul class="nav nav-pills">
-				<li class="active"><a class="success" href="#attending" data-toggle="tab">Mæting</a></li>
-				<li><a class="important" href="#absent" data-toggle="tab">Fjarri</a></li>
-				<li><a class="warning" href="#unclear" data-toggle="tab">Óvíst</a></li>
-				<li><a href="#invitation" data-toggle="tab">Boðun</a></li>
-			</ul><!-- nav-pills -->
+		<section id="event_roles">
+
+			<form>
+
+			<div id="event_roles-data">
+				<ul class="nav nav-pills">
+					<li class="active"><a class="success" href="#attending" data-toggle="tab">Mæting <span id="total_attending">{{ total_attending }}</span></a></li>
+					<li><a class="important" href="#absent" data-toggle="tab">Fjarri <span id="total_absent">{{ total_absent }}</span></a></li>
+					<li><a class="warning" href="#unclear" data-toggle="tab">Óvíst <span id="total_unclear">{{ total_invited }}</span></a></li>
+					<li><a href="#invitation" data-toggle="tab">Boðun</a></li>
+				</ul><!-- nav-pills -->
 	
-			<div class="tab-content">
+				<div class="tab-content" style="overflow:visible">
 
 {# Create a tab pane for each status: #}
 {% for status in status_list %} {# attending absent unclear #}
 <div  class="tab-pane {% if status == "attending" %}active{% endif %}" id="{{ status }}">
+	<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_{{ status }}s" data-toggle_state="hidden" onclick="if($(this).data('toggle_state')=='hidden'){$('.{{ status }}.edit-interface').show();$(this).data('toggle_state','shown');}else{$('.{{ status }}.edit-interface').hide();$(this).data('toggle_state','hidden');}"></i><br />
 	<ul id="{{ status }}_roles" style="list-style: none; margin-left:0;">
+
 	{# List each role for this particular status #}
 	{% for role in role_data %}
-		<li id="role_{{ role.eventrole.role.id }}_entry" style="margin: 0 1em;">
+		<li id="role_{{ role.eventrole.role.id }}_entry" style="margin: 0 1em;" style="whitespace: nowrap; overflow: hidden;">
 			<div class="role_entry_header">
-		{# Display an icon to indicate whether the member is invited and attending or not. #}
+
+		{# Display an icon to indicate whether the member is not invited, attending, absent or hasn't responded yet. #}
 		{% if role.cm_status == "not invited" %}
 				<span id="role_{{ role.eventrole.role.id}}_status_icon" class="icon-circle-blank not-invited"></span>
-		{% else %}
-			{% if role.cm_status == "attending" %}
+		{% elif role.cm_status == "attending" %}
 				<span id="role_{{ role.eventrole.role.id}}_status_icon" class="icon-ok-circle"></span>
-			{% else %}
-				{% if role.cm_status == "absent" %}{#or role.cm_status == "attending elsewhere" %#}
+		{% elif role.cm_status == "absent" %}
 				<span id="role_{{ role.eventrole.role.id}}_status_icon" class="icon-ban-circle"></span>
-				{% else %}
-				{# role.cm_status == "invited" #}
+		{% else %}{# In this case, the status is: "invited" #}
 				<span id="role_{{ role.eventrole.role.id}}_status_icon" class="icon-circle-blank invited"></span>
-				{% endif %}
-			{% endif %}
 		{% endif %}
-				<span class="role_entry-title">{{ role.eventrole.role.title }}</span>
+
+		{# Display the event role title and maximum and minimum number of people required #}
+				<span class="role_entry-title" style="display:inline-block">{{ role.eventrole.role.title }}</span>
 				<span class="role_entry-bttns">{{ role.eventrole.minimum }}〜{% if role.eventrole.maximum == 0 %}∞{% else %}{{ role.eventrole.maximum }}{% endif %}</span>
+
+		{# If the current member is invited, show the response icons/buttons #}
 		{% if not role.cm_status == 'not invited' %}
 				<span style="float: right;" data-eventrole="{{ role.eventrole.id }}" class="response-icons">
-					<span style="float:none;" id="attend-{{ role.eventrole.id }}" data-action="attend" class="respond-icon icon-plus-sign"></span>
-					<span style="float:none;" id="absent-{{ role.eventrole.id }}" data-action="absent" class="respond-icon icon-remove-sign"></span>
+					<span id="nd-{{ role.eventrole.id }}" data-action="attend" data-status="{{ role.cm_status }}" class="respond-icon icon-plus-sign"></span>
+					<span id="nt-{{ role.eventrole.id }}" data-action="absent" data-status="{{ role.cm_status }}" class="respond-icon icon-remove-sign"></span>
 				</span>
 		{% endif %}
 			</div>
+
+		{# Display the members #}
 			<ul id="role_{{ role.eventrole.role.id }}_{{ status }}_members">
 		{% if status == "attending" %}
 			{% for member in role.attendingmembers %}
 				<li id="role_{{ role.eventrole.role.id }}_member_{{ member.user.id }}_entry">
+					<a href="/felagi/{{ member.user.username }}" style="display: inline-block;">{{ member.user.first_name }} {{ member.user.last_name }}</a>
+				{# TODO: condition this on having the rights, if we're going to limit them. #}
+					<span class="change-response {{ status }} edit-interface icon-remove-sign pull-right" style="display: none" data-member_id="{{ member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="absent" data-status="{{ status }}"></span>
+				</li>
+			{% endfor %}
+		{% elif status == "absent" %}
+			{% for member in role.absentmembers %}
+				<li id="role_{{ role.eventrole.role.id }}_member_{{ member.user.id }}_entry">
 					<a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a>
+				{# TODO: condition this on having the rights, if we're going to limit them. #}
+					<span class="change-response {{ status }} edit-interface icon-plus-sign pull-right" style="display: none" data-member_id="{{ member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="attend" data-status="{{ status }}"></span>
 				</li>
 			{% endfor %}
 		{% else %}
-			{% if status == "absent" %}
-				{% for member in role.absentmembers %}
+		{# Here, status is "unclear" #}
+			{% for member in role.invitedmembers %}
 				<li id="role_{{ role.eventrole.role.id }}_member_{{ member.user.id }}_entry">
 					<a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a>
+				{# TODO: condition this on having the rights, if we're going to limit them. #}
+					<span class="change-response {{ status }} edit-interface icon-remove-sign pull-right" style="display: none" data-member_id="{{ member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="absent" data-status="{{ status }}"></span>
+					<span class="change-response {{ status }} edit-interface icon-plus-sign pull-right" style="display: none" data-member_id="{{ member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="attend" data-status="{{ status }}"></span>
 				</li>
-				{% endfor %}
-			{% else %}
-				{# unclear #}
-				{% for member in role.invitedmembers %}
-				<li id="role_{{ role.eventrole.role.id }}_member_{{ member.user.id }}_entry">
-					<a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a>
-				</li>
-				{% endfor %}
-			{% endif %}
+			{% endfor %}
 		{% endif %}
 			</ul>
 		</li>
@@ -116,65 +252,115 @@ $(document).ready(function(){
 
 <!-- Invitations -->
 <div class="tab-pane" id="invitation">
-	<ul style="list-style: none; margin-left:0;">
+	<div id="event_invitations-data">
+		<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_invitations"></i><br />
+		<ul style="list-style: none; margin-left:0;">
 {% for event_role in event.eventrole_set.all %}
-		<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;">{{ event_role.role.title }} <span style="font-size:smaller; color: gray; float: right;">{{ event_role.minimum }}〜{% if event_role.maximum == 0 %}∞{% else %}{{ event_role.maximum }}{% endif %}</span></div>
-			<ul>
+			<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;"><span class="role_entry-title">{{ event_role.role.title }}</span> <span style="font-size:smaller; color: gray; float: right;">{{ event_role.minimum }}〜{% if event_role.maximum == 0 %}∞{% else %}{{ event_role.maximum }}{% endif %}</span></div>
+				<ul>
 	{% for group in event_role.invited_groups.all %}
-				<li><a href="/hopur/{{ group.slug }}">{{ group.title }}</a></li>
+					<li><a href="/hopur/{{ group.slug }}">{{ group.title }}</a></li>
 	{% endfor %}
-			</ul>
-			<ul>
+				</ul>
+				<ul>
 	{% for member in event_role.invited_members.all %}
-				<li><a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a></li>
+					<li><a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a></li>
 	{% endfor %}
-			</ul>
-		</li>
+				</ul>
+			</li>
 {% endfor %}
-	</ul>
-</div>
+		</ul>
+	</div><!-- /#event_invitations-data -->
+	<div id="event_invitations-form" style="display: none">
+		<div class="btn-group pull-right" id="event-invite-button">
+			<button class="btn dropdown-toggle" data-toggle="dropdown">Bæta við hlutverki <span class="caret"></span> </button>
+			<ul id="role-dropdown" class="dropdown-menu">
+   {% for role in event_roles %}
+				<li class="role-dropdown-item" id="{{ role.id}}"><a>{{ role.title }}</a></li>
+   {% endfor %}
+			</ul>
+		</div><!-- /#event-invite-button -->
+     	<div id="invite-role-list" style="clear:both">
 
-			</div><!-- class="tab-content" -->
+	{% for event_role in event.eventrole_set.all %}
+			<div class="role_entry">
+				<div class="role_entry-title" style="float:left">{{ event_role.role.title }}</div>
+				<input type="hidden" name="role[{{ event_role.role.id }}][id]" value="{{ event_role.role.id }}" />
+				<div style="float:right"><i id="{{ event_role.role.id }}" class="delete-role-entry icon-remove-sign pull-right" style="cursor: pointer"></i></div>
+				<div style="float:right; margin-right: .5em;">mest:   <input name="role[{{ event_role.role.id }}][max]" class="span6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>
+				<div style="float:right; margin-right: .5em;">minnst: <input name="role[{{ event_role.role.id }}][min]" class="span6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>
+				<div>
+					<select name="role[{{ event_role.role.id }}][participants][]" multiple data-placeholder="Veldu þáttakendur" class="select-participants">
+						<optgroup label="Hópar og flokkar">
+		{% for group in groups %}
+							<option value="g{{ group.id }}"{% if group in event_role.invited_groups.all %} selected="selected"{% endif %}>{{ group.title }}</option>
+		{% endfor %}
+						</optgroup>
+						<optgroup label="Meðlimir">
+		{% for member in members %}
+							<option value="m{{ member.id }}"{% if member in event_role.invited_members.all %} selected="selected"{% endif %}>{{ member }}</option>
+		{% endfor %}
+						</optgroup>
+					</select>
+				</div>
+       		</div><!--/#role-entry-->
+	{% endfor %}
+
+       	</div><!--invite-role-list-->
+      
+		<input type="reset" value="Hætta við" class="span2 btn toggle-form" data-form_id-prefix="event_invitations" onclick="$('#results').slideUp();" />
+		<input type="submit" value="Vista" class="span2 btn btn-primary oggle-form" data-form_id-prefix="event_invitations" />
+	</div><!-- /#event_invitations-form -->
+</div><!-- /.tab-pane#invitation -->
+
+				</div><!-- class="tab-content" -->
+			</div><!-- id="event_roles-data" -->
+
 		</section>
 	</div><!-- class="span4" -->
+
 
 	<div class="span8">
 		<section id="event_description">
 			<div id="event_description-data">
 				<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_description"></i>
-				<date class="pull-right">{{ event.date_time_begin }}〜{{ event.date_time_end }}</date>
+				<date class="pull-right">{{ event.date_time_begin|date:"Y-m-d H:i" }}〜{{ event.date_time_end|date:"Y-m-d H:i" }}</date>
+<div>
 				<h2>{{ event.title }} – <span style="font-size: smaller; color: gray;">{{ event.event_type.title|lower }}</span></h2>
 				<div style="margin:0 .5em .5em .5em;">{{ event.description|textile }}</div>
+</div>
 			</div>
 	{# TODO: Should we add some permissions to access the edit form, or do we trust people not to mess things up too much? #}
 			<div id="event_description-form" style="display: none">
-				<input type="hidden" name="event_id" id="event_id" value="" />
+				<input type="hidden" name="event_id" id="event_id" value=" {{ event.id }}" />
 	
 				<div class="row-fluid">
-					<div class="span5">Titill{{ form.title }}</div>
-					<div class="span2">
+					<div class="span5"><input name="title" class="span12" type="text" value="{{ event.title }}"></input></div>
+						<div class="span2">
 						<select id="event_type" name="event_type">
 		{% for type in event_types %}
-							<option value="{{ type.pk }}">{{ type.title }}</option>
+							<option value="{{ type.pk }}"{% if type.pk == event.event_type.id %} selected="selected"{% endif %}>{{ type.title }}</option>
 		{% endfor %}
 						</select>
 					</div>
-					<div class="span2">upphaf{{ form.date_time_begin }}</div>
-					<div class="span2">endir{{ form.date_time_end }}</div>
+					<div class="span2">
+						<input id="id_date_time_begin" class="hasDatepicker" type="text" name="date_time_begin" placeholder="Upphaf" value="{{ event.date_time_begin|date:"Y-m-d H:i" }}"></input>
+					</div>
+					<div class="span2">
+						<input id="id_date_time_end" class="hasDatepicker" type="text" name="date_time_end" placeholder="Lok" value="{{ event.date_time_end|date:"Y-m-d H:i" }}"></input>
+					</div>
 					<!-- Possibly allow duplication, but multiple events is probably overdoing it ...
 					<a class="btn span1" id="add_dates_btn" onclick="$('#add_days').slideToggle();$('#add_days_icon').toggleClass('icon-minus');"><i id="add_days_icon" class="icon-plus"></i></a>
 					-->
 				</div><!-- /.row-fluid -->
 	
 				<div class="row-fluid">
-					Lýsing
-					{{ form.description }}
+					<textarea class="span12" id="event_description-textarea" name="description">{{ event.description }}</textarea>
 				</div><!-- /.row-fluid -->
 				<div style="text-align: right">
-					{# TODO: The cancel button should reset the form and toggle back to displaying the data #}
-					<input type="button" value="Hætta við" class="span2 btn toggle-form toggle-form" data-form_id-prefix="event_description" />
+					<input type="reset" value="Hætta við" class="span2 btn toggle-form" data-form_id-prefix="event_description" onclick="$('#results').slideUp();" />
 					{# TODO: The submit button should post the data and only on success toggle back to displaying the data #}
-					<input type="button" value="Vista" class="span2 btn btn-primary toggle-form" data-form_id-prefix="event_description" />
+					<input type="submit" value="Vista" class="span2 btn btn-primary oggle-form" data-form_id-prefix="event_description" />
 				</div>
 			</div><!-- /#event_description-form -->
 		</section>
@@ -228,6 +414,7 @@ $(document).ready(function(){
 				</div><!-- /#event_location-map -->
 
 			</div>
+			</form>
 		</section>
 	</div>
 </div><!-- /.row -->

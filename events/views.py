@@ -5,7 +5,7 @@ from members.models import Member
 from groups.models import Group
 from events.models import Role, EventType, Event, EventRole, EventCreation, EventRoleForm, GroupInvitation, MemberInvitation, MemberResponse
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import get_object_or_404, render_to_response
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 
 from django.utils import timezone
@@ -50,6 +50,8 @@ def list_events(request):
 	# Otherwise it's just a normal request for the events page.
 	recent_events_list = Event.objects.filter(date_time_begin__lte=now).order_by('-date_time_begin')[:20]
 	coming_events_list = Event.objects.filter(date_time_begin__gte=now).order_by('date_time_begin')[:20]
+	#import pprint
+	#pprint.pprint(coming_events_list)
 	# TODO: Add incidents?
 	# recent_incidents_list = Incident.objects.filter(date_time_begin__lte=now).order_by('-date_time_begin')[:20]
 	return render_to_response('events/events_index.html', { 'recent_events_list': recent_events_list, 'coming_events_list': coming_events_list })
@@ -57,13 +59,70 @@ def list_events(request):
 from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
+def event_response_new(request):
+	print 'hi'
+	if not request.is_ajax():
+		return False
+	else:
+		# Get the necessary POST data:
+		member_id = request.POST['member_id']
+		eventrole_id = request.POST['eventrole_id']
+		action = request.POST['action']
+		if action == 'attend':
+			act = 'Y'
+		elif action == 'absent':
+			act = 'N'
+
+		# Get the relevant objects:
+		member = Member.objects.get(id=member_id)
+		event_role = get_object_or_404(EventRole, id=eventrole_id)
+
+		# See if there already exists a member response:
+		try:
+			mr = MemberResponse.objects.get(event_role=event_role, member=member)
+			print '>> MemberResponse {} found'.format(mr)
+			mr.response=act
+		# Otherwise create a new one:
+		except:
+			mr = MemberResponse(event_role=event_role, member=member, response=act)
+			print '>> No MemberResponse found. Creating a new one: {}'.format(mr)
+
+		# Clean and save.
+		try:
+			mr.clean_fields()
+			mr.save()
+			print '>> SAVED'
+		except:
+			print '>> FAILED'
+			return HttpResponse('Failed: could not save member response')
+
+		# Return data to template.
+		data = {
+			'user_id': member.user.id,
+			'user_name': member.__unicode__(),
+			'username': member.user.username,
+			'event_id': event_role.event.id,
+			'role_id': event_role.role.id,
+			'eventrole_id': event_role.id,
+			'action': action,
+		}
+		print 'Data: {}'.format(data)
+		jsondata = json.dumps(data)
+		print 'JSON: ',jsondata
+		print 'XXXXX responding'
+		return HttpResponse(json.dumps(data))##, mimetype='application/javascript')
+
+@csrf_exempt
 def event_response(request):
 	print 'in event_response'
-	if not request.user.is_authenticated():
-		cm = User.objects.get(id=2)
-	else:
-		cm = request.user.member
-	print cm
+	#if not request.user.is_authenticated():
+		#cm = User.objects.get(id=2)
+	#else:
+		#cm = request.user.member
+	# Current member:
+	cm = request.user.member
+	#print cm
+
 	if request.is_ajax():
 		#import pprint
 		action = request.POST['action']
@@ -77,10 +136,6 @@ def event_response(request):
 		print 'eventrole.id: {}'.format(eventrole_id)
 
 		print 'OK, now for my second act...'
-		#TODO: read current member info from login!!!
-		#mr = MemberResponse(event_role__id=eventrole_id, member=cm, response='Y')
-		#event = get_object_or_404(Event, id=pk)
-		#print event
 		event_role = get_object_or_404(EventRole, id=eventrole_id)
 		#event_role = EventRole.objects.get(event_role__id=14)
 		print event_role.id
@@ -141,31 +196,41 @@ def display_event(request, pk):
 	#			add member to the list
 	role_data = []
 	
+	total_attending = set()
+	total_absent    = set()
+	total_invited   = set()
+
 	for eventrole in EventRole.objects.filter(event=event):
-		print 'On EventRole {}:'.format(eventrole)
+	#	print 'On EventRole {}:'.format(eventrole)
 		attending = []
 		absent = []
 		for memberresponse in eventrole.memberresponse_set.all():
-			print '> memberresponse: {}'.format(memberresponse)
+	#		print '> memberresponse: {}'.format(memberresponse)
 			if memberresponse.response == 'Y':
 				attending.append(memberresponse.member)
 			if memberresponse.response == 'N':
 				absent.append(memberresponse.member)
-		print '> Attending members {}:'.format(attending)
-		print '> Absent members: {}'.format(absent)
+	#	print '> Attending members {}:'.format(attending)
+	#	print '> Absent members: {}'.format(absent)
 		invitedmembers = []
-		print '>> Members invited through groups'
-		for member in Member.objects.filter(group__groupinvitation__event_role=eventrole).filter(group__groupinvitation__event_role__event=event):
-			print '>>   {}'.format(member.user.username)
+	#	print '>> Members invited through groups'
+		for member in Member.objects.filter(group__groupinvitation__event_role=eventrole):#filter(group__groupinvitation__event_role__event=event):
+	#		print '>>   {}'.format(member.user.username)
 			if member not in invitedmembers and member not in attending and member not in absent:
 				invitedmembers.append(member)
-				print '++   {}'.format(member)
-		print '>> Members invited directly'
-		for member in Member.objects.filter(memberinvitation__event_role=eventrole).filter(memberinvitation__event_role__event=event):
-			print '>>   {}'.format(member)
+	#			print '++   {}'.format(member)
+	#	print '>> Members invited directly'
+		for member in Member.objects.filter(memberinvitation__event_role=eventrole):#filter(memberinvitation__event_role__event=event):
+	#		print '>>   {}'.format(member)
 			if member not in invitedmembers and member not in attending and member not in absent:
 				invitedmembers.append(member)
-				print '++   {}'.format(member)
+	#			print '++   {}'.format(member)
+
+		# Add these to the total:
+		total_attending.update(attending)
+		print 'Total attending: {}'.format(total_attending)
+		total_absent.update(absent)
+		total_invited.update(invitedmembers)
 
 		# Check to see whether the current member has responded or is invited to a particular role.
 		cm_status = 'not invited'
@@ -175,7 +240,17 @@ def display_event(request, pk):
 			cm_status = 'absent'
 		if cm in attending:
 			cm_status = 'attending'
+
 		role_data.append({ 'eventrole': eventrole, 'invitedmembers': invitedmembers, 'absentmembers': absent, 'attendingmembers': attending, 'cm_status': cm_status, })
+
+	# Pass possible roles and event types so that we can edit the event.
+	event_types = EventType.objects.all()
+	#print 'EVNTTYPES: {}'.format(event_types)
+	#for etype in event_types:
+		#print etype.title
+		#print etype.pk
+	event_roles = Role.objects.all()
+	#print 'EVENTROLES: {}'.format(event_roles)
 
 # TODO: Currently members can sign up for multiple roles. This is probably a good thing as members may be both a driver and participant and we want to log each role.
 #	# Now let's make sure that a member who is attending a role doesn't get invited
@@ -188,9 +263,14 @@ def display_event(request, pk):
 #				if tmprole['cm_status'] == 'invited' or tmprole['cm_status'] == 'absent':
 #					tmprole['cm_status'] = 'attending elsewhere'
 #			role['cm_status'] = 'attending'
-	import pprint
-	pprint.pprint(role_data)
-	return render_to_response('events/event_page.html', { 'event': event, 'cm': cm, 'role_data': role_data, 'status_list': ['attending', 'absent', 'unclear'] })
+	#import pprint
+	#pprint.pprint(role_data)
+
+	# Add the groups and members.
+	members = Member.objects.all()
+	groups = Group.objects.all()
+
+	return render_to_response('events/event_page.html', { 'event': event, 'cm': cm, 'role_data': role_data, 'status_list': ['attending', 'absent', 'unclear'], 'event_types': event_types, 'event_roles': event_roles, 'total_attending': len(total_attending), 'total_absent': len(total_absent), 'total_invited': len(total_invited), 'members': members, 'groups': groups, })
 
 def display_or_save_event_form(request):
 	event_types = EventType.objects.all()
@@ -209,6 +289,7 @@ def display_or_save_event_form(request):
 #TODO: Do we need to remove orphaned invitations once an EventRole has been removed?
 #TODO: Reorder these try-s to shorten them so that the exceptions make more sense.
 def save_event(request):
+	print 'Saving event'
 	if request.is_ajax() or True:
 		print 'Is AJAX'
 		# TODO: Add handler for these below. They are required and must be submitted or else the form will not validate. Or perhaps the clean_fields() exception is enough...?
@@ -218,11 +299,36 @@ def save_event(request):
 		print 'Hér kemur JSON útgáfan:'
 		data = json.loads(request.POST['data'])
 		pprint.pprint(data)
+
+		# Sanitise some of the data and return messages if it fails.
+		# The title must be non-zero and no longer than ... TODO!!
 		t = data['title']
+		if t == "":
+			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Title missing.', }))
+		# There are no restrictions on the description field other than being cleaned. It may be blank and arbitrarily long.
 		d = data['description']
+		# The dates must be supplied and the beginning must precede the end.
+		if data['date_time_begin'] == "":
+			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Beginning date missing.', }))
 		dtb = timezone.make_aware(parser.parse(data['date_time_begin']),timezone.get_default_timezone())
-		dte = timezone.make_aware(parser.parse(data['date_time_end']),timezone.get_default_timezone())
+		if data['date_time_end'] == "":
+			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'End date missing.', }))
+		try:
+			dte = timezone.make_aware(parser.parse(data['date_time_end']),timezone.get_default_timezone())
+			print 'Hæ'
+		except:
+			return HttpResponse(jseon.dumps({ 'type': 'error', 'message': 'Not a valid datetime', }))
+		print 'XXX'
+		print dte
+		print 'XXX'
+		if dte <= dtb:
+			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'The event start time must precede the end.', }))
+		# The event-type must be supplied.
 		et_id = data['event_type']
+		if et_id== "":
+			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'No event type supplied.', }))
+
+		print 'Nú eru öll gögnin komin. Athugum hvort event_id sé gefið.'
 		try:
 			event_id = data['event_id']
 			if event_id == '':
@@ -236,7 +342,7 @@ def save_event(request):
 				event.date_time_begin = dtb
 				event.date_time_end = dte
 				event.event_type_id = et_id
-				#return HttpResponse('Event fields updated.')
+
 			# Now save the event
 			try:
 				event.clean_fields()
@@ -245,7 +351,7 @@ def save_event(request):
 				print (vars(event))
 				print '--------------------'
 			except:
-				return HttpResponse ("Hello, world. Could not save event.")
+				return HttpResponse (json.dumps({ 'type': 'error', 'message': 'Could not save event.'}))
 
 			# Now that the event has been taken care of, let's sort out the event roles etc.
 			# Flow:
@@ -324,7 +430,7 @@ def save_event(request):
 								eventrole.save()
 								print 'eventrole saved: {}.'.format(eventrole)
 							except:
-								return HttpResponse('Hello, world. Could not update eventrole max/min numbers.')
+								return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not update eventrole max/min numbers.' }))
 					except: #else
 						# Since there is no existing EventRole, we need to:
 						#  1. Create an EventRole, and save it as eventrole.
@@ -337,7 +443,7 @@ def save_event(request):
 							eventrole.save()
 							print 'eventrole saved: {}.'.format(eventrole)
 						except:
-							return HttpResponse('Hello, world. Could not save eventrole.')
+							return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not save eventrole.' }))
 
 					# Now that we have the eventrole and it has been stripped of its
 					# unwanted participatns, let's add the wanted ones.
@@ -390,19 +496,7 @@ def save_event(request):
 						print 'No role exists. All good.'
 				print ' ..... '
 		except:
-			return HttpResponse("Hello, world. Could not create event.")
-		return HttpResponse(event.id)
+			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not create event', }))
+		return HttpResponse(json.dumps({ 'type': 'success', 'event_id': event.id }))
 	else:
-		return HttpResponse("Hello, world. Not AJAX request.")
-
-#def group_save(request):
-#	if request.is_ajax():
-#		eventId = request.POST['eid']
-#		roleId = request.POST['rid']
-#		group = request.POST['grp']
-#		member = request.POST['grp']
-#		mininum = request.POST['min']
-#		maximum = request.POST['max']
-#	else:
-#		# Perhaps just merge this with the standard view response.
-#		return HttpResponse("Group save request isn't an AJAX request.")
+		return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Hello, world. Not AJAX request.'}))

@@ -8,6 +8,8 @@
 <link type="text/css" rel="stylesheet" href="/static/js/css/ui-lightness/jquery-ui-1.8.21.custom.css" />
 <script type="text/javascript" src="/static/js/chosen.jquery.min.js"></script>
 <link type="text/css" rel="stylesheet" href="/static/css/chosen.css" />
+<script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
+<script type="text/javascript" src="/static/js/tsar.events.js"></script>
 <style>
 	/* css for timepicker */
 	.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
@@ -34,14 +36,8 @@
 /*	#id_date_time_begin, #id_date_time_end { display: inline; width: 8em; }*/
 	#id_title, #event_type, #id_date_time_begin, #id_date_time_end { width: 100% !important; }
 	
-	.role_entry { background-color: #efefef; padding: .4em; margin-bottom: .4em; }
-	.role_entry-title { font-size: 1.6em; padding-top: .3em; }
-
-	//#invite-role-list { width: 00p; }
 </style>
 <script type="text/javascript">
-
-//$( "#datepicker" ).datepicker( $.datepicker.regional[ "us" ] );
 
 $(document).ready(function(){
 // Datetimepicker
@@ -65,10 +61,6 @@ $(document).ready(function(){
   	      }
 		}
 
-	//	onClose: function( selectedDate ) {
-	//		$( "#id_date_time_end" ).datetimepicker( "option", "minDate", selectedDate );
-	//		//$( "#id_date_time_end" ).datetimepicker( "option", "minDateTime", new Date($(this).datepicker('getDate').getTime()));
-	//	}
 	});
 	$('#id_date_time_end').datetimepicker({
 		onClose: function (selectedDateTime){
@@ -87,17 +79,7 @@ $(document).ready(function(){
 				startDateTextBox.val(selectedDateTime);
 			}
 		}
-//		onClose: function( selectedDate ) {
-//			console.log(selectedDate);
-//			test = new Date(selectedDate);
-//			console.log(test);
-//			$( "#id_date_time_begin" ).datetimepicker( "option", "maxDateTime", test );
-//			//$( "#id_date_time_begin" ).datetimepicker( "option", "maxDateTime", selectedDate );
-//			//$( "#id_date_time_begin" ).datetimepicker( "option", "maxDateTime", new Date($(this).datepicker('getDate').getTime()));
-//		}
 	});
-//onClose: function( selectedDateTime ) { $( "#id_date_time_begin" ).datetimepicker( "option", "maxDateTime", selectedDateTime );} });
-//onClose: function( selectedDateTime ) { $( "#id_date_time_end" ).datetimepicker( "option", "minDateTime", selectedDateTime );} });
 
 // Chosen UI
 	$('#role-groups-id_template').chosen();
@@ -107,60 +89,16 @@ $(document).ready(function(){
 	$('#tag-location').chosen();
 	$('#tag-equipment').chosen();
 
-// Bootstrap styling
-	//$('#id_title').addClass('span6');
-	//$('#event_type').addClass('span2');
-	//$('#id_date_time_begin').addClass('span2');
-	//$('#id_date_time_end').addClass('span2');
-
-//	$('#add_days').addClass('span6');
-
 	$('#id_description').addClass('span12');
 
-
-// Serialise the input data and submit the form.
-	$('form').submit(function() {
-		csrf = "{{ csrf_token|escapejs }}"
-		console.log('serialising');
-		json = JSON.stringify($(this).serializeJSON());
-		//console.log(json);
-		var posting = $.post("/vidburdur/nyskraning/vista", {'csrfmiddlewaretoken': csrf, 'data': json});
-		posting.done(function(data) {
-			if (isNaN(parseInt(data))) {
-				print_result('Error: '+data,'alert-error');
-			} else {
-				$('#event_id').val(data);
-				print_result('Viðburður númer '+data+' búinn til. Sjá <a href="/vidburdur/'+data+'">síðu viðburðarins</a>','alert-success');
-			}
-		});
-		return false;
-	});
-
-	function print_results(message){
-		$('#results').show()
-		$('#results').html(message)
-	}
+// Place the CSRF token in a js variable so that the form handler can send it to the view.
+	//csrf = "{{ csrf_token|escapejs }}";
+	var csrftoken = $.cookie('csrftoken');
+	console.log('CSRF (on page):'+csrftoken);
 
 }); //END READY -----------------------
 
-	function print_result(message,type){
-		$('#results').slideDown()
-		$('#results').html(message)
-		if (type) {
-			$('#results').removeClass()
-			$('#results').addClass('alert '+type)
-		}
-	}
-
-	$('.delete-role-entry').live('click',(function(){
-		role_id = $(this).attr('id');
-		role_title = $(this).parents('.role_entry').find('.role_entry-title').html();
-		$(this).parents('.role_entry').fadeOut(300).slideUp({ duration: 500, queue: false });
-		$(this).parents('.role_entry').remove();
-		$('#role-dropdown').append('<li id="'+role_id+'" class="role-tmp"><a>'+role_title+'</a></li>');
-	}));
-
-	$('.role-tmp').live('click',(function(){
+	$('.role-dropdown-item').live('click',(function(){
 		role_id = $(this).attr('id');
 		role_title = $(this).children('a').html();
 		$(this).remove();
@@ -194,6 +132,7 @@ $(document).ready(function(){
 		//$('#invite-role-list').append(node).children(':last').stop(true, true).hide().slideDown(500).fadeIn({ duration: 400, queue: false });
 		$('.select-participants').chosen();
 	}));
+
 </script>
 {% endblock %}
 
@@ -217,12 +156,12 @@ $(document).ready(function(){
 				<button class="btn dropdown-toggle" data-toggle="dropdown">Bæta við hlutverki <span class="caret"></span> </button>
 				<ul id="role-dropdown" class="dropdown-menu">
 	{% for role in event_roles %}
-					<li class="role-tmp" id="{{ role.id}}"><a>{{ role.title }}</a></li>
+					<li class="role-dropdown-item" id="{{ role.id}}"><a>{{ role.title }}</a></li>
 	{% endfor %}
 				</ul>
 			</div><!-- /#event-invite-button -->
 		
-			<h2 id="event-invite-header">Boðun</h2>
+			<h3 id="event-invite-header">Boðun</h3>
 		
 			<div id="invite-role-list">
 			</div><!--invite-role-list-->
@@ -232,7 +171,7 @@ $(document).ready(function(){
 	<div class="span8"><!-- Contains the next three sections: #description, #tags, #location -->
 		<section id="description" tyle="overflow: visible">
 	
-			<input type="hidden" name="event_id" id="event_id" value="" />
+			<input type="hidden" name="event_id" id="event_id" value="{{ event.pk }}" />
 	
 	<!--
 		<h2>Lýsing</h2>
@@ -291,7 +230,7 @@ $(document).ready(function(){
 	<!-- TAGS -->
 		<section id="tags" style="overflow: visible">
 			<input id="event-tag-button" type="button" class="btn" style="float: right" value="Merkja" data-toggle="button" onclick="$(this).toggleClass('active');$('#merki-content').slideToggle();" />
-			<h2 id="event-tag-header">Merki</h2>
+			<h3 id="event-tag-header">Merki</h3>
 			<div id="merki-content" style="display:none">
 				<table style="width: 100%">
 					<tr>
@@ -369,7 +308,7 @@ $(document).ready(function(){
 			<div style="float:right; vertical-align: bottom;">
 				<input id="event-geo-button" type="button" class="btn" data-toggle="button" onclick="$(this).toggleClass('active');$('#stadsetning-content').slideToggle();" value="Staðsetja" />
 			</div>
-			<h2 id="event-geo-header">Staðsetning</h2>
+			<h3 id="event-geo-header">Staðsetning</h3>
 			<div id="stadsetning-content" style="display:none">
 		
 				<div style="float:right;"><img src="/static/img/hengill-husmuli.png" width="200" height="200" alt="Kort af svæðinu." /></div>
