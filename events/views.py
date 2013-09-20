@@ -59,13 +59,70 @@ def list_events(request):
 from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
+def event_response_new(request):
+	print 'hi'
+	if not request.is_ajax():
+		return False
+	else:
+		# Get the necessary POST data:
+		member_id = request.POST['member_id']
+		eventrole_id = request.POST['eventrole_id']
+		action = request.POST['action']
+		if action == 'attend':
+			act = 'Y'
+		elif action == 'absent':
+			act = 'N'
+
+		# Get the relevant objects:
+		member = Member.objects.get(id=member_id)
+		event_role = get_object_or_404(EventRole, id=eventrole_id)
+
+		# See if there already exists a member response:
+		try:
+			mr = MemberResponse.objects.get(event_role=event_role, member=member)
+			print '>> MemberResponse {} found'.format(mr)
+			mr.response=act
+		# Otherwise create a new one:
+		except:
+			mr = MemberResponse(event_role=event_role, member=member, response=act)
+			print '>> No MemberResponse found. Creating a new one: {}'.format(mr)
+
+		# Clean and save.
+		try:
+			mr.clean_fields()
+			mr.save()
+			print '>> SAVED'
+		except:
+			print '>> FAILED'
+			return HttpResponse('Failed: could not save member response')
+
+		# Return data to template.
+		data = {
+			'user_id': member.user.id,
+			'user_name': member.__unicode__(),
+			'username': member.user.username,
+			'event_id': event_role.event.id,
+			'role_id': event_role.role.id,
+			'eventrole_id': event_role.id,
+			'action': action,
+		}
+		print 'Data: {}'.format(data)
+		jsondata = json.dumps(data)
+		print 'JSON: ',jsondata
+		print 'XXXXX responding'
+		return HttpResponse(json.dumps(data))##, mimetype='application/javascript')
+
+@csrf_exempt
 def event_response(request):
 	print 'in event_response'
-	if not request.user.is_authenticated():
-		cm = User.objects.get(id=2)
-	else:
-		cm = request.user.member
-	print cm
+	#if not request.user.is_authenticated():
+		#cm = User.objects.get(id=2)
+	#else:
+		#cm = request.user.member
+	# Current member:
+	cm = request.user.member
+	#print cm
+
 	if request.is_ajax():
 		#import pprint
 		action = request.POST['action']
@@ -79,10 +136,6 @@ def event_response(request):
 		print 'eventrole.id: {}'.format(eventrole_id)
 
 		print 'OK, now for my second act...'
-		#TODO: read current member info from login!!!
-		#mr = MemberResponse(event_role__id=eventrole_id, member=cm, response='Y')
-		#event = get_object_or_404(Event, id=pk)
-		#print event
 		event_role = get_object_or_404(EventRole, id=eventrole_id)
 		#event_role = EventRole.objects.get(event_role__id=14)
 		print event_role.id

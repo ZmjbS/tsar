@@ -67,6 +67,34 @@ function respond_to_event(button, pagetype) {
 					$('#role_'+obj.role_id+'_status_icon').addClass('icon-ban-circle');
 				}
 
+		// Fix the total number of attendees.
+      status=$(button).data('status');
+		console.log(status);
+      $('#total_'+status).text(parseInt($('#total_'+status).text()-1));
+
+      switch (action) {
+         case 'attend':
+            number=parseInt($('#total_attending').text());
+            number++
+            $('#total_attending').text(number);
+            break;
+         case 'absent':
+            number=parseInt($('#total_absent').text());
+            number++
+            $('#total_absent').text(number);
+            break;
+      }
+
+		// Fix the button current status:
+      switch (action) {
+         case 'attend':
+				$('.respond-icon').data('status','attending');
+            break;
+         case 'absent':
+				$('.respond-icon').data('status','absent');
+            break;
+      }
+
 				// ==================================================== End of "Event page"
 				break;
 
