@@ -98,7 +98,7 @@ $(document).ready(function(){
   });
 /////////// END SNIPPET ////////////////////////
 
-	$('#all-members-list').chosen();
+	$('#non_members_list').chosen();
 	$("#group_members_list").tablesorter({
 		sortList: [[0,0], [1,0]],
 		textSorter : sortBy,
@@ -110,6 +110,36 @@ $(document).ready(function(){
 		},
 	}); 
 });
+
+	$('.remove_member_entry').live('click',(function(){
+		member=$(this).parents('.membership_entry').data('member');
+		member_id=$(this).parents('.membership_entry').data('member_id');
+		console.log('removing member '+member+' with id '+member_id);
+      $(this).parents('.membership_entry').fadeOut(300).slideUp({ duration: 500, queue: false });
+      $(this).parents('.membership_entry').remove();
+      $('#non_members_list').append('<option>'+member+'</option>');
+      $('#non_members_list').trigger('liszt:updated');
+   }));
+
+	$('#add_members').live('click', function() {
+		console.log('adding members');
+		new_members = $('#non_members_list option:selected').map(function() { return $(this).text(); }).get();
+		console.log('new members: '+new_members);
+		$('#non_members_list option:selected').each( function() {
+			//TODO: It might be best to submit these to the view and have it return the necessary data if adding the members to the group is successful.
+			//member=$(this).parents('.membership_entry').data('member');
+			//member_id=$(this).parents('.membership_entry').data('member_id');
+			member=$(this).val();
+			member_id=2;
+			username=member;
+			phone="555 1234";
+			email="dæmi@dæmi.is";
+			console.log('add member: '+member);
+			$('#group_members_list tbody').append('<tr class="membership_entry" data-member="'+member+'" data-member_id="'+member_id+'"><td><input class="edit-interface" type="checkbox" /></td> <td><a href="/felagi/'+username+'">'+member+'</a></td> <td>'+phone+'</td> <td>'+email+'</td> <td><input class="edit-interface-checkbox" type="checkbox" checked="checked" /></td><!-- A --> <td><input class="edit-interface-checkbox" type="checkbox" /></td><!-- B --> <td><input class="edit-interface-checkbox" type="checkbox" /></td><!-- C --> <td><span class="icon-remove-sign edit-interface remove_member_entry"></span> </td><!-- C --></tr>');
+			$('#non_members_list option:selected').remove();
+      	$('#non_members_list').trigger('liszt:updated');
+		});
+	});
 </script>
 {% endblock %}
 
@@ -131,13 +161,14 @@ $(document).ready(function(){
 			<h2>Meðlimir
 				<input type="button" class="btn pull-right btn-small" value="Sýsla" style="vertical-align: bottom;" onclick="$('.edit-interface').toggle('600');$(this).toggleClass('btn-primary');($(this).val()=='Lokið')?$(this).val('Sýsla'):$(this).val('Lokið');$('.edit-interface-checkbox').prop('disabled',!$('.edit-interface-checkbox').prop('disabled'));" />
 			</h2>
+<form>
 			<table id="group_members_list" class="table-hover table-condensed table tablesorter">
 				<thead>
 					<tr><th style="width: 1.1em;"><input class="edit-interface" type="checkbox"></th><th>Nafn</th><th>Sími</th><th>Tölvupóstfang</th><th>A</th><th>B</th><th>C</th><th style="width:1.1em;"></th></tr>
 				</thead>
 				<tbody>
 {% for member in group.members.all %}
-					<tr>
+					<tr class="membership_entry" data-member="{{ member }}" data-member_id="{{ member.id }}">
 	<td><input class="edit-interface" type="checkbox" /></td>
 	<td><a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a></td>
 	<td>{% for phone in member.phone_set.all %}{% if phone.is_primary %}{{ phone.number }}{% endif %}{% endfor %}</td>
@@ -145,7 +176,7 @@ $(document).ready(function(){
 	<td><input class="edit-interface-checkbox" type="checkbox" checked="checked" disabled="disabled" /></td><!-- A -->
 	<td><input class="edit-interface-checkbox" type="checkbox" disabled="disabled" /></td><!-- B -->
 	<td><input class="edit-interface-checkbox" type="checkbox" disabled="disabled" /></td><!-- C -->
-	<td><span class="icon-remove-sign edit-interface"></span> </td><!-- C -->
+	<td><span class="icon-remove-sign edit-interface remove_member_entry"></span> </td><!-- C -->
 					</tr>
 {% endfor %}
 				</tbody>
@@ -158,15 +189,16 @@ $(document).ready(function(){
 		<input type="button" class="btn btn-primary" value="Vista" />
 	</div>
 -->
-			<div class="input-append edit-interface" style="width: 100%">
-				<select id="all-members-list" multiple data-placeholder="Nafn">
+			<div class="input-append dit-interface" style="width: 100%">
+				<select id="non_members_list" name="new_members[]" multiple data-placeholder="Nafn">
 			{% for member in members %}
 					<option>{{ member }}</option>
 			{% endfor %}
 				</select>
 	<!--<input type="text" value="Nafn" />-->
-				<input type="button" class="btn btn-rimary" value="Bæta við" />
+				<input id="add_members" type="button" class="btn btn-rimary" value="Bæta við" />
 			</div>
+</form>
 <!--
 </div>
 -->
