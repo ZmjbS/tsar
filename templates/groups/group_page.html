@@ -12,7 +12,7 @@
 <style>
 //	.edit-interface { display: none; }
 	#all_members_list_chzn { width: 80% !important; }
-	.unsaved_entry { background-color: green; }
+	.unsaved_entry { background-color: #edb; }
 </style>
 <script type="text/javascript">
 $(document).ready(function(){
@@ -99,18 +99,14 @@ $(document).ready(function(){
   });
 /////////// END SNIPPET ////////////////////////
 
-	members = {};
-{% for member in group.members.all %}
-	members[{{ member.id }}]='{{ member }}';
-{% endfor %}
-
-	non_members = {};
-{% for member in members %}
-	non_members[{{ member.id }}]='{{ member }}';
-{% endfor %}
-
+	// Once the document is ready, hide the edit-interface elements. TODO: only include this when the elements are included (i.e. when the user is a group manager).
 	$('.edit-interface').hide();
 	$('.form-edit-icon').show();
+
+	/*
+	 * We have a drop-down list of non-members to add members to the group.
+	 */
+	// We use the jQuery Chosen for the member selection, style it and add tablesorter to make it sortable:
 	$('#non_members_list').chosen();
 	$('#non_members_list_chzn').css('float', 'right');
 	$("#group_members_list").tablesorter({
@@ -124,27 +120,42 @@ $(document).ready(function(){
 		},
 	}); 
 
-	/* When a member is chosen from the list of non-members, we have to add them to the group members list.
-	 * If they are already a member (the user may have been removed and just added back), show the hidden entry.
-	 * If they are not yet a member then add an entry and give it an "unsave_entry" class.
+	/*
+	 * When a member is chosen from the list of non-members, we have to add them to the group members list.
 	 */
 	$('#non_members_list').chosen().change( function() {
 //		console.log('adding members');
 		member_id=$(this).val();
 		console.log('Add member_id: '+member_id);
 		if (members[member_id]) {
-			$('[value='+member_id+']').show();
+			// If they are already a member (the user may have been removed and just added back), show the hidden entry.
+			$('[data-member_id='+member_id+']').show();
 		} else {
+			// If they are not yet a member then add an entry and give it an "unsave_entry" class.
 			member=non_members[$(this).val()];
 			username=member;
 			phone="555 1234";
 			email="dæmi@dæmi.is";
 			$('#group_members_list tbody').prepend('<tr class="membership_entry unsaved_entry" data-member="'+member+'" data-member_id="'+member_id+'"><td><input class="edit-interface" type="checkbox" /></td> <td><a href="/felagi/'+username+'">'+member+'</a></td> <td>'+phone+'</td> <td>'+email+'</td> <td><input class="edit-interface-checkbox" type="checkbox" checked="checked" /></td><!-- A --> <td><input class="edit-interface-checkbox" type="checkbox" /></td><!-- B --> <td><input class="edit-interface-checkbox" type="checkbox" /></td><!-- C --> <td><span class="icon-remove-sign edit-interface remove_member_entry"></span> </td><!-- C --></tr>');
-			$('#non_members_list option:selected').remove();
-      	$('#non_members_list').trigger('liszt:updated');
 		};
+		$('#non_members_list option:selected').remove();
+      $('#non_members_list').trigger('liszt:updated');
 	});
 });
+
+/*
+ * Maybe this is unnecessary, but to simplify adding and removing group member list entries, let's construct a couple of objects for members and non-members. 
+ */
+// These are the group members
+members = {};
+{% for member in group.members.all %}
+members[{{ member.id }}]='{{ member }}';
+{% endfor %}
+// Non-group members
+non_members = {};
+{% for member in members %}
+non_members[{{ member.id }}]='{{ member }}';
+{% endfor %}
 
 //	// Capture click events on edit icons and toggle to the edit form.
 //	// The data to be hidden has an id such as "my_stuff-data" and the form to be displayed has the corresponding id "my_stuff-form"
@@ -163,21 +174,25 @@ $(document).ready(function(){
 		$('.edit-interface-checkbox').prop('disabled',!$('.edit-interface-checkbox').prop('disabled'));
 	}
 
-	$('.remove_member_entry').live('click',(function(){
+	function remove_member_entry() {
+	}
+	$('.remove_member_entry').live('click',function(){
 		member=$(this).parents('.membership_entry').data('member');
 		member_id=$(this).parents('.membership_entry').data('member_id');
 		/* If the member is a group member, just hide the person and   */
 		if (members[member_id]) {
 			$(this).parents('.membership_entry').addClass('removed_entry');
       	$(this).parents('.membership_entry').fadeOut(300).slideUp({ duration: 500, queue: false });
+		// If the member isn't in the group, just remove the entry.
 		} else {
+			$(this).parents('.membership_entry').remove();
 			
 		}
 		//console.log('removing member '+member+' with id '+member_id);
       //$(this).parents('.membership_entry').remove();
       $('#non_members_list').append('<option value='+member_id+'>'+member+'</option>');
       $('#non_members_list').trigger('liszt:updated');
-   }));
+   });
 
 	/* When we press the reset buttion we want to flush the unsaved_entry's and add the members back to the non_members_list. */
 	function reset_members_list() {
