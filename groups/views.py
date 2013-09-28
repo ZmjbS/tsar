@@ -80,4 +80,4 @@ def save_group(request):
 					except:
 						return HttpResponse('unable to delete membership')
 		# All is done. Return a successful response to the template. :-)
-		return HttpResponse('hi')
+		return HttpResponse(json.dumps({ 'type': 'success' }))
