@@ -13,5 +13,6 @@ urlpatterns = patterns('groups.views',
 #			model=Group,
 #			template_name='groups/group_page.html')),
 	url(r'^(?P<slug>[\w-]+)/$', 'group_page'),
+	url(r'^vista$', 'save_group', name='groups'),
 	
 )
