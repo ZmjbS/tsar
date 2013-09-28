@@ -269,6 +269,8 @@ non_members[{{ member.id }}]='{{ member }}';
 		<section id="group-members" style="position: relative">
 	{# Add the edit tools if the user is a group manager #}
 	{% if "x" == "x" %}
+<form style="margin-bottom: .5em;">
+	<input type="hidden" name="group_id" value="{{ group.id }}" />
 			<span class="icon-edit pull-right form-edit-icon edit-interface" style="display:inline" onclick="toggle_edit_interface()"></span>
 
 			<div class="input-append edit-interface pull-right">
@@ -279,11 +281,14 @@ non_members[{{ member.id }}]='{{ member }}';
 			{% endfor %}
 				</select>
 			</div>
+
+			<div id="group_save_buttons" class="edit-interface" style="text-align: right; clear:both;">
+      		<input type="reset" value="Hætta við" class="span2 btn" onclick="reset_members_list();toggle_edit_interface();" />
+      		<input type="submit" value="Vista" class="span2 btn btn-primary" onclick="toggle_edit_interface();" />
+			</div>
 	{% endif %}
 			<h2>Meðlimir
 			</h2>
-<form style="margin-bottom: .5em;">
-	<input type="hidden" name="group_id" value="{{ group.id }}" />
 			<table id="group_members_list" class="table-hover table-condensed table tablesorter">
 				<thead>
 					<tr>
@@ -314,11 +319,6 @@ non_members[{{ member.id }}]='{{ member }}';
 {% endfor %}
 				</tbody>
 			</table>
-
-			<div id="group_save_buttons" class="edit-interface" style="text-align: right;">
-      		<input type="reset" value="Hætta við" class="span2 btn" onclick="reset_members_list();toggle_edit_interface();" />
-      		<input type="submit" value="Vista" class="span2 btn btn-primary" onclick="toggle_edit_interface();" />
-			</div>
 <!--
 <div class="controls controls-row">
 	<div class="pull-right">
@@ -339,7 +339,9 @@ non_members[{{ member.id }}]='{{ member }}';
 				<input id="add_members" type="button" class="btn btn-rimary" value="Bæta við" />
 			</div>
 -->
+	{% if "x" == "x" %}
 </form>
+	{% endif %}
 <!--
 </div>
 -->
