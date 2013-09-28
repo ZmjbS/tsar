@@ -317,7 +317,7 @@ def save_event(request):
 			dte = timezone.make_aware(parser.parse(data['date_time_end']),timezone.get_default_timezone())
 			print 'Hæ'
 		except:
-			return HttpResponse(jseon.dumps({ 'type': 'error', 'message': 'Not a valid datetime', }))
+			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Not a valid datetime', }))
 		print 'XXX'
 		print dte
 		print 'XXX'
