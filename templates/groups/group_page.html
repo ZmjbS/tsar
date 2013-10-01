@@ -9,9 +9,12 @@
 <!-- jQuery tablesorter -->
 	<script type="text/javascript" src="/static/js/jquery.tablesorter.min.js"></script>
 	<script type="text/javascript" src="/static/js/jquery.tablesorter.parser-input-select.js"></script>
+	<script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
+	<script type="text/javascript" src="/static/js/tsar.groups.js"></script>
 <style>
-	.edit-interface { display: none; }
+//	.edit-interface { display: none; }
 	#all_members_list_chzn { width: 80% !important; }
+	.unsaved_entry { background-color: #edb; }
 </style>
 <script type="text/javascript">
 $(document).ready(function(){
@@ -98,7 +101,16 @@ $(document).ready(function(){
   });
 /////////// END SNIPPET ////////////////////////
 
-	$('#all-members-list').chosen();
+	// Once the document is ready, hide the edit-interface elements. TODO: only include this when the elements are included (i.e. when the user is a group manager).
+	$('.edit-interface').hide();
+	$('.form-edit-icon').show();
+
+	/*
+	 * We have a drop-down list of non-members to add members to the group.
+	 */
+	// We use the jQuery Chosen for the member selection, style it and add tablesorter to make it sortable:
+	$('#non_members_list').chosen();
+	$('#non_members_list_chzn').css('float', 'right');
 	$("#group_members_list").tablesorter({
 		sortList: [[0,0], [1,0]],
 		textSorter : sortBy,
@@ -109,7 +121,134 @@ $(document).ready(function(){
 	      8: { sorter: 'checkbox' },
 		},
 	}); 
+
+	/*
+	 * When a member is chosen from the list of non-members, we have to add them to the group members list.
+	 */
+	$('#non_members_list').chosen().change( function() {
+//		console.log('adding members');
+		member_id=$(this).val();
+		console.log('Add member_id: '+member_id);
+		if (members[member_id]) {
+			// If they are already a member (the user may have been removed and just added back), show the hidden entry.
+			$('[data-member_id='+member_id+']').children('.member_name').children('input').val('member');
+			$('[data-member_id='+member_id+']').show();
+		} else {
+			// If they are not yet a member then add an entry and give it an "unsave_entry" class.
+			member=non_members[$(this).val()];
+			username=member;
+			phone="555 1234";
+			email="dæmi@dæmi.is";
+			member_entry = '<tr class="membership_entry unsaved_entry" data-member="'+member+'" data-member_id="'+member_id+'">'
+								+ '<td><input class="edit-interface" type="checkbox" /></td>'
+								+ '<td class="member_name"><a href="/felagi/'+username+'">'+member+'</a><input type="hidden" name="member['+member_id+']" value="add-member" /></td>'
+								+ '<td class="member_phone">'+phone+'</td>'
+								+ '<td class="member_email">'+email+'</td>'
+								+ '<td><input class="edit-interface-checkbox" type="checkbox" checked="checked" /></td><!-- A -->'
+								+ '<td><input class="edit-interface-checkbox" type="checkbox" /></td><!-- B -->'
+								+ '<td><input class="edit-interface-checkbox" type="checkbox" /></td><!-- C -->'
+								+ '<td><span class="icon-remove-sign edit-interface remove_member_entry"></span></td><!-- C --></tr>';
+			$('#group_members_list tbody').prepend(member_entry);
+		};
+		$('#non_members_list option:selected').remove();
+      $('#non_members_list').trigger('liszt:updated');
+	});
+
+	// Place the CSRF token in a js variable so that the form handler can send it to the view. 
+   //csrf = "{{ csrf_token|escapejs }}"; 
+   var csrftoken = $.cookie('csrftoken'); 
+   console.log('CSRF (on page):'+csrftoken); 
+
 });
+
+/*
+ * Maybe this is unnecessary, but to simplify adding and removing group member list entries, let's construct a couple of objects for members and non-members. 
+ */
+// These are the group members
+members = {};
+{% for member in group.members.all %}
+members[{{ member.id }}]='{{ member }}';
+{% endfor %}
+// Non-group members
+non_members = {};
+{% for member in members %}
+non_members[{{ member.id }}]='{{ member }}';
+{% endfor %}
+
+//	// Capture click events on edit icons and toggle to the edit form.
+//	// The data to be hidden has an id such as "my_stuff-data" and the form to be displayed has the corresponding id "my_stuff-form"
+//	$('.toggle-form').click(function() {
+//		prefix = $(this).data('form_id-prefix');
+//		$('#'+prefix+'-data').toggle();
+//		$('#'+prefix+'-form').toggle();
+//
+//		// TODO: Not needed on all, but this is a useful hack to force the initial resizing...
+//		$('#event_description-textarea').trigger('autosize.resize');
+//	});
+
+	/*
+	 * Toggling the interface involves toggling the .edit-interface elements and then dis-or-enabling the checkboxes.
+	 */
+	function toggle_edit_interface() {
+		$('.edit-interface').toggle('600');
+		$('.edit-interface-checkbox').prop('disabled',!$('.edit-interface-checkbox').prop('disabled'));
+	}
+
+	/*
+	 * When removing a member entry we need to remove the member from the list and, if they're previously a member, mark them for removal from the group.
+	 */
+	function remove_member_entry() {
+	}
+	$('.remove_member_entry').live('click',function(){
+		member=$(this).parents('.membership_entry').data('member');
+		member_id=$(this).parents('.membership_entry').data('member_id');
+		/* If the member is a group member, just hide the person and mark them for removal on their hidden input field  */
+		if (members[member_id]) {
+			$(this).parents('.membership_entry').addClass('removed_entry');
+      	$(this).parents('.membership_entry').fadeOut(300).slideUp({ duration: 500, queue: false });
+			$(this).parents('.membership_entry').children('.member_name').children('input').val('remove-member');
+			//console.log($(this).parents('.membership_entry').children('.member_name').children('input').val());
+		// If the member isn't in the group, just remove the entry.
+		} else {
+			$(this).parents('.membership_entry').remove();
+			
+		}
+		//console.log('removing member '+member+' with id '+member_id);
+      //$(this).parents('.membership_entry').remove();
+      $('#non_members_list').append('<option value='+member_id+'>'+member+'</option>');
+      $('#non_members_list').trigger('liszt:updated');
+   });
+
+	/* When we press the reset buttion we want to flush the unsaved_entry's and add the members back to the non_members_list. */
+	function reset_members_list() {
+		/* Show removed entries */
+		$('.removed_entry').toggle();
+		$.each($('.removed_entry'), function() {
+			member_id=$(this).data('member_id');
+			console.log('Removing member '+member_id);
+			// Reset the value to 'member'
+			$(this).children('.member_name').children('input').val('member');
+			console.log($(this).children('.member_name').children('a').val());
+			console.log($(this).children('.member_name').children('input').val());
+		});
+		/* Remove the unsaved entries from the member list and add them back to the select list */
+		$.each($('.unsaved_entry'), function() {
+			member=$(this).data('member');
+			member_id=$(this).data('member_id');
+			console.log('removing member '+member+' with id '+member_id);
+      	$(this).fadeOut(300).slideUp({ duration: 500, queue: false });
+      	$(this).remove();
+      	$('#non_members_list').append('<option value='+member_id+'>'+member+'</option>');
+		});
+		/* Update the chosen drop-down with the modified select list. */
+      $('#non_members_list').trigger('liszt:updated');
+		/* Reset the hidden member inputs */
+		// TODO: Does this even work?
+		//$.each($('input[type=hidden,value=delete]', function() {
+		//	$(this).value('member');
+		//});
+	}
+
 </script>
 {% endblock %}
 
@@ -128,29 +267,58 @@ $(document).ready(function(){
 
 	<div class="span8">
 		<section id="group-members" style="position: relative">
+	{# Add the edit tools if the user is a group manager #}
+	{% if "x" == "x" %}
+<form style="margin-bottom: .5em;">
+	<input type="hidden" name="group_id" value="{{ group.id }}" />
+			<span class="icon-edit pull-right form-edit-icon edit-interface" style="display:inline" onclick="toggle_edit_interface()"></span>
+
+			<div class="input-append edit-interface pull-right">
+				<select id="non_members_list" class="pull-right" name="new_members[]" data-placeholder="Nafn">
+					<option></option>
+			{% for member in members %}
+					<option value="{{ member.id }}">{{ member }}</option>
+			{% endfor %}
+				</select>
+			</div>
+
+			<div id="group_save_buttons" class="edit-interface" style="text-align: right; clear:both;">
+      		<input type="reset" value="Hætta við" class="span2 btn" onclick="reset_members_list();toggle_edit_interface();" />
+      		<input type="submit" value="Vista" class="span2 btn btn-primary" onclick="toggle_edit_interface();" />
+			</div>
+	{% endif %}
 			<h2>Meðlimir
-				<input type="button" class="btn pull-right btn-small" value="Sýsla" style="vertical-align: bottom;" onclick="$('.edit-interface').toggle('600');$(this).toggleClass('btn-primary');($(this).val()=='Lokið')?$(this).val('Sýsla'):$(this).val('Lokið');$('.edit-interface-checkbox').prop('disabled',!$('.edit-interface-checkbox').prop('disabled'));" />
 			</h2>
 			<table id="group_members_list" class="table-hover table-condensed table tablesorter">
 				<thead>
-					<tr><th style="width: 1.1em;"><input class="edit-interface" type="checkbox"></th><th>Nafn</th><th>Sími</th><th>Tölvupóstfang</th><th>A</th><th>B</th><th>C</th><th style="width:1.1em;"></th></tr>
+					<tr>
+						<th style="width: 1.1em;"><input class="edit-interface" type="checkbox"></th>
+						<th>Nafn</th>
+						<th>Sími</th>
+						<th>Tölvupóstfang</th>
+						<th>A</th>
+						<th>B</th>
+						<th>C</th>
+						<th style="width:1.1em;"></th>
+					</tr>
 				</thead>
 				<tbody>
 {% for member in group.members.all %}
-					<tr>
-	<td><input class="edit-interface" type="checkbox" /></td>
-	<td><a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a></td>
-	<td>{% for phone in member.phone_set.all %}{% if phone.is_primary %}{{ phone.number }}{% endif %}{% endfor %}</td>
-	<td>{% for email in member.email_set.all %}{% if email.is_primary %}{{ email.address }}{% endif %}{% endfor %}</td>
-	<td><input class="edit-interface-checkbox" type="checkbox" checked="checked" disabled="disabled" /></td><!-- A -->
-	<td><input class="edit-interface-checkbox" type="checkbox" disabled="disabled" /></td><!-- B -->
-	<td><input class="edit-interface-checkbox" type="checkbox" disabled="disabled" /></td><!-- C -->
-	<td><span class="icon-remove-sign edit-interface"></span> </td><!-- C -->
+					<tr class="membership_entry" data-member="{{ member }}" data-member_id="{{ member.id }}">
+	<td><input class="edit-interface" type="checkbox"></td>
+	<td class="member_name"><a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a>
+		{% if forloop.counter == 2 %}<span class="icon-briefcase" style="margin-left:1em; color: gray;"></span>{% endif %}
+		<input type="hidden" name="member[{{ member.id }}]" value="member" /></td>
+	<td class="member_phone">{% for phone in member.phone_set.all %}{% if phone.is_primary %}{{ phone.number }}{% endif %}{% endfor %}</td>
+	<td class="member_email">{% for email in member.email_set.all %}{% if email.is_primary %}{{ email.address }}{% endif %}{% endfor %}</td>
+	<td><input class="edit-interface-checkbox" type="checkbox" disabled /></td><!-- A -->
+	<td><input class="edit-interface-checkbox" type="checkbox" disabled /></td><!-- B -->
+	<td><input class="edit-interface-checkbox" type="checkbox" disabled /></td><!-- C -->
+	<td><span class="icon-remove-sign edit-interface remove_member_entry"></span> </td><!-- C -->
 					</tr>
 {% endfor %}
 				</tbody>
 			</table>
-
 <!--
 <div class="controls controls-row">
 	<div class="pull-right">
@@ -158,15 +326,22 @@ $(document).ready(function(){
 		<input type="button" class="btn btn-primary" value="Vista" />
 	</div>
 -->
+<!--
 			<div class="input-append edit-interface" style="width: 100%">
-				<select id="all-members-list" multiple data-placeholder="Nafn">
+				<select id="non_members_list" name="new_members[]" multiple data-placeholder="Nafn">
 			{% for member in members %}
 					<option>{{ member }}</option>
 			{% endfor %}
 				</select>
+-->
 	<!--<input type="text" value="Nafn" />-->
-				<input type="button" class="btn btn-rimary" value="Bæta við" />
+<!--
+				<input id="add_members" type="button" class="btn btn-rimary" value="Bæta við" />
 			</div>
+-->
+	{% if "x" == "x" %}
+</form>
+	{% endif %}
 <!--
 </div>
 -->
