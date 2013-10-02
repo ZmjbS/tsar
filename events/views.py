@@ -178,11 +178,7 @@ def event_response(request):
 
 def display_event(request, pk):
 	event = get_object_or_404(Event, id=pk)
-	#TODO: read this from login info!!!
-	if not request.user.is_authenticated():
-		cm = User.objects.get(id=2)
-	else:
-		cm = request.user.member
+	cm = request.user.member
 	# Compile a list of members who are invited.
 	# Workflow:
 	# Create an empty list of invited members.
@@ -270,7 +266,19 @@ def display_event(request, pk):
 	members = Member.objects.all()
 	groups = Group.objects.all()
 
-	return render_to_response('events/event_page.html', { 'event': event, 'cm': cm, 'role_data': role_data, 'status_list': ['attending', 'absent', 'unclear'], 'event_types': event_types, 'event_roles': event_roles, 'total_attending': len(total_attending), 'total_absent': len(total_absent), 'total_invited': len(total_invited), 'members': members, 'groups': groups, })
+	return render_to_response('events/event_page.html', {
+		'user': request.user,
+		'event': event,
+		'cm': cm,
+		'role_data': role_data,
+		'status_list': ['attending', 'absent', 'unclear'],
+		'event_types': event_types,
+		'event_roles': event_roles,
+		'total_attending': len(total_attending),
+		'total_absent': len(total_absent),
+		'total_invited': len(total_invited),
+		'members': members, 'groups': groups,
+	})
 
 def display_or_save_event_form(request):
 	event_types = EventType.objects.all()
