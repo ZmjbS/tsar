@@ -28,14 +28,7 @@
 <body>
 
 <!-- HEADER -->
-<header style="margin-top:.6em;">
-	<form id="search-field" class="form-search" style="margin-right: 1em;">
-		<div class="input-append">
-<input type="text" class="search-query span2" data-placeholder="Félagatal" />
-<button type="submit" class="btn">Leita</button>
-</div>
-</form>
-<h1>{% block page_title %}Hjálparsveit Skáta í Reykjavík{% endblock %}</h1>
+<header style="argin-top:.6em;">
 <div class="navbar">
 	<div class="navbar-inner">
 		<div class="container">
@@ -60,9 +53,16 @@
 				<li class="pull-right"><a href="/utskra">útskrá</a></li>
 				<li class="pull-right"><a href="/admin">(admin)</a></li>
 			</ul>
+	<form id="search-field" class="form-search" style="margin: 0em;">
+		<div class="input-append">
+<input type="text" class="search-query span2" data-placeholder="Félagatal" />
+<button type="submit" class="btn">Leita</button>
+		</div>
+	</form>
 		</div>
 	</div>
 </div>
+{% block page_title %}<h1>Hjálparsveit Skáta í Reykjavík</h1>{% endblock %}
 
 </header>
 

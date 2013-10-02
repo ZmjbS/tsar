@@ -1,5 +1,18 @@
 {% extends "tsar.html" %}
 {% load markup %}
+{% block page_title %}
+		<div class="row" style="margin-left: -20px;">
+			<div id="event_description-data" class="span12">
+	<section>
+				<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_description"></i>
+				<date class="pull-right">{{ event.date_time_begin|date:"Y-m-d H:i" }}〜{{ event.date_time_end|date:"Y-m-d H:i" }}</date>
+<div>
+				<h2>{{ event.title }} – <span style="font-size: smaller; color: gray;">{{ event.event_type.title|lower }}</span></h2>
+</div>
+	</section>
+			</div>
+		</div>
+{% endblock %}
 
 {% block head %}
 <style>
@@ -324,11 +337,16 @@ $(document).ready(function(){
 		<section id="event_description">
 			<div id="event_description-data">
 				<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_description"></i>
+	<!--
 				<date class="pull-right">{{ event.date_time_begin|date:"Y-m-d H:i" }}〜{{ event.date_time_end|date:"Y-m-d H:i" }}</date>
 <div>
 				<h2>{{ event.title }} – <span style="font-size: smaller; color: gray;">{{ event.event_type.title|lower }}</span></h2>
+	-->
+				<h3>Lýsing</h3>
 				<div style="margin:0 .5em .5em .5em;">{{ event.description|textile }}</div>
+	<!--
 </div>
+	-->
 			</div>
 	{# TODO: Should we add some permissions to access the edit form, or do we trust people not to mess things up too much? #}
 			<div id="event_description-form" style="display: none">

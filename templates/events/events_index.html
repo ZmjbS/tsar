@@ -1,5 +1,5 @@
 {% extends "tsar.html" %}
-{% block page_title %}HSSR: Viðburðir og útköll{% endblock %}
+{% block page_title %}{% endblock %}
 
 {% block head %}
 <link rel='stylesheet' type='text/css' href='/static/css/fullcalendar.css' />
@@ -60,12 +60,16 @@ td.fc-sat, td.fc-sun { background-color: #eff; }
 {% block content %}
 
 <ul class="nav nav-pills">
-	<li class="active"><a href="#calendar" data-toggle="tab">Dagatal</a></li>
+	<li class="active"><a href="#cal" data-toggle="tab">Dagatal</a></li>
 	<li><a href="#lists" data-toggle="tab">Viðburðalistar</a></li>
 </ul>
 
 <div class="tab-content">
-	<div class="tab-pane active" id="calendar"></div>
+	<div class="tab-pane active" id="cal">
+		<section>
+			<div id="calendar"></div>
+	  </section>
+	</div>
 
 	<div class="tab-pane row" id="lists">
 

@@ -1,5 +1,10 @@
 /* Layout */
-#navigation { padding: .4em; }
+.navbar-inner {
+	//border: thin solid red;
+	//background: #363;
+	//background-image: linear-gradient(to bottom, #373, #363);
+	//color: white;
+}
 h1 { margin-top: 10px; }
 h1, article { padding-left: 10px; }
 
@@ -30,7 +35,8 @@ h1 {
 }
 h1, h2, h3 {
 	margin: 0;
-	color: #a33;
+	//color: #a33;
+	color: #383;
 	//font-family: "Times New Roman", serif;
 }
 h2 {
