@@ -12,23 +12,22 @@
 <script type="text/javascript" src="/static/js/tsar.events.js"></script>
 <style>
 	/* css for timepicker */
-	.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
-	.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
-	.ui-timepicker-div dl { text-align: left; }
-	.ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
-	.ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }
-	.ui-timepicker-div td { font-size: 90%; }
-	.ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
+	//.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+	//.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+	//.ui-timepicker-div dl { text-align: left; }
+	//.ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
+	//.ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }
+	//.ui-timepicker-div td { font-size: 90%; }
+	//.ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
 </style>
 <style>
 	section { overflow: auto; }
-	h2 { margin-top: 0; }
 	.select-participants, [id*='role-groups-id_'] { width: 100%; }
 	/*#tag-event_task, #tag-organiser, #tag-location, #tag-equipment { width: 44em; }*/
 	/*#tag-event_task, #tag-organiser, #tag-location, #tag-equipment { width: 100%; }*/
 	#tag_organiser_chzn, #tag_event_task_chzn, #tag_location_chzn, #tag_equipment_chzn { width: 100% !important; }
 	/*#tag-organiser { width: 8em; } */
-	#id_minimum, #id_maximum { width: 2em; }
+	//#id_minimum, #id_maximum { width: 2em; }
 	th, td { height: 1em; }
 	#role_groups_id_template_chzn, #role_groups_id_template_chzn .chzn-drop, #role_groups_id_template_chzn ul li input { width: 100% !important; }
 
@@ -40,6 +39,11 @@
 <script type="text/javascript">
 
 $(document).ready(function(){
+	$('#id_title').css('font-size','3em');
+	$('#id_date_time_begin, #id_date_time_end').css('font-size','.9em');
+	$('#id_title, #id_date_time_begin, #id_date_time_end').css('height','auto');
+	$('#id_title, #event_type, #id_date_time_begin, #id_date_time_end, #id_description').addClass('form-control');
+
 // Datetimepicker
 	startDateTextBox = $('#id_date_time_begin')
 	endDateTextBox = $('#id_date_time_end')
@@ -89,7 +93,7 @@ $(document).ready(function(){
 	$('#tag-location').chosen();
 	$('#tag-equipment').chosen();
 
-	$('#id_description').addClass('col-sm-12');
+	$('#id_description').addClass('col-xs-12');
 
 // Place the CSRF token in a js variable so that the form handler can send it to the view.
 	//csrf = "{{ csrf_token|escapejs }}";
@@ -136,20 +140,62 @@ $(document).ready(function(){
 </script>
 {% endblock %}
 
+{% block page_title %}{% endblock %}
+
 {% block content %}
-
-<!--
-<section style="position: absolute; right: 50px; top: 70px">
-	<input type="text" value="Viðburður" /><input type="button" value="Afrita" />
-</section>
--->
-
-{% if error_message %}<div id="error_message">{{ error_message }}</div>{% endif %}
-
 <form id="event-creator" action="." method="post">
 
+	<input type="hidden" name="event_id" id="event_id" value="{{ event.pk }}" />
+	
+	<div class="row" style="margin-bottom: 1.5em;">
+		<div class="col-xs-12 col-sm-7">{{ form.title }}</div>
+		<div class="col-xs-5 col-sm-2">
+			<select id="event_type" name="event_type form-control">
+						{% for type in event_types %}
+				<option value="{{ type.pk }}">{{ type.title }}</option>
+						{% endfor %}
+			</select>
+		</div>
+		<div class="col-xs-3 col-sm-2">{{ form.date_time_begin }}{{ form.date_time_end }}</div>
+		<div class="col-xs-1 col-sm-1"><button type="button" class="btn btn-default" id="add_dates_btn" onclick="$('#add_days').slideToggle();$('#add_days_icon').toggleClass('icon-minus');"><i id="add_days_icon" class="icon-plus"></i></a></div>
+	</div>
+	
+	<div id="add_days" class="tabbable" style="display:none;">
+		<ul class="nav nav-tabs" style="margin-right: 0;">
+			<li class="active"><a href="#reps" data-toggle="tab">Endurtaka</a></li>
+			<li><a href="#days" data-toggle="tab">Bæta við</a></li>
+		</ul>
+		<div class="tab-content" style="border: thin solid #ddd; padding: .4em; margin-bottom: .5em; border-left: none; border-bottom: none;">
+			<input class="btn btn-default" type="button" value="Sýna lista" style="float:right" onclick="$('#add_days_list').slideToggle();" />
+			<div class="tab-pane" id="days">
+				add days
+			</div>
+			<div class="tab-pane active" id="reps">
+				á sama vikudegi
+				<select id="reps-period" style="vertical-align: baseline; width: auto;">
+					<option>í hverri viku</option>
+					<option>í fyrstu og þriðju viku hvers mánaðar</option>
+					<option>í annari og fjórðu viku hvers mánaðar</option>
+					<option>í hverjum mánuði</option>
+				</select>
+				þar til <input type="text" style="width: 7em; vertical-align: baseline;" />
+			</div>
+			<ul id="add_days_list" style="display: none; -moz-column-count:3; /* Firefox */ -webkit-column-count:3; /* Safari and Chrome */ column-count:3;">
+				<li><date>Ðis is a deit</date></li>
+				<li><date>Ðis is a deit</date></li>
+				<li><date>Ðis is a deit</date></li>
+				<li><date>Ðis is a deit</date></li>
+				<li><date>Ðis is a deit</date></li>
+				<li><date>Ðis is a deit</date></li>
+				<li><date>Ðis is a deit</date></li>
+			</ul>
+		</div>
+	</div>
+
+
+{% if error_message %}<div id="error_message">{{ error_message }}</div>{% endif %}
 <div class="row">
-	<div class="col-sm-4" style="height: 100%;">
+	<div class="col-xs-12 col-sm-6 col-md-4" style="height: 100%;">
 	<!-- BOÐUN Í HLUTVERK -->
 		<section class="" style="overflow: visible;">
 			<div class="btn-group pull-right" id="event-invite-button">
@@ -168,63 +214,10 @@ $(document).ready(function(){
 		</section>
 	</div>
 
-	<div class="col-sm-8"><!-- Contains the next three sections: #description, #tags, #location -->
+	<div class="col-xs-12 col-sm-6 col-md-8"><!-- Contains the next three sections: #description, #tags, #location -->
 		<section id="description" tyle="overflow: visible">
 	
-			<input type="hidden" name="event_id" id="event_id" value="{{ event.pk }}" />
-	
-	<!--
-		<h2>Lýsing</h2>
-	-->
-			<div class="row">
-				<div class="col-sm-5">{{ form.title }}</div>
-				<div class="col-sm-2">
-				<select id="event_type" name="event_type">
-						{% for type in event_types %}
-					<option value="{{ type.pk }}">{{ type.title }}</option>
-						{% endfor %}
-				</select>
-				</div>
-				<div class="col-sm-2">{{ form.date_time_begin }}</div>
-				<div class="col-sm-2">{{ form.date_time_end }}</div>
-				<a class="btn btn-default col-sm-1" id="add_dates_btn" onclick="$('#add_days').slideToggle();$('#add_days_icon').toggleClass('icon-minus');"><i id="add_days_icon" class="icon-plus"></i></a>
-			</div>
-	
-			<div id="add_days" class="tabbable" style="display:none;">
-				<ul class="nav nav-tabs" style="margin-right: 0;">
-					<li class="active"><a href="#reps" data-toggle="tab">Endurtaka</a></li>
-					<li><a href="#days" data-toggle="tab">Bæta við</a></li>
-				</ul>
-				<div class="tab-content" style="border: thin solid #ddd; padding: .4em; margin-bottom: .5em; border-left: none; border-bottom: none;">
-					<input class="btn btn-default" type="button" value="Sýna lista" style="float:right" onclick="$('#add_days_list').slideToggle();" />
-					<div class="tab-pane" id="days">
-						add days
-					</div>
-					<div class="tab-pane active" id="reps">
-						á sama vikudegi
-						<select id="reps-period" style="vertical-align: baseline; width: auto;">
-							<option>í hverri viku</option>
-							<option>í fyrstu og þriðju viku hvers mánaðar</option>
-							<option>í annari og fjórðu viku hvers mánaðar</option>
-							<option>í hverjum mánuði</option>
-						</select>
-						þar til <input type="text" style="width: 7em; vertical-align: baseline;" />
-					</div>
-					<ul id="add_days_list" style="display: none; -moz-column-count:3; /* Firefox */ -webkit-column-count:3; /* Safari and Chrome */ column-count:3;">
-						<li><date>Ðis is a deit</date></li>
-						<li><date>Ðis is a deit</date></li>
-						<li><date>Ðis is a deit</date></li>
-						<li><date>Ðis is a deit</date></li>
-						<li><date>Ðis is a deit</date></li>
-						<li><date>Ðis is a deit</date></li>
-						<li><date>Ðis is a deit</date></li>
-					</ul>
-				</div>
-			</div>
-	
-			<div class="row">
 				{{ form.description }}
-			</div>
 		</section><!-- /#description -->
 	
 	<!-- TAGS -->
