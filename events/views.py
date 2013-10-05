@@ -75,7 +75,11 @@ def list_events(request):
 	#pprint.pprint(coming_events_list)
 	# TODO: Add incidents?
 	# recent_incidents_list = Incident.objects.filter(date_time_begin__lte=now).order_by('-date_time_begin')[:20]
-	return render_to_response('events/events_index.html', { 'recent_events_list': recent_events_list, 'coming_events_list': coming_events_list })
+	return render_to_response('events/events_index.html', {
+		'recent_events_list': recent_events_list,
+		'coming_events_list': coming_events_list,
+		'user': request.user,
+	})
 
 from django.views.decorators.csrf import csrf_exempt
 

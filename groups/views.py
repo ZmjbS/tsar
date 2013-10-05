@@ -11,7 +11,10 @@ now=datetime.datetime.now()
 
 def index(request):
 	all_groups_list = Group.objects.all().order_by('title')
-	return render_to_response('groups/groups_index.html', { 'group_list': all_groups_list })
+	return render_to_response('groups/groups_index.html', {
+		'group_list': all_groups_list,
+		'user': request.user,
+	})
 
 from django.contrib.auth.decorators import login_required
 
@@ -20,10 +23,19 @@ def group_page(request, slug):
 	g = get_object_or_404(Group, slug=slug)
 	#import pprint
 	#pprint.pprint(g.members.all())
+	managers = Member.objects.filter(membership__is_leader=True)
+	print managers
 	om = Member.objects.exclude(membership__group__slug=slug)
 	recent_events_list=Event.objects.filter(eventrole__groupinvitation__group__slug=slug).filter(date_time_begin__lte=now).distinct()
 	coming_events_list=Event.objects.filter(eventrole__groupinvitation__group__slug=slug).filter(date_time_begin__gte=now).distinct()
-	return render_to_response('groups/group_page.html', { 'group': g, 'members': om, 'recent_events_list': recent_events_list, 'coming_events_list': coming_events_list, })
+	return render_to_response('groups/group_page.html', {
+		'group': g,
+		'managers': managers,
+		'members': om,
+		'recent_events_list': recent_events_list,
+		'coming_events_list': coming_events_list,
+		'user': request.user,
+	})
 
 import simplejson as json
 def save_group(request):
