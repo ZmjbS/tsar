@@ -31,12 +31,33 @@ def calendar_events_list(start, end):
 	events = Event.objects.filter(date_time_end__gt=calendar_begins).filter(date_time_begin__lt=calendar_ends)
 	events_list = []
 	for event in events:
+		eventtype = event.event_type.title
+		print eventtype
+		if eventtype == u'Námskeið': #light-Orange
+			backgroundcolor = '#FFC600'
+		elif eventtype == u'Æfing': #Orange
+			backgroundcolor = '#Da9600'
+		elif eventtype == u'Vinnukvöld': #dark-orange
+			backgroundcolor = '#Bb6655'
+		elif eventtype == u'Skemmtun': #light-green
+			backgroundcolor = '#38FF0D'
+		elif eventtype == u'Ferð': #Green
+			backgroundcolor = '#2DCF0A'
+		elif eventtype == u'Fundur': #dark-green
+			backgroundcolor = '#209407'
+		elif eventtype == u'Fjáröflun': # dark-blue
+			backgroundcolor = '#0158EA'
+		elif eventtype == u'Sérverkefni': # light-blue
+			backgroundcolor = '#0DDDFF'
+		else:
+			backgroundcolor = 'green'
 		events_list.append({
 			'title': event.title,
 			'start': calendar.timegm(event.date_time_begin.utctimetuple()),
 			'end': calendar.timegm(event.date_time_end.utctimetuple()),
 			'id': event.id,
 			'url': '/vidburdur/'+str(event.id),
+ 			'backgroundColor': backgroundcolor,
 		})
 	import pprint
 	pprint.pprint(events_list)
