@@ -351,13 +351,12 @@ def save_event(request):
 			print 'Hæ'
 		except:
 			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Not a valid datetime', }))
-		print 'XXX'
 		print dte
-		print 'XXX'
 		if dte <= dtb:
 			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'The event start time must precede the end.', }))
 		# The event-type must be supplied.
 		et_id = data['event_type']
+		print et_id
 		if et_id== "":
 			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'No event type supplied.', }))
 

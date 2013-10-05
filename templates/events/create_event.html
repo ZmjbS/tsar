@@ -150,7 +150,7 @@ $(document).ready(function(){
 	<div class="row" style="margin-bottom: 1.5em;">
 		<div class="col-xs-12 col-sm-7">{{ form.title }}</div>
 		<div class="col-xs-5 col-sm-2">
-			<select id="event_type" name="event_type form-control">
+			<select id="event_type" name="event_type" class="form-control">
 						{% for type in event_types %}
 				<option value="{{ type.pk }}">{{ type.title }}</option>
 						{% endfor %}
