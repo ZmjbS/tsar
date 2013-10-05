@@ -175,27 +175,24 @@ $(document).ready(function(){
 		</div><!-- #event_header-data -->
 
 		<div id="event_header-form" style="display: none">
-
 			<div class="row">
-				<div class="col-sm-5"><input id="id_title" name="title" class="" type="text" value="{{ event.title }}"></input></div>
-					<div class="col-sm-2">
+				<div class="col-xs-12 col-sm-6"><input id="id_title" name="title" class="" type="text" value="{{ event.title }}"></input></div>
+				<div class="col-xs-4 col-sm-2">
 					<select id="event_type" name="event_type">
 		{% for type in event_types %}
 						<option value="{{ type.pk }}"{% if type.pk == event.event_type.id %} selected="selected"{% endif %}>{{ type.title }}</option>
 		{% endfor %}
 					</select>
 				</div>
-				<div class="col-sm-2">
+				<div class="col-xs-8 col-sm-2">
 					<input id="id_date_time_begin" class="hasDatepicker" type="text" name="date_time_begin" placeholder="Upphaf" value="{{ event.date_time_begin|date:"Y-m-d H:i" }}"></input>
 					<input id="id_date_time_end" class="hasDatepicker" type="text" name="date_time_end" placeholder="Lok" value="{{ event.date_time_end|date:"Y-m-d H:i" }}"></input>
 				</div>
 				<!-- Possibly allow duplication, but multiple events is probably overdoing it ...
 				<a class="btn col-sm-1" id="add_dates_btn" onclick="$('#add_days').slideToggle();$('#add_days_icon').toggleClass('icon-minus');"><i id="add_days_icon" class="icon-plus"></i></a>
 				-->
-				<div style="text-align: right;">
-					<input type="reset" value="Hætta við" class="col-xs-6 col-sm-2 btn btn-default toggle-form" data-form_id-prefix="event_header" onclick="$('#results').slideUp();" />
-					<input type="submit" value="Vista" class="col-xs-6 col-sm-2 btn btn-primary" data-form_id-prefix="event_header" />
-				</div>
+				<div class="col-xs-6 col-sm-2"><input type="reset" value="Hætta við" class="btn btn-default toggle-form form-control" data-form_id-prefix="event_header" onclick="$('#results').slideUp();" /></div>
+				<div class="col-xs-6 col-sm-2"><input type="submit" value="Vista" class="btn btn-primary form-control" data-form_id-prefix="event_header" /></div>
 			</div><!-- /.row-->
 		</div><!-- #event_header-form-->
 
