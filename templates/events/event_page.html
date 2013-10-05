@@ -1,22 +1,8 @@
 {% extends "tsar.html" %}
 {% load markup %}
-{% block page_title %}
-		<div class="row" style="margin-left: -20px;">
-			<div id="event_description-data" class="span12">
-	<section>
-				<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_description"></i>
-				<date class="pull-right">{{ event.date_time_begin|date:"Y-m-d H:i" }}〜{{ event.date_time_end|date:"Y-m-d H:i" }}</date>
-<div>
-				<h2>{{ event.title }} – <span style="font-size: smaller; color: gray;">{{ event.event_type.title|lower }}</span></h2>
-</div>
-	</section>
-			</div>
-		</div>
-{% endblock %}
 
 {% block head %}
 <style>
-.nav { margin-bottom: 10px; }
 .nav-pills > li > a { padding: .4em; margin-right: .4em; }
 .nav-pills > .active > a.success, .nav-pills > .active > a.success:hover { background-color: rgb(70, 136, 71); color: white; }
 .nav-pills > li > a.success { color: rgb(70, 136, 71);; }
@@ -133,10 +119,10 @@ $(document).ready(function(){
 		+			'<div class="role_entry-title" style="float:left">'+role_title+'</div>'
 		+			'<input type="hidden" name="role['+role_id+'][id]" value="'+role_id+'" />'
 		+					'<div style="float:right"><i id="'+role_id+'" class="delete-role-entry icon-remove-sign pull-right" style="cursor: pointer"></i></div>'
-		+					'<div style="float:right; margin-right: .5em;">mest:   <input name="role['+role_id+'][max]" class="span6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>'
-		+					'<div style="float:right; margin-right: .5em;">minnst: <input name="role['+role_id+'][min]" class="span6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>'
+		+					'<div style="float:right; margin-right: .5em;">mest:   <input name="role['+role_id+'][max]" class="col-sm-6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>'
+		+					'<div style="float:right; margin-right: .5em;">minnst: <input name="role['+role_id+'][min]" class="col-sm-6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>'
 //		+					'<div>'
-//		+						'<input name="role['+role_id+'][closed]" class="btn btn-danger span12" type="button" value="lokað" onclick="$(this).toggleClass(\'btn-danger btn-success\');($(this).val()==\'lokað\')?$(this).val(\'opið\'):$(this).val(\'lokað\');" />'
+//		+						'<input name="role['+role_id+'][closed]" class="btn btn-danger col-sm-12" type="button" value="lokað" onclick="$(this).toggleClass(\'btn-danger btn-success\');($(this).val()==\'lokað\')?$(this).val(\'opið\'):$(this).val(\'lokað\');" />'
 //		+					'</div>'
 		+		'<div>'
 		+			'<select name="role['+role_id+'][participants][]" multiple data-placeholder="Veldu þáttakendur" class="select-participants">'
@@ -167,20 +153,61 @@ $(document).ready(function(){
 
 {% endblock %}
 
+{% block page_title %}
+{# TODO: Should we add some permissions to access the edit form, or do we trust people not to mess things up too much? #}
+<form>
+	<div id="event_header" style="margin-right:40px; padding-right: 20px;">
+
+		<div id="event_header-data">
+			<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_header"></i>
+			<date class="pull-right" style="font-size: em; text-align: right;">{{ event.date_time_begin|date:"Y-m-d H:i" }}<br />〜{{ event.date_time_end|date:"Y-m-d H:i" }}</date>
+			<div class="pull-right" style="font-size: 1.8em; text-align: right; display:inline-block; vertical-align: text-bottom">{{ event.date_time_end|timeuntil:event.date_time_begin }}</div>
+		</div><!-- #event_header-data -->
+
+		<div id="event_header-form" style="display: none">
+			<input type="hidden" name="event_id" id="event_id" value=" {{ event.id }}" />
+
+			<div class="row">
+				<div class="col-sm-5"><input name="title" class="col-sm-12" type="text" value="{{ event.title }}"></input></div>
+					<div class="col-sm-2">
+					<select id="event_type" name="event_type">
+		{% for type in event_types %}
+						<option value="{{ type.pk }}"{% if type.pk == event.event_type.id %} selected="selected"{% endif %}>{{ type.title }}</option>
+		{% endfor %}
+					</select>
+				</div>
+				<div class="col-sm-2">
+					<input id="id_date_time_begin" class="hasDatepicker" type="text" name="date_time_begin" placeholder="Upphaf" value="{{ event.date_time_begin|date:"Y-m-d H:i" }}"></input>
+				</div>
+				<div class="col-sm-2">
+					<input id="id_date_time_end" class="hasDatepicker" type="text" name="date_time_end" placeholder="Lok" value="{{ event.date_time_end|date:"Y-m-d H:i" }}"></input>
+				</div>
+				<!-- Possibly allow duplication, but multiple events is probably overdoing it ...
+				<a class="btn col-sm-1" id="add_dates_btn" onclick="$('#add_days').slideToggle();$('#add_days_icon').toggleClass('icon-minus');"><i id="add_days_icon" class="icon-plus"></i></a>
+				-->
+				<div style="text-align: right;">
+					<input type="reset" value="Hætta við" class="col-xs-6 col-sm-2 btn btn-default toggle-form" data-form_id-prefix="event_header" onclick="$('#results').slideUp();" />
+					<input type="submit" value="Vista" class="col-xs-6 col-sm-2 btn btn-primary" data-form_id-prefix="event_header" />
+				</div>
+			</div><!-- /.row-->
+		</div><!-- #event_header-form-->
+
+	</div>
+	<h1>{{ event.title }} – <span style="font-size: smaller; color: gray;">{{ event.event_type.title|lower }}</span></h1>
+{% endblock %}
+
 {% block content %}
 
 <div id="response"></div>
 
 <div class="row">
-	<div class="span12">
+	<div class="col-sm-12">
 		<div class="alert" style="padding-top: 4px; padding-bottom: 4px; display:none" id="results"></div>
 	</div>
 </div>
 <div class="row">
-	<div class="span4">
+	<div class="col-sm-4">
 		<section id="event_roles">
-
-			<form>
 
 			<div id="event_roles-data">
 				<ul class="nav nav-pills">
@@ -196,7 +223,7 @@ $(document).ready(function(){
 {% for status in status_list %} {# attending absent unclear #}
 <div  class="tab-pane {% if status == "attending" %}active{% endif %}" id="{{ status }}">
 	<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_{{ status }}s" data-toggle_state="hidden" onclick="if($(this).data('toggle_state')=='hidden'){$('.{{ status }}.edit-interface').show();$(this).data('toggle_state','shown');}else{$('.{{ status }}.edit-interface').hide();$(this).data('toggle_state','hidden');}"></i><br />
-	<ul id="{{ status }}_roles" style="list-style: none; margin-left:0;">
+	<ul id="{{ status }}_roles" style="list-style: none; margin-left: 0; padding-left: 0;">
 
 	{# List each role for this particular status #}
 	{% for role in role_data %}
@@ -267,7 +294,7 @@ $(document).ready(function(){
 <div class="tab-pane" id="invitation">
 	<div id="event_invitations-data">
 		<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_invitations"></i><br />
-		<ul style="list-style: none; margin-left:0;">
+		<ul style="list-style: none; margin-left:0; padding-left: 0;">
 {% for event_role in event.eventrole_set.all %}
 			<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;"><span class="role_entry-title">{{ event_role.role.title }}</span> <span style="font-size:smaller; color: gray; float: right;">{{ event_role.minimum }}〜{% if event_role.maximum == 0 %}∞{% else %}{{ event_role.maximum }}{% endif %}</span></div>
 				<ul>
@@ -286,7 +313,7 @@ $(document).ready(function(){
 	</div><!-- /#event_invitations-data -->
 	<div id="event_invitations-form" style="display: none">
 		<div class="btn-group pull-right" id="event-invite-button">
-			<button class="btn dropdown-toggle" data-toggle="dropdown">Bæta við hlutverki <span class="caret"></span> </button>
+			<button class="btn btn-default dropdown-toggle" data-toggle="dropdown">Bæta við hlutverki <span class="caret"></span> </button>
 			<ul id="role-dropdown" class="dropdown-menu">
    {% for role in event_roles %}
 				<li class="role-dropdown-item" id="{{ role.id}}"><a>{{ role.title }}</a></li>
@@ -300,8 +327,8 @@ $(document).ready(function(){
 				<div class="role_entry-title" style="float:left">{{ event_role.role.title }}</div>
 				<input type="hidden" name="role[{{ event_role.role.id }}][id]" value="{{ event_role.role.id }}" />
 				<div style="float:right"><i id="{{ event_role.role.id }}" class="delete-role-entry icon-remove-sign pull-right" style="cursor: pointer"></i></div>
-				<div style="float:right; margin-right: .5em;">mest:   <input name="role[{{ event_role.role.id }}][max]" class="span6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>
-				<div style="float:right; margin-right: .5em;">minnst: <input name="role[{{ event_role.role.id }}][min]" class="span6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>
+				<div style="float:right; margin-right: .5em;">mest:   <input name="role[{{ event_role.role.id }}][max]" class="col-sm-6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>
+				<div style="float:right; margin-right: .5em;">minnst: <input name="role[{{ event_role.role.id }}][min]" class="col-sm-6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>
 				<div>
 					<select name="role[{{ event_role.role.id }}][participants][]" multiple data-placeholder="Veldu þáttakendur" class="select-participants">
 						<optgroup label="Hópar og flokkar">
@@ -321,8 +348,8 @@ $(document).ready(function(){
 
        	</div><!--invite-role-list-->
       
-		<input type="reset" value="Hætta við" class="span2 btn toggle-form" data-form_id-prefix="event_invitations" onclick="$('#results').slideUp();" />
-		<input type="submit" value="Vista" class="span2 btn btn-primary oggle-form" data-form_id-prefix="event_invitations" />
+		<input type="reset" value="Hætta við" class="col-sm-2 btn btn-default toggle-form" data-form_id-prefix="event_invitations" onclick="$('#results').slideUp();" />
+		<input type="submit" value="Vista" class="col-sm-2 btn btn-primary" data-form_id-prefix="event_invitations" />
 	</div><!-- /#event_invitations-form -->
 </div><!-- /.tab-pane#invitation -->
 
@@ -330,62 +357,30 @@ $(document).ready(function(){
 			</div><!-- id="event_roles-data" -->
 
 		</section>
-	</div><!-- class="span4" -->
+	</div><!-- class="col-sm-4" -->
 
 
-	<div class="span8">
+	<div class="col-sm-8">
 		<section id="event_description">
+
 			<div id="event_description-data">
 				<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_description"></i>
-	<!--
-				<date class="pull-right">{{ event.date_time_begin|date:"Y-m-d H:i" }}〜{{ event.date_time_end|date:"Y-m-d H:i" }}</date>
-<div>
-				<h2>{{ event.title }} – <span style="font-size: smaller; color: gray;">{{ event.event_type.title|lower }}</span></h2>
-	-->
 				<h3>Lýsing</h3>
 				<div style="margin:0 .5em .5em .5em;">{{ event.description|textile }}</div>
-	<!--
-</div>
-	-->
-			</div>
-	{# TODO: Should we add some permissions to access the edit form, or do we trust people not to mess things up too much? #}
+			</div><!-- /#event_description-data -->
+
 			<div id="event_description-form" style="display: none">
-				<input type="hidden" name="event_id" id="event_id" value=" {{ event.id }}" />
-	
-				<div class="row-fluid">
-					<div class="span5"><input name="title" class="span12" type="text" value="{{ event.title }}"></input></div>
-						<div class="span2">
-						<select id="event_type" name="event_type">
-		{% for type in event_types %}
-							<option value="{{ type.pk }}"{% if type.pk == event.event_type.id %} selected="selected"{% endif %}>{{ type.title }}</option>
-		{% endfor %}
-						</select>
-					</div>
-					<div class="span2">
-						<input id="id_date_time_begin" class="hasDatepicker" type="text" name="date_time_begin" placeholder="Upphaf" value="{{ event.date_time_begin|date:"Y-m-d H:i" }}"></input>
-					</div>
-					<div class="span2">
-						<input id="id_date_time_end" class="hasDatepicker" type="text" name="date_time_end" placeholder="Lok" value="{{ event.date_time_end|date:"Y-m-d H:i" }}"></input>
-					</div>
-					<!-- Possibly allow duplication, but multiple events is probably overdoing it ...
-					<a class="btn span1" id="add_dates_btn" onclick="$('#add_days').slideToggle();$('#add_days_icon').toggleClass('icon-minus');"><i id="add_days_icon" class="icon-plus"></i></a>
-					-->
-				</div><!-- /.row-fluid -->
-	
-				<div class="row-fluid">
-					<textarea class="span12" id="event_description-textarea" name="description">{{ event.description }}</textarea>
-				</div><!-- /.row-fluid -->
+				<textarea class="col-sm-12" id="event_description-textarea" name="description">{{ event.description }}</textarea>
 				<div style="text-align: right">
-					<input type="reset" value="Hætta við" class="span2 btn toggle-form" data-form_id-prefix="event_description" onclick="$('#results').slideUp();" />
-					{# TODO: The submit button should post the data and only on success toggle back to displaying the data #}
-					<input type="submit" value="Vista" class="span2 btn btn-primary oggle-form" data-form_id-prefix="event_description" />
+					<input type="reset" value="Hætta við" class="col-xs-6 col-sm-2 btn btn-default toggle-form" data-form_id-prefix="event_description" onclick="$('#results').slideUp();" />
+					<input type="submit" value="Vista" class="col-xs-6 col-sm-2 btn btn-primary" data-form_id-prefix="event_description" />
 				</div>
 			</div><!-- /#event_description-form -->
 		</section>
 
 		<section style="overflow: auto; ">
-			<div class="row-fluid">
-				<div class="span6">
+			<div class="row">
+				<div class="col-md-6">
 
 					<div id="event_tag-data">
 						<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_tag"></i>
@@ -402,9 +397,9 @@ $(document).ready(function(){
 						<h3>Merki</h3>
 						<div style="text-align: right">
 							{# TODO: The cancel button should reset the form and toggle back to displaying the data #}
-							<input type="button" value="Hætta við" class="span4 btn toggle-form toggle-form" data-form_id-prefix="event_tag" />
+							<input type="button" value="Hætta við" class="col-sm-4 btn btn-default toggle-form toggle-form" data-form_id-prefix="event_tag" />
 							{# TODO: The submit button should post the data and only on success toggle back to displaying the data #}
-							<input type="button" value="Vista" class="span4 btn btn-primary toggle-form" data-form_id-prefix="event_tag" />
+							<input type="button" value="Vista" class="col-sm-4 btn btn-primary toggle-form" data-form_id-prefix="event_tag" />
 						</div>
 					</div><!-- /#event_description-form -->
 
@@ -420,14 +415,14 @@ $(document).ready(function(){
 						<h3>Staðsetning</h3>
 						<div style="text-align: right">
 							{# TODO: The cancel button should reset the form and toggle back to displaying the data #}
-							<input type="button" value="Hætta við" class="span4 btn toggle-form toggle-form" data-form_id-prefix="event_location" />
+							<input type="button" value="Hætta við" class="col-sm-4 btn btn-default toggle-form toggle-form" data-form_id-prefix="event_location" />
 							{# TODO: The submit button should post the data and only on success toggle back to displaying the data #}
-							<input type="button" value="Vista" class="span4 btn btn-primary toggle-form" data-form_id-prefix="event_location" />
+							<input type="button" value="Vista" class="col-sm-4 btn btn-primary toggle-form" data-form_id-prefix="event_location" />
 						</div>
 					</div><!-- /#event_location-form -->
-				</div><!-- /.span6 -->
+				</div><!-- /.col-sm-6 -->
 
-				<div id="event_location-map" class="span6">
+				<div id="event_location-map" class="col-md-6">
 					<img src="/static/img/hengill-husmuli.png" alt="kort" style="width:100%;"/>
 				</div><!-- /#event_location-map -->
 

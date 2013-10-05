@@ -110,7 +110,8 @@ $(document).ready(function(){
 	 */
 	// We use the jQuery Chosen for the member selection, style it and add tablesorter to make it sortable:
 	$('#non_members_list').chosen();
-	$('#non_members_list_chzn').css('float', 'right');
+	$('#non_members_list_chzn').css('float', 'right').css('width','auto');
+	$('#non_members_list_chzn *').css('width','auto');
 	$("#group_members_list").tablesorter({
 		sortList: [[0,0], [1,0]],
 		textSorter : sortBy,
@@ -257,7 +258,7 @@ non_members[{{ member.id }}]='{{ member }}';
 {% block content %}
 
 <div class="row">
-	<div class="span12">
+	<div class="col-sm-12">
 		<section id="group-description">
 {{ group.description }}
 			<br />
@@ -265,93 +266,63 @@ non_members[{{ member.id }}]='{{ member }}';
 		</section>
 	</div>
 
-	<div class="span8">
+	<div class="col-sm-8">
 		<section id="group-members" style="position: relative">
 	{# Add the edit tools if the user is a group manager #}
 	{% if "x" == "x" %}
 <form style="margin-bottom: .5em;">
 	<input type="hidden" name="group_id" value="{{ group.id }}" />
-			<span class="icon-edit pull-right form-edit-icon edit-interface" style="display:inline" onclick="toggle_edit_interface()"></span>
+	<span class="icon-edit pull-right form-edit-icon edit-interface" style="display:inline" onclick="toggle_edit_interface()"></span>
 
-			<div class="input-append edit-interface pull-right">
-				<select id="non_members_list" class="pull-right" name="new_members[]" data-placeholder="Nafn">
-					<option></option>
-			{% for member in members %}
-					<option value="{{ member.id }}">{{ member }}</option>
-			{% endfor %}
-				</select>
-			</div>
 
-			<div id="group_save_buttons" class="edit-interface" style="text-align: right; clear:both;">
-      		<input type="reset" value="Hætta við" class="span2 btn" onclick="reset_members_list();toggle_edit_interface();" />
-      		<input type="submit" value="Vista" class="span2 btn btn-primary" onclick="toggle_edit_interface();" />
-			</div>
-	{% endif %}
-			<h2>Meðlimir
-			</h2>
-			<table id="group_members_list" class="table-hover table-condensed table tablesorter">
-				<thead>
-					<tr>
-						<th style="width: 1.1em;"><input class="edit-interface" type="checkbox"></th>
-						<th>Nafn</th>
-						<th>Sími</th>
-						<th>Tölvupóstfang</th>
-						<th>A</th>
-						<th>B</th>
-						<th>C</th>
-						<th style="width:1.1em;"></th>
-					</tr>
-				</thead>
-				<tbody>
-{% for member in group.members.all %}
-					<tr class="membership_entry" data-member="{{ member }}" data-member_id="{{ member.id }}">
-	<td><input class="edit-interface" type="checkbox"></td>
-	<td class="member_name"><a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a>
-		{% if forloop.counter == 2 %}<span class="icon-briefcase" style="margin-left:1em; color: gray;"></span>{% endif %}
-		<input type="hidden" name="member[{{ member.id }}]" value="member" /></td>
-	<td class="member_phone">{% for phone in member.phone_set.all %}{% if phone.is_primary %}{{ phone.number }}{% endif %}{% endfor %}</td>
-	<td class="member_email">{% for email in member.email_set.all %}{% if email.is_primary %}{{ email.address }}{% endif %}{% endfor %}</td>
-	<td><input class="edit-interface-checkbox" type="checkbox" disabled /></td><!-- A -->
-	<td><input class="edit-interface-checkbox" type="checkbox" disabled /></td><!-- B -->
-	<td><input class="edit-interface-checkbox" type="checkbox" disabled /></td><!-- C -->
-	<td><span class="icon-remove-sign edit-interface remove_member_entry"></span> </td><!-- C -->
-					</tr>
-{% endfor %}
-				</tbody>
-			</table>
-<!--
-<div class="controls controls-row">
-	<div class="pull-right">
-		<input type="button" class="btn btn-danger" value="Endursetja" />
-		<input type="button" class="btn btn-primary" value="Vista" />
+	<div class="input-append edit-interface pull-right">
+	<div id="group_save_buttons">
+    		<input type="reset" value="Hætta við" class="btn btn-default" onclick="reset_members_list();toggle_edit_interface();" />
+    		<input type="submit" value="Vista" class="btn btn-primary" onclick="toggle_edit_interface();" />
 	</div>
--->
-<!--
-			<div class="input-append edit-interface" style="width: 100%">
-				<select id="non_members_list" name="new_members[]" multiple data-placeholder="Nafn">
+		<select id="non_members_list" class="ull-right" name="new_members[]" data-placeholder="Nafn">
+			<option></option>
 			{% for member in members %}
-					<option>{{ member }}</option>
+			<option value="{{ member.id }}">{{ member }}</option>
 			{% endfor %}
-				</select>
--->
-	<!--<input type="text" value="Nafn" />-->
-<!--
-				<input id="add_members" type="button" class="btn btn-rimary" value="Bæta við" />
-			</div>
--->
+		</select>
+	</div>
+	{% endif %}
+
+	<h2>Meðlimir</h2>
+	<table id="group_members_list" class="table-hover table-condensed table tablesorter">
+		<thead>
+			<tr>
+				<th style="width: 1.1em;"><input class="edit-interface" type="checkbox"></th>
+				<th>Nafn</th>
+				<th>Sími</th>
+				<th>Tölvupóstfang</th>
+				<th>A</th>
+				<th>B</th>
+				<th>C</th>
+				<th style="width:1.1em;"></th>
+			</tr>
+		</thead>
+		<tbody>
+{% for member in group.members.all %}
+			<tr class="membership_entry" data-member="{{ member }}" data-member_id="{{ member.id }}">
+				<td><input class="edit-interface" type="checkbox"></td>
+				<td class="member_name"><a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a>
+		{% if forloop.counter == 2 %}<span class="icon-briefcase" style="margin-left:1em; color: gray;"></span>{% endif %}
+					<input type="hidden" name="member[{{ member.id }}]" value="member" /></td>
+				<td class="member_phone">{% for phone in member.phone_set.all %}{% if phone.is_primary %}{{ phone.number }}{% endif %}{% endfor %}</td>
+				<td class="member_email">{% for email in member.email_set.all %}{% if email.is_primary %}{{ email.address }}{% endif %}{% endfor %}</td>
+				<td><input class="edit-interface-checkbox" type="checkbox" disabled /></td><!-- A -->
+				<td><input class="edit-interface-checkbox" type="checkbox" disabled /></td><!-- B -->
+				<td><input class="edit-interface-checkbox" type="checkbox" disabled /></td><!-- C -->
+				<td><span class="icon-remove-sign edit-interface remove_member_entry"></span> </td><!-- C -->
+			</tr>
+{% endfor %}
+		</tbody>
+	</table>
 	{% if "x" == "x" %}
 </form>
 	{% endif %}
-<!--
-</div>
--->
-	<!--<div style="position:absolute;right:.5em;top:.5em;">-->
-	<!--<input type="button" class="btn btn-danger" value="Breyta skráningu" />-->
-	<!--<select>
-		<option selected="true" disabled="true"></option>
-		<option>Eyða úr hóp</option>
-		<option>Breyta hæfni</option>
-	</select> -->
 		</section>
 
 		<section id="group-qualifications">
@@ -364,7 +335,7 @@ non_members[{{ member.id }}]='{{ member }}';
 		</section>
 	</div>
 
-	<div class="span4">
+	<div class="col-sm-4">
 		<section id="recent-events">
 			<h2>Nýlegir viðburðir</h2>
 			<ul>
@@ -380,13 +351,13 @@ non_members[{{ member.id }}]='{{ member }}';
 				<li><a href="/vidburdur/{{ event.id }}">{{ event.title }}</a></li>
 {% endfor %}
 
-<!-- Er kannski betra að nota „invitation“ frekar en „event“? Sparar það eittthvað?
+<!-- TODO: Er kannski betra að nota „invitation“ frekar en „event“? Sparar það eittthvað?
 {% for invitation in group.groupinvitation_set.all %}
 	<li><a href="/vidburdur/{{ invitation.event_role.event.id }}">{{ invitation.event_role.event.title }}</a></li>
 {% endfor %}
 -->
 			</ul>
 		</section>
-	</div><!-- /.span4 -->
+	</div><!-- /.col-sm-4 -->
 </div><!-- /.row -->
 {% endblock %}

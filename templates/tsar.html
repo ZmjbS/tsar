@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8" />
 <!-- Reset for HTML5 -->
-	<link type="text/css" rel="stylesheet" href="/static/css/html-5-reset.css" />
+<!--	<link type="text/css" rel="stylesheet" href="/static/css/html-5-reset.css" />-->
 <!-- jQuery -->
 	<script type="text/javascript" src="/static/js/jquery.min.js"></script>
 	<script type="text/javascript" src="/static/js/jquery.autosize-min.js"></script>
@@ -29,39 +29,39 @@
 
 <!-- HEADER -->
 <header style="argin-top:.6em;">
-<div class="navbar">
-	<div class="navbar-inner">
-		<div class="container">
-			<!-- .btn-navbar is used as the toggle for collapsed navbar content -->
-			<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-			</a>
-		</div>
-		<div class="nav-collapse collapse">
-			<!-- .nav, .navbar-search, .navbar-form, etc -->
-			<ul class="nav">
-				<li><a href="/">Síðan mín</a></li>
-				<li><a href="/hopur">Hópar og flokkar</a></li>
-				<li><a href="/vidburdur" style="padding-right:.2em">Viðburðir og útköll</a></li>
-				<li><a href="/vidburdur/nyskraning" style="padding-left:0.2em;"><b class="icon-edit" style="vertical-align: 10%"></b></a></li>
-				<li><a href="/haefnir">Hæfnir</a></li>
-			</ul>
-			<ul class="nav pull-right" >
-				<li class="pull-right"><a href="/felagi/{{ user }}">{{ user }}</a></li>
-				<li class="pull-right"><a href="/utskra">útskrá</a></li>
-				<li class="pull-right"><a href="/admin">(admin)</a></li>
-			</ul>
-	<form id="search-field" class="form-search" style="margin: 0em;">
-		<div class="input-append">
-<input type="text" class="search-query span2" data-placeholder="Félagatal" />
-<button type="submit" class="btn">Leita</button>
-		</div>
-	</form>
-		</div>
+<nav class="navbar navbar-default" role="navigation">
+	<div class="navbar-header">
+		<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		</button>
+		<a class="navbar-brand" href="/">Síðan mín</a>
 	</div>
-</div>
+	<!-- Collect the nav links, forms, and other content for toggling -->
+	<div class="collapse navbar-collapse navbar-ex1-collapse">
+		<ul class="nav navbar-nav">
+			<li><a href="/hopur">Hópar og flokkar</a></li>
+			<li><a href="/vidburdur" style="padding-right:.2em">Viðburðir og útköll</a></li>
+			<li><a href="/vidburdur/nyskraning" style="padding-left:0.2em;"><b class="icon-edit" style="vertical-align: 10%"></b></a></li>
+			<li><a href="/haefnir">Hæfnir</a></li>
+		</ul>
+
+		<ul class="nav navbar-nav navbar-right">
+			<form class="navbar-form navbar-left" role="search">
+				<div class="form-group">
+					<input type="text" class="form-control" placeholder="Leita">
+				</div>
+<!--				<button type="submit" class="btn btn-default">Submit</button>-->
+			</form>
+
+			<li><a href="/felagi/{{ user }}">{{ user }}</a></li>
+			<li><a href="/utskra">útskrá</a></li>
+			<li><a href="/admin">(admin)</a></li>
+		</ul>
+	</div><!-- /.navbar-collapse -->
+</nav>
 {% block page_title %}<h1>Hjálparsveit Skáta í Reykjavík</h1>{% endblock %}
 
 </header>

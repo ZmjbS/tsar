@@ -1,43 +1,30 @@
 /* Layout */
-.navbar-inner {
-	//border: thin solid red;
-	//background: #363;
-	//background-image: linear-gradient(to bottom, #373, #363);
-	//color: white;
-}
-h1 { margin-top: 10px; }
-h1, article { padding-left: 10px; }
-
-#admin-links, #search-field { float: right; }
-
-td, th { padding: 0 .4em }
-
 /* Calendar */
-#dagatal tr td { height: 5em; }
-#dagatal { width: 100%; table-layout: fixed; }
-#dagatal td { width: 14%; height: 5em; border: thin solid #ddd; vertical-align: top; white-space:nowrap; overflow: visibe; }
-#dagatal td div { overflow: hidden; }
-#dagatal td.i_dag { border: 2px solid #aaf; z-index: -1; }
-#dagatal td.laugardagur, #dagatal td.sunnudagur { background-color: #eef; }
-.dagatal_vidburdur { width: 100%; background-color: #ddf; }
 
 /* Look */
 body {	background-image: url("/static/img/tsar_background-transparent-4.png");
-/*	background-color: rgb(229,187,124);*/
 	background-color: white;
 	background-repeat: no-repeat;
 	background-position: 100px 50px;
-	background-attachment: fixed; }
+	background-attachment: fixed;
+}
+
+h1, article { margin: 0 40px; }
+
 h1 {
-	padding: 4px 4px 4px .3em;
-	font-variant: small-caps;
+	margin-top: 10px;
+	//padding: 0 0 0 1.5em;
+	margin-bottom: 20px;
 	font-size: 2.57em;
 }
 h1, h2, h3 {
-	margin: 0;
+	//margin: 0;
 	//color: #a33;
 	color: #383;
 	//font-family: "Times New Roman", serif;
+}
+h2, h3 {
+	margin-top: .3em;
 }
 h2 {
 	//font-weight: bol; ont-size: normal;
@@ -54,7 +41,7 @@ h3 {
 	border: thin solid white;
 }
 date, time {	color: gray; font-size: smaller; }
-section {
+section, .col-sm- { 
 	background-color: rgba(255,255,255,0.75);
 	border: thin solid #dde;
 	border-radius: .5em;

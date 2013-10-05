@@ -2,7 +2,6 @@
 
 {% block head %}
 <style>
-.events_list { list-style: none; margin-left: 0.3em; }
 .overflow { display: none; }
 </style>
 <script>
@@ -14,24 +13,14 @@ $(document).ready(function(){
 {% load humanize %}
 
 {% block content %}
-<div class="full-width" style="display:none">
-<section>
-<h2>Tilkynningar</h2>
-<p>
-... skemmtilegt.
-</p>
-</section>
-</div>
-
-<div class="">
-	<div class="row">
-		<div class="span6"><!-- 1 of 2 columns -->
-<section id="vidburdir">
-	<span class="btn pull-right" onclick="$('.notinvited').toggle();$('.overflow').toggle();$(this).toggleClass('active');"><i class="icon-user"></i></span>
-	<h2>Næstu viðburðir</h2>
-	<ul id="events" class="events_list">
+<div class="row">
+	<div class="col-sm-6"><!-- 1 of 2 columns -->
+		<section id="vidburdir">
+			<button type="button" class="btn btn-default pull-right" onclick="$('.notinvited').toggle();$('.overflow').toggle();$(this).toggleClass('active');"><i class="icon-user"></i></button>
+			<h2>Næstu viðburðir</h2>
+			<ul id="events" class="events_list list-unstyled">
 {% for ed in events_dictionaries_list %}
-		<li id="event-{{ ed.event.id }}" class="event-list-item{% if not ed.invitedroles_dictionaries_list %} notinvited{% else %}{%if forloop.counter > event_list_length %} overflow{% endif %}{% endif %}"
+				<li id="event-{{ ed.event.id }}" class="event-list-item{% if not ed.invitedroles_dictionaries_list %} notinvited{% else %}{%if forloop.counter > event_list_length %} overflow{% endif %}{% endif %}"
 	{% if ed.invitedroles_dictionaries_list %}
 			onclick="
 				if ($('#event_{{ ed.event.id }}_roles_list').is(':visible')) {
@@ -46,124 +35,122 @@ $(document).ready(function(){
 					$(this).css('background-color', '#eef');
 				};
 				$(this).children('span.status-icon').toggleClass('icon-circle icon-circle-blank');"{% endif %}>
-		<span id="event_{{ ed.event.id }}_status_icon" 
+				<span id="event_{{ ed.event.id }}_status_icon" 
 	{% if ed.invitedroles_dictionaries_list %}
 		{% if ed.positive_response %}
-			class="icon-circle status-icon attending-icon"
+					class="icon-circle status-icon attending-icon"
 		{% else %}
 			{% if ed.unanswered_response %}
-			class="icon-circle status-icon unclear-icon"
+					class="icon-circle status-icon unclear-icon"
 			{% else %}
-			class="icon-circle status-icon absent-icon"
+					class="icon-circle status-icon absent-icon"
 			{% endif %}
 		{% endif %}
 	{% else %}
-			class="icon-circle-blank status-icon notinvited-icon"
+					class="icon-circle-blank status-icon notinvited-icon"
 	{% endif %}
-		></span>
+				></span>
 
-		<a href="/vidburdur/{{ ed.id }}/" onclick="event.stopPropagation()">{{ ed.event.title }}</a>
-		<time datetime='{{ed.event.date_time_begin|date:"Y-m-d"}}'>{{ ed.event.date_time_begin|naturaltime }}</time>
-		<span id="event_{{ ed.event.id }}_response_icons" class="response-icons"
+				<a href="/vidburdur/{{ ed.id }}/" onclick="event.stopPropagation()">{{ ed.event.title }}</a>
+				<time datetime='{{ed.event.date_time_begin|date:"Y-m-d"}}'>{{ ed.event.date_time_begin|naturaltime }}</time>
+				<span id="event_{{ ed.event.id }}_response_icons" class="response-icons"
 	{% if ed.invitedroles_dictionaries_list|length == 1 %}
-			data-eventrole="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}">
+					data-eventrole="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}">
 		{% if ed.positive_response %}
-			<span id="absent-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="absent" class="respond-icon icon-remove-sign"></span>
-			<span id="unclea-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="unclear" class="respond-icon icon-question-sign"></span>
+					<span id="absent-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="absent" class="respond-icon icon-remove-sign"></span>
+					<span id="unclea-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="unclear" class="respond-icon icon-question-sign"></span>
 		{% else %}
 			{% if ed.unanswered_response %}
-			<span id="absent-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="absent" class="respond-icon icon-remove-sign"></span>
-			<span id="attend-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="attend" class="respond-icon icon-plus-sign"></span>
+					<span id="absent-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="absent" class="respond-icon icon-remove-sign"></span>
+					<span id="attend-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="attend" class="respond-icon icon-plus-sign"></span>
 			{% else %}
-			<span id="unclea-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="unclear" class="respond-icon icon-question-sign"></span>
-			<span id="attend-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="attend" class="respond-icon icon-plus-sign"></span>
+					<span id="unclea-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="unclear" class="respond-icon icon-question-sign"></span>
+					<span id="attend-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="attend" class="respond-icon icon-plus-sign"></span>
 			{% endif %}
 		{% endif %}
 	{% else %}
-			>
+					>
 		{% if ed.invitedroles_dictionaries_list|length > 1 %}
-				<span style="float: right; color: #ccc;">{{ ed.invitedroles_dictionaries_list|length }} hlutverk</span>
+						<span style="float: right; color: #ccc;">{{ ed.invitedroles_dictionaries_list|length }} hlutverk</span>
 		{% endif %}
 	{% endif %}
-			</span>
-			<ul id="event_{{ ed.event.id }}_roles_list" class="roles_list">
+					</span>
+					<ul id="event_{{ ed.event.id }}_roles_list" class="roles_list">
 	{% for ird in ed.invitedroles_dictionaries_list %}
-				<li id="eventrole_{{ird.eventrole.id }}" class="eventrole-list-item">
-					<span id="eventrole_{{ ird.eventrole.id }}_status_icon"
+						<li id="eventrole_{{ird.eventrole.id }}" class="eventrole-list-item">
+							<span id="eventrole_{{ ird.eventrole.id }}_status_icon"
 					{% if ird.response == 'Y' %}
-						data-status="attending" class="icon-circle status-icon" style="color: rgb(70, 136, 71); cursor: default; margin: 0;"
+								data-status="attending" class="icon-circle status-icon" style="color: rgb(70, 136, 71); cursor: default; margin: 0;"
 					{% else %}
 						{% if ird.response == 'N' %}
-						data-status="absent" class="icon-circle status-icon" style="color: rgb(185, 74, 72); cursor: default; margin: 0;"
+								data-status="absent" class="icon-circle status-icon" style="color: rgb(185, 74, 72); cursor: default; margin: 0;"
 						{% else %}
-						data-status="unclear" class="icon-circle status-icon" style="color: rgb(248, 148, 6); cursor: default; margin: 0;"
+								data-status="unclear" class="icon-circle status-icon" style="color: rgb(248, 148, 6); cursor: default; margin: 0;"
 						{% endif %}
 					{% endif %}
-					></span>
+							></span>
 
 					{{ ird.eventrole.role }}
 
-					<span id="eventrole_{{ ird.eventrole.id }}_response_icons" data-eventrole="{{ ird.eventrole.id }}" class="response-icons">
+							<span id="eventrole_{{ ird.eventrole.id }}_response_icons" data-eventrole="{{ ird.eventrole.id }}" class="response-icons">
 					{% if ird.response == 'Y' %}
-						<span id="eventrole-absent-{{ ird.eventrole.id }}" data-action="absent"  class="respond-icon icon-remove-sign"></span>
-						<span id="eventrole-unclea-{{ ird.eventrole.id }}" data-action="unclear" class="respond-icon icon-question-sign"></span>
+								<span id="eventrole-absent-{{ ird.eventrole.id }}" data-action="absent"  class="respond-icon icon-remove-sign"></span>
+								<span id="eventrole-unclea-{{ ird.eventrole.id }}" data-action="unclear" class="respond-icon icon-question-sign"></span>
 					{% else %}
 						{% if ird.response == 'N' %}
-						<span id="eventrole-unclea-{{ ird.eventrole.id }}" data-action="unclear" class="respond-icon icon-question-sign"></span>
-						<span id="eventrole-attend-{{ ird.eventrole.id }}" data-action="attend"  class="respond-icon icon-plus-sign"></span>
+								<span id="eventrole-unclea-{{ ird.eventrole.id }}" data-action="unclear" class="respond-icon icon-question-sign"></span>
+								<span id="eventrole-attend-{{ ird.eventrole.id }}" data-action="attend"  class="respond-icon icon-plus-sign"></span>
 						{% else %}
-						<span id="eventrole-absent-{{ ird.eventrole.id }}" data-action="absent"  class="respond-icon icon-remove-sign"></span>
-						<span id="eventrole-attend-{{ ird.eventrole.id }}" data-action="attend"  class="respond-icon icon-plus-sign"></span>
+								<span id="eventrole-absent-{{ ird.eventrole.id }}" data-action="absent"  class="respond-icon icon-remove-sign"></span>
+								<span id="eventrole-attend-{{ ird.eventrole.id }}" data-action="attend"  class="respond-icon icon-plus-sign"></span>
 						{% endif %}
 					{% endif %}
-					</span>
-				</li>
+							</span>
+						</li>
 	{% endfor %}
+					</ul>
+				</li>
+{% endfor %}
 			</ul>
-		</li>
-{% endfor %}
-	</ul>
-</section>
-<!--</div>-->
+		</section>
 
-		</div><!-- 1 of 2 columns -->
-		<div class="span6"><!-- 2 of 2 columns -->
+	</div><!-- 1 of 2 columns -->
+	<div class="col-sm-6"><!-- 2 of 2 columns -->
 
-<section>
-<h2>Hæfni í boði</h2>
-<!--Hæfnir sem eru í boði (næstu skref/námskeið í boði?).-->
-<ul>
-<li>Frímerkjasöfnun 2</li>
-<li>Kassabílagerð 3 [<time datetime='2011-02-13'>2011.02.31</time>]</li>
-</ul>
-<h2>Endurnýjun</h2>
-<ul>
-<li>Sérhæfð bið (rennur út <time datetime='2028-03-09'>eftir 3 mánuði</time>)</li>
-</ul>
-</section>
+		<section>
+			<h2>Hæfni í boði</h2>
+			<!--Hæfnir sem eru í boði (næstu skref/námskeið í boði?).-->
+			<ul>
+				<li>Frímerkjasöfnun 2</li>
+				<li>Kassabílagerð 3 [<time datetime='2011-02-13'>2011.02.31</time>]</li>
+			</ul>
+			<h2>Endurnýjun</h2>
+			<ul>
+				<li>Sérhæfð bið (rennur út <time datetime='2028-03-09'>eftir 3 mánuði</time>)</li>
+			</ul>
+		</section>
 
-<section>
-  <h2>Fréttir</h2>
-	<a href="http://www.hssr.is">HSSR</a>
-	<ul>
+		<section>
+  			<h2>Fréttir</h2>
+			<a href="http://www.hssr.is">HSSR</a>
+			<ul>
 {% for entry in hssr_entries %}
-	<li><a href="{{ entry.link }}">{{ entry.title }}</a> <time datetime='{{entry.published|date:"Y-m-d"}}'>{{ entry.published }}</time></li>
+				<li><a href="{{ entry.link }}">{{ entry.title }}</a> <time datetime='{{entry.published|date:"Y-m-d"}}'>{{ entry.published }}</time></li>
 {% endfor %}
-	</ul>
+			</ul>
 
-	<a href="http://landsbjorg.is/">Landsbjörg</a>
-	<ul>
+			<a href="http://landsbjorg.is/">Landsbjörg</a>
+			<ul>
 <!-- Skoða: http://justquick.github.com/django-native-tags/contrib/feeds.html -->
 {% for entry in sl_entries %}
-	<li><a href="{{ entry.link }}">{{ entry.title }}</a> <time datetime='{{entry.published|date:"Y-m-d"}}'>{{ entry.published }}</time></li>
+				<li><a href="{{ entry.link }}">{{ entry.title }}</a> <time datetime='{{entry.published|date:"Y-m-d"}}'>{{ entry.published }}</time></li>
 {% endfor %}
-	</ul>
+			</ul>
 <!-- Skoða: http://www.b-list.org/weblog/2007/dec/09/updates/ -->
-</section>
+		</section>
 
-		</div><!-- 2 of 2 columns -->
-	</div><!-- row -->
-</div><!-- -->
+	</div><!-- 2 of 2 columns -->
+</div><!-- row -->
 
 {% endblock %}
 
