@@ -88,6 +88,11 @@ function change_event_response(button) {
 };
 
 $(document).ready(function(){
+	$('#id_title').css('font-size','3em');
+	$('#id_date_time_begin, #id_date_time_end').css('font-size','.9em');
+	$('#id_title, #id_date_time_begin, #id_date_time_end').css('height','auto');
+	$('#id_title, #event_type, #id_date_time_begin, #id_date_time_end, #id_description').addClass('form-control');
+
    $('body').delegate('.respond-icon', 'click', function() { respond_to_event(this, 'Event page') } );
 
 	$('body').delegate('.change-response', 'click', function() { change_event_response(this) } );
@@ -153,22 +158,26 @@ $(document).ready(function(){
 
 {% endblock %}
 
-{% block page_title %}
+{% block page_title %}{% endblock %}
+
+{% block content %}
 {# TODO: Should we add some permissions to access the edit form, or do we trust people not to mess things up too much? #}
 <form>
-	<div id="event_header" style="margin-right:40px; padding-right: 20px;">
+	<input type="hidden" name="event_id" id="event_id" value=" {{ event.id }}" />
+
+	<div id="event_header">
 
 		<div id="event_header-data">
 			<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_header"></i>
 			<date class="pull-right" style="font-size: em; text-align: right;">{{ event.date_time_begin|date:"Y-m-d H:i" }}<br />〜{{ event.date_time_end|date:"Y-m-d H:i" }}</date>
 			<div class="pull-right" style="font-size: 1.8em; text-align: right; display:inline-block; vertical-align: text-bottom">{{ event.date_time_end|timeuntil:event.date_time_begin }}</div>
+			<h1>{{ event.title }} – <span style="font-size: smaller; color: gray;">{{ event.event_type.title|lower }}</span></h1>
 		</div><!-- #event_header-data -->
 
 		<div id="event_header-form" style="display: none">
-			<input type="hidden" name="event_id" id="event_id" value=" {{ event.id }}" />
 
 			<div class="row">
-				<div class="col-sm-5"><input name="title" class="col-sm-12" type="text" value="{{ event.title }}"></input></div>
+				<div class="col-sm-5"><input id="id_title" name="title" class="" type="text" value="{{ event.title }}"></input></div>
 					<div class="col-sm-2">
 					<select id="event_type" name="event_type">
 		{% for type in event_types %}
@@ -178,8 +187,6 @@ $(document).ready(function(){
 				</div>
 				<div class="col-sm-2">
 					<input id="id_date_time_begin" class="hasDatepicker" type="text" name="date_time_begin" placeholder="Upphaf" value="{{ event.date_time_begin|date:"Y-m-d H:i" }}"></input>
-				</div>
-				<div class="col-sm-2">
 					<input id="id_date_time_end" class="hasDatepicker" type="text" name="date_time_end" placeholder="Lok" value="{{ event.date_time_end|date:"Y-m-d H:i" }}"></input>
 				</div>
 				<!-- Possibly allow duplication, but multiple events is probably overdoing it ...
@@ -193,10 +200,6 @@ $(document).ready(function(){
 		</div><!-- #event_header-form-->
 
 	</div>
-	<h1>{{ event.title }} – <span style="font-size: smaller; color: gray;">{{ event.event_type.title|lower }}</span></h1>
-{% endblock %}
-
-{% block content %}
 
 <div id="response"></div>
 
@@ -378,7 +381,7 @@ $(document).ready(function(){
 			</div><!-- /#event_description-form -->
 		</section>
 
-		<section style="overflow: auto; ">
+		<section>
 			<div class="row">
 				<div class="col-md-6">
 
