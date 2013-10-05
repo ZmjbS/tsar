@@ -73,18 +73,18 @@ $(document).ready(function() {
 
 	<div class="tab-pane row" id="lists">
 
-		<div class="col-sm-4">
+		<div class="col-xs-12 col-sm-6">
 			<section id="recent-events">
 				<h2>Nýlegir viðburðir</h2>
-					<ul>
+				<ul>
 {% for event in recent_events_list.all %}
-						<li><a href="/vidburdur/{{ event.id }}">{{ event.title }}</a> <date>{{ event.date_time_begin.date }}</li>
+					<li><a href="/vidburdur/{{ event.id }}">{{ event.title }}</a> <date>{{ event.date_time_begin.date }}</li>
 {% endfor %}
-					</ul>
+				</ul>
 			</section>
 		</div>
 
-		<div class="col-sm-4">
+		<div class="col-xs-12 col-sm-6">
 			<section id="upcoming-events">
 				<h2>Næstu viðburðir</h2>
 				<ul>
@@ -94,8 +94,9 @@ $(document).ready(function() {
 				</ul>
 			</section>
 		</div>
-
-		<div class="col-sm-4">
+<!--
+TODO: Maybe we don't really need to differentiate the incidents?
+		<div class="col-xs-12 col-sm-12 col-md-4">
 			<section id="incidents">
 				<h2>Útköll</h2>
 				<ul>
@@ -105,6 +106,7 @@ $(document).ready(function() {
 				</ul>
 			</section>
 		</div>
+-->
 	</div><!-- /#lists.row -->
 </div><!-- /.tab-contents -->
 
