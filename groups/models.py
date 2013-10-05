@@ -6,7 +6,7 @@ from datetime import datetime
 class Group(models.Model):
 	title = models.CharField(max_length=64)
 	slug = models.SlugField()
-	description = models.TextField()
+	description = models.TextField(blank=True)
 	members = models.ManyToManyField(Member, through='Membership')
 	GROUP_TYPE_CHOICES = (
 		(u'UH', u'útkallshópur'),
