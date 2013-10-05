@@ -12,8 +12,7 @@
 <!-- Bootstrap -->
 	<link type="text/css" rel="stylesheet" href="/static/css/bootstrap.min.css" />
 	<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<link type="text/css" rel="stylesheet" href="/static/css/bootstrap-responsive.css" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Font Awesome is awesome. Provides a bunch of icons as font characters. Supercedes the Bootstrap icons. -->
 	<link type="text/css" rel="stylesheet" href="/static/css/font-awesome.min.css">
 <!-- Add per-template options. -->
@@ -45,7 +44,8 @@
 			<li><a href="/hopur">Hópar og flokkar</a></li>
 			<li><a href="/vidburdur" style="padding-right:.2em">Viðburðir og útköll</a></li>
 			<li><a href="/vidburdur/nyskraning" style="padding-left:0.2em;"><b class="icon-edit" style="vertical-align: 10%"></b></a></li>
-			<li><a href="/haefnir">Hæfnir</a></li>
+			<li><a kref="/skjol">Skjöl</a></li>
+			<li><a kref="/haefnir">Hæfnir</a></li>
 		</ul>
 
 		<ul class="nav navbar-nav navbar-right">
@@ -62,12 +62,12 @@
 		</ul>
 	</div><!-- /.navbar-collapse -->
 </nav>
-{% block page_title %}<h1>Hjálparsveit Skáta í Reykjavík</h1>{% endblock %}
 
 </header>
 
 <!-- MAIN -->
-<article id="article">
+<article id="article" class="container">
+{% block page_title %}<h1>Hjálparsveit Skáta í Reykjavík</h1>{% endblock %}
 
 {% block content %}
 {% endblock %}

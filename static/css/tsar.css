@@ -9,7 +9,7 @@ body {	background-image: url("/static/img/tsar_background-transparent-4.png");
 	background-attachment: fixed;
 }
 
-h1, article { margin: 0 40px; }
+article { margin: -20px 40px 0 0 !important; } // Marked important to keep the Bootstrap .container keyword from centering it.
 
 h1 {
 	margin-top: 10px;
