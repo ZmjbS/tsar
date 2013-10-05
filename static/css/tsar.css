@@ -9,36 +9,25 @@ body {	background-image: url("/static/img/tsar_background-transparent-4.png");
 	background-attachment: fixed;
 }
 
-article { margin: -20px 40px 0 0 !important; } // Marked important to keep the Bootstrap .container keyword from centering it.
+article { margin: 0 40px 0 0 !important; } /* Marked important to keep the Bootstrap .container keyword from centering it. */
 
 h1 {
-	margin-top: 10px;
-	//padding: 0 0 0 1.5em;
+	margin-top: 0 !important; /* Marked important to override Bootsrap. */
 	margin-bottom: 20px;
 	font-size: 2.57em;
 }
 h1, h2, h3 {
-	//margin: 0;
-	//color: #a33;
 	color: #383;
-	//font-family: "Times New Roman", serif;
 }
 h2, h3 {
 	margin-top: .3em;
 }
 h2 {
-	//font-weight: bol; ont-size: normal;
 	font-size: 1.54em;
 }
 h3 {
-	//font-weight: bol; ont-size: normal;
 	font-size: 1.4em;
 	margin-left: .5em;
-}
-#navigation {
-	background-color: #eee; }
-#search-field {
-	border: thin solid white;
 }
 date, time {	color: gray; font-size: smaller; }
 section, .col-sm- { 
