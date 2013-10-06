@@ -219,50 +219,54 @@ def display_event(request, pk):
 	
 	total_attending = set()
 	total_absent    = set()
-	total_invited   = set()
+	total_unclear   = set()
 
 	for eventrole in EventRole.objects.filter(event=event):
 	#	print 'On EventRole {}:'.format(eventrole)
 		attending = []
 		absent = []
+		unclear = []
+
+		# First populate those attending or absent from existing responses.
 		for memberresponse in eventrole.memberresponse_set.all():
-	#		print '> memberresponse: {}'.format(memberresponse)
+#			print '> memberresponse: {}'.format(memberresponse)
 			if memberresponse.response == 'Y':
 				attending.append(memberresponse.member)
 			if memberresponse.response == 'N':
 				absent.append(memberresponse.member)
-	#	print '> Attending members {}:'.format(attending)
-	#	print '> Absent members: {}'.format(absent)
-		invitedmembers = []
-	#	print '>> Members invited through groups'
+#		print '> Attending members {}:'.format(attending)
+#		print '> Absent members: {}'.format(absent)
+
+		# run through those who are invited but whose status is still unclear.
+#		print '>> Members invited through groups'
 		for member in Member.objects.filter(group__groupinvitation__event_role=eventrole):#filter(group__groupinvitation__event_role__event=event):
-	#		print '>>   {}'.format(member.user.username)
-			if member not in invitedmembers and member not in attending and member not in absent:
-				invitedmembers.append(member)
-	#			print '++   {}'.format(member)
-	#	print '>> Members invited directly'
+#			print '>>   {}'.format(member.user.username)
+			if member not in unclear and member not in attending and member not in absent:
+				unclear.append(member)
+#				print '++   {}'.format(member)
+#		print '>> Members invited directly'
 		for member in Member.objects.filter(memberinvitation__event_role=eventrole):#filter(memberinvitation__event_role__event=event):
-	#		print '>>   {}'.format(member)
-			if member not in invitedmembers and member not in attending and member not in absent:
-				invitedmembers.append(member)
-	#			print '++   {}'.format(member)
+#			print '>>   {}'.format(member)
+			if member not in unclear and member not in attending and member not in absent:
+				unclear.append(member)
+#				print '++   {}'.format(member)
 
 		# Add these to the total:
 		total_attending.update(attending)
-		print 'Total attending: {}'.format(total_attending)
+#		print 'Total attending: {}'.format(total_attending)
 		total_absent.update(absent)
-		total_invited.update(invitedmembers)
+		total_unclear.update(unclear)
 
 		# Check to see whether the current member has responded or is invited to a particular role.
 		cm_status = 'not invited'
-		if cm in invitedmembers:
-			cm_status = 'invited'
+		if cm in unclear:
+			cm_status = 'unclear'
 		if cm in absent:
 			cm_status = 'absent'
 		if cm in attending:
 			cm_status = 'attending'
 
-		role_data.append({ 'eventrole': eventrole, 'invitedmembers': invitedmembers, 'absentmembers': absent, 'attendingmembers': attending, 'cm_status': cm_status, })
+		role_data.append({ 'eventrole': eventrole, 'unclearmembers': unclear, 'absentmembers': absent, 'attendingmembers': attending, 'cm_status': cm_status, })
 
 	# Pass possible roles and event types so that we can edit the event.
 	event_types = EventType.objects.all()
@@ -301,7 +305,7 @@ def display_event(request, pk):
 		'event_roles': event_roles,
 		'total_attending': len(total_attending),
 		'total_absent': len(total_absent),
-		'total_invited': len(total_invited),
+		'total_unclear': len(total_unclear),
 		'members': members, 'groups': groups,
 	})
 

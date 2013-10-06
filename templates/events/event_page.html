@@ -66,6 +66,7 @@ function change_event_response(button) {
 		
 		// Fix the total number of attendees.
 		status=$(button).data('status');
+		console.log(status);
 		$('#total_'+status).text(parseInt($('#total_'+status).text()-1));
 
 		switch (action) {
@@ -212,7 +213,7 @@ $(document).ready(function(){
 				<ul class="nav nav-pills">
 					<li class="active"><a class="success" href="#attending" data-toggle="tab">Mæting <span id="total_attending">{{ total_attending }}</span></a></li>
 					<li><a class="important" href="#absent" data-toggle="tab">Fjarri <span id="total_absent">{{ total_absent }}</span></a></li>
-					<li><a class="warning" href="#unclear" data-toggle="tab">Óvíst <span id="total_unclear">{{ total_invited }}</span></a></li>
+					<li><a class="warning" href="#unclear" data-toggle="tab">Óvíst <span id="total_unclear">{{ total_unclear }}</span></a></li>
 					<li><a href="#invitation" data-toggle="tab">Boðun</a></li>
 				</ul><!-- nav-pills -->
 	
@@ -236,8 +237,8 @@ $(document).ready(function(){
 				<span class="role_{{ role.eventrole.role.id}}_status_icon icon-ok-circle"></span>
 		{% elif role.cm_status == "absent" %}
 				<span class="role_{{ role.eventrole.role.id}}_status_icon icon-ban-circle"></span>
-		{% else %}{# In this case, the status is: "invited" #}
-				<span class="role_{{ role.eventrole.role.id}}_status_icon icon-circle-blank invited"></span>
+		{% else %}{# In this case, the status is: "unclear" #}
+				<span class="role_{{ role.eventrole.role.id}}_status_icon icon-circle-blank unclear"></span>
 		{% endif %}
 
 		{# Display the event role title and maximum and minimum number of people required #}
@@ -273,7 +274,7 @@ $(document).ready(function(){
 			{% endfor %}
 		{% else %}
 		{# Here, status is "unclear" #}
-			{% for member in role.invitedmembers %}
+			{% for member in role.unclearmembers %}
 				<li id="role_{{ role.eventrole.role.id }}_member_{{ member.user.id }}_entry">
 					<a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a>
 				{# TODO: condition this on having the rights, if we're going to limit them. #}
