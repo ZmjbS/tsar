@@ -124,8 +124,8 @@ $(document).ready(function(){
 		+			'<div class="role_entry-title" style="float:left">'+role_title+'</div>'
 		+			'<input type="hidden" name="role['+role_id+'][id]" value="'+role_id+'" />'
 		+					'<div style="float:right"><i id="'+role_id+'" class="delete-role-entry icon-remove-sign pull-right" style="cursor: pointer"></i></div>'
-		+					'<div style="float:right; margin-right: .5em;">mest:   <input name="role['+role_id+'][max]" class="col-sm-6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>'
-		+					'<div style="float:right; margin-right: .5em;">minnst: <input name="role['+role_id+'][min]" class="col-sm-6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>'
+//		+					'<div style="float:right; margin-right: .5em;">mest:   <input name="role['+role_id+'][max]" class="col-sm-6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>'
+//		+					'<div style="float:right; margin-right: .5em;">minnst: <input name="role['+role_id+'][min]" class="col-sm-6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>'
 //		+					'<div>'
 //		+						'<input name="role['+role_id+'][closed]" class="btn btn-danger col-sm-12" type="button" value="lokað" onclick="$(this).toggleClass(\'btn-danger btn-success\');($(this).val()==\'lokað\')?$(this).val(\'opið\'):$(this).val(\'lokað\');" />'
 //		+					'</div>'
@@ -153,6 +153,7 @@ $(document).ready(function(){
 
 	$('.select-participants').chosen();
 	$('.chosen').chosen();
+	$('.chzn-container.chzn-container-multi, .chzn-drop').css('width','100%');
 });
 </script>
 
@@ -312,23 +313,28 @@ $(document).ready(function(){
 		</ul>
 	</div><!-- /#event_invitations-data -->
 	<div id="event_invitations-form" style="display: none">
-		<div class="btn-group pull-right" id="event-invite-button">
-			<button class="btn btn-default dropdown-toggle" data-toggle="dropdown">Bæta við hlutverki <span class="caret"></span> </button>
-			<ul id="role-dropdown" class="dropdown-menu">
+		<div class="row" style="margin: .2em;">
+			<div class="col-xs-6 col-sm-3" style="padding: 0 5px 0 0;"><input type="reset" value="Hætta við" class="btn btn-default toggle-form form-control" data-form_id-prefix="event_invitations" onclick="$('#results').slideUp();" /></div>
+			<div class="col-xs-6 col-sm-3" style="padding: 0 5px;"><input type="submit" value="Vista" class="btn btn-primary form-control" data-form_id-prefix="event_invitations" /></div>
+			<div class="col-xs-12 col-sm-6 btn-group pull-right" style="padding: 0 0 0 5px;" id="event-invite-button">
+				<button class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown">Bæta við hlutverki <span class="caret"></span> </button>
+				<ul id="role-dropdown" class="dropdown-menu">
    {% for role in event_roles %}
-				<li class="role-dropdown-item" id="{{ role.id}}"><a>{{ role.title }}</a></li>
+					<li class="role-dropdown-item" id="{{ role.id}}"><a>{{ role.title }}</a></li>
    {% endfor %}
-			</ul>
+				</ul>
+			</div>
 		</div><!-- /#event-invite-button -->
-     	<div id="invite-role-list" style="clear:both">
+	<div id="invite-role-list" style="clear:both">
 
 	{% for event_role in event.eventrole_set.all %}
 			<div class="role_entry">
 				<div class="role_entry-title" style="float:left">{{ event_role.role.title }}</div>
 				<input type="hidden" name="role[{{ event_role.role.id }}][id]" value="{{ event_role.role.id }}" />
 				<div style="float:right"><i id="{{ event_role.role.id }}" class="delete-role-entry icon-remove-sign pull-right" style="cursor: pointer"></i></div>
-				<div style="float:right; margin-right: .5em;">mest:   <input name="role[{{ event_role.role.id }}][max]" class="col-sm-6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>
+<!--				<div style="float:right; margin-right: .5em;">mest:   <input name="role[{{ event_role.role.id }}][max]" class="col-sm-6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>
 				<div style="float:right; margin-right: .5em;">minnst: <input name="role[{{ event_role.role.id }}][min]" class="col-sm-6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>
+-->
 				<div>
 					<select name="role[{{ event_role.role.id }}][participants][]" multiple data-placeholder="Veldu þáttakendur" class="select-participants">
 						<optgroup label="Hópar og flokkar">
@@ -348,8 +354,6 @@ $(document).ready(function(){
 
        	</div><!--invite-role-list-->
       
-		<input type="reset" value="Hætta við" class="col-sm-2 btn btn-default toggle-form" data-form_id-prefix="event_invitations" onclick="$('#results').slideUp();" />
-		<input type="submit" value="Vista" class="col-sm-2 btn btn-primary" data-form_id-prefix="event_invitations" />
 	</div><!-- /#event_invitations-form -->
 </div><!-- /.tab-pane#invitation -->
 

@@ -35,6 +35,8 @@
 /*	#id_date_time_begin, #id_date_time_end { display: inline; width: 8em; }*/
 	#id_title, #event_type, #id_date_time_begin, #id_date_time_end { width: 100% !important; }
 	
+	.required { border-color: rgb(233, 175, 102);outline: 0px none;box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(233, 175, 102, 0.6); }
+
 </style>
 <script type="text/javascript">
 
@@ -50,6 +52,16 @@ $(document).ready(function(){
 	$('#add_dates_btn').parent().css('padding-right', '15px');
 	$('#add_dates_btn').css('font-size','2.27em');
 	$('#add_dates_btn').css('height','auto');
+
+	$('#id_title, #id_date_time_begin, #id_date_time_end').addClass('required');
+	$('#id_title, #id_date_time_begin, #id_date_time_end').live('blur', function(element) {
+		console.log($(this).val());
+		if ($(this).val() == "") {
+			$(this).addClass('required');
+		} else {
+			$(this).removeClass('required');
+		}
+	});
 
 // Datetimepicker
 	startDateTextBox = $('#id_date_time_begin')
@@ -107,6 +119,9 @@ $(document).ready(function(){
 	var csrftoken = $.cookie('csrftoken');
 	console.log('CSRF (on page):'+csrftoken);
 
+	// Populate with a default role
+	$('#6').click();
+
 }); //END READY -----------------------
 
 	$('.role-dropdown-item').live('click',(function(){
@@ -117,8 +132,8 @@ $(document).ready(function(){
 		+			'<div class="role_entry-title" style="float:left">'+role_title+'</div>'
 		+			'<input type="hidden" name="role['+role_id+'][id]" value="'+role_id+'" />'
 		+					'<div style="float:right"><i id="'+role_id+'" class="delete-role-entry icon-remove-sign pull-right" style="cursor: pointer"></i></div>'
-		+					'<div style="float:right; margin-right: .5em;">mest:   <input name="role['+role_id+'][max]" class="col-sm-6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>'
-		+					'<div style="float:right; margin-right: .5em;">minnst: <input name="role['+role_id+'][min]" class="col-sm-6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>'
+//		+					'<div style="float:right; margin-right: .5em;">mest:   <input name="role['+role_id+'][max]" class="col-sm-6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>'
+//		+					'<div style="float:right; margin-right: .5em;">minnst: <input name="role['+role_id+'][min]" class="col-sm-6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>'
 //		+					'<div>'
 //		+						'<input name="role['+role_id+'][closed]" class="btn btn-danger col-sm-12" type="button" value="lokað" onclick="$(this).toggleClass(\'btn-danger btn-success\');($(this).val()==\'lokað\')?$(this).val(\'opið\'):$(this).val(\'lokað\');" />'
 //		+					'</div>'
@@ -223,7 +238,7 @@ $(document).ready(function(){
 
 	<div class="col-xs-12 col-sm-6 col-md-8"><!-- Contains the next three sections: #description, #tags, #location -->
 		<section id="description" tyle="overflow: visible">
-	
+			<h3 id="event-description-header">Lýsing</h3>
 				{{ form.description }}
 		</section><!-- /#description -->
 	

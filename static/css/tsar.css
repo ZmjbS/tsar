@@ -94,3 +94,8 @@ div#profile-picture {
 
 .role_entry { background-color: #efefef; padding: .4em; margin-bottom: .4em; }
 .role_entry-title { font-size: 1.28em; padding-top: .3em; }
+
+
+/****** Various *****/
+	//Chosen tweak
+	.search-field input { min-height: 25px; }
