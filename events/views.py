@@ -291,6 +291,12 @@ def display_event(request, pk):
 	#import pprint
 	#pprint.pprint(role_data)
 
+	# Clear those attending one role from those absent so that the numbers accurately reflect this:
+	total_absent = total_absent.difference(total_attending)
+	# Clear those attending or absent from a role from those unclear so that the numbers accurately reflect this:
+	total_unclear = total_unclear.difference(total_attending)
+	total_unclear = total_unclear.difference(total_absent)
+
 	# Add the groups and members.
 	members = Member.objects.all()
 	groups = Group.objects.all()
