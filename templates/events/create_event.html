@@ -39,10 +39,17 @@
 <script type="text/javascript">
 
 $(document).ready(function(){
-	$('#id_title').css('font-size','3em');
-	$('#id_date_time_begin, #id_date_time_end').css('font-size','.9em');
+	$('#id_title').css('font-size','2.57em');
+	$('#id_date_time_begin').css('margin-bottom','5px');
+	$('#id_date_time_begin, #id_date_time_end').css('font-size','.7em');
 	$('#id_title, #id_date_time_begin, #id_date_time_end').css('height','auto');
 	$('#id_title, #event_type, #id_date_time_begin, #id_date_time_end, #id_description').addClass('form-control');
+	$('#event_header *').css('padding-right', '5px');
+	$('#event_header *').css('padding-left', '5px');
+	$('#id_title').parent().css('padding-left', '15px');
+	$('#add_dates_btn').parent().css('padding-right', '15px');
+	$('#add_dates_btn').css('font-size','2.27em');
+	$('#add_dates_btn').css('height','auto');
 
 // Datetimepicker
 	startDateTextBox = $('#id_date_time_begin')
@@ -147,7 +154,7 @@ $(document).ready(function(){
 
 	<input type="hidden" name="event_id" id="event_id" value="{{ event.pk }}" />
 	
-	<div class="row" style="margin-bottom: 1.5em;">
+	<div id="event_header" class="row" style="margin-bottom: 1.5em;">
 		<div class="col-xs-12 col-sm-7">{{ form.title }}</div>
 		<div class="col-xs-5 col-sm-2">
 			<select id="event_type" name="event_type" class="form-control">
@@ -157,7 +164,7 @@ $(document).ready(function(){
 			</select>
 		</div>
 		<div class="col-xs-3 col-sm-2">{{ form.date_time_begin }}{{ form.date_time_end }}</div>
-		<div class="col-xs-1 col-sm-1"><button type="button" class="btn btn-default" id="add_dates_btn" onclick="$('#add_days').slideToggle();$('#add_days_icon').toggleClass('icon-minus');"><i id="add_days_icon" class="icon-plus"></i></a></div>
+		<div class="col-xs-1 col-sm-1"><button type="button" class="btn btn-default form-control" id="add_dates_btn" onclick="$('#add_days').slideToggle();$('#add_days_icon').toggleClass('icon-minus');"><i id="add_days_icon" class="icon-plus"></i></a></div>
 	</div>
 	
 	<div id="add_days" class="tabbable" style="display:none;">
