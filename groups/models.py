@@ -23,7 +23,7 @@ class Membership(models.Model):
 	member = models.ForeignKey(Member)
 	group = models.ForeignKey(Group)
 	date_joined = models.DateField(default=datetime.now)
-	is_leader = models.BooleanField(default=False)
+	is_manager = models.BooleanField(default=False)
 
 	def __unicode__(self):
 		return self.group.title + ': ' + self.member.user.first_name + ' ' + self.member.user.last_name

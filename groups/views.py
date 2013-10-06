@@ -23,7 +23,7 @@ def group_page(request, slug):
 	g = get_object_or_404(Group, slug=slug)
 	#import pprint
 	#pprint.pprint(g.members.all())
-	managers = [ membership.member for membership in Membership.objects.filter(group=g).filter(is_leader=True) ]
+	managers = [ membership.member for membership in Membership.objects.filter(group=g).filter(is_manager=True) ]
 	print managers
 	om = Member.objects.exclude(membership__group__slug=slug)
 	recent_events_list=Event.objects.filter(eventrole__groupinvitation__group__slug=slug).filter(date_time_begin__lte=now).distinct()
