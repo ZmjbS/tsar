@@ -53,7 +53,7 @@ from django.contrib.auth.decorators import login_required
 def my_page(request):
 	member = request.user.member
 
-	event_list_length = 10
+	event_list_length = 20
 
 	# Retrieve a list of upcoming events and place them in a dictionary
 	all_events_list = Event.objects.filter(date_time_begin__gte=now).order_by('date_time_begin')[:event_list_length]
