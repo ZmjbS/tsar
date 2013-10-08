@@ -124,8 +124,8 @@ $(document).ready(function(){
 		+			'<div class="role_entry-title" style="float:left">'+role_title+'</div>'
 		+			'<input type="hidden" name="role['+role_id+'][id]" value="'+role_id+'" />'
 		+					'<div style="float:right"><i id="'+role_id+'" class="delete-role-entry icon-remove-sign pull-right" style="cursor: pointer"></i></div>'
-//		+					'<div style="float:right; margin-right: .5em;">mest:   <input name="role['+role_id+'][max]" class="col-sm-6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>'
-//		+					'<div style="float:right; margin-right: .5em;">minnst: <input name="role['+role_id+'][min]" class="col-sm-6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>'
+		+					'<div style="float:right; margin-right: .5em;display:none;">mest:   <input name="role['+role_id+'][max]" class="col-sm-6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>'
+		+					'<div style="float:right; margin-right: .5em;display:none;">minnst: <input name="role['+role_id+'][min]" class="col-sm-6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>'
 //		+					'<div>'
 //		+						'<input name="role['+role_id+'][closed]" class="btn btn-danger col-sm-12" type="button" value="lokað" onclick="$(this).toggleClass(\'btn-danger btn-success\');($(this).val()==\'lokað\')?$(this).val(\'opið\'):$(this).val(\'lokað\');" />'
 //		+					'</div>'
@@ -173,7 +173,7 @@ $(document).ready(function(){
 			<date class="pull-right" style="font-size: em; text-align: right;">{{ event.date_time_begin|date:"Y-m-d H:i" }}<br />〜{{ event.date_time_end|date:"Y-m-d H:i" }}</date>
 			<div class="pull-right" style="font-size: 1.8em; text-align: right; display:inline-block; vertical-align: text-bottom">{{ event.date_time_end|timeuntil:event.date_time_begin }}</div>
 			<h1>{{ event.title }} – <span style="font-size: smaller; color: gray;">{{ event.event_type.title|lower }}</span></h1>
-		</div><!-- #event_header-data -->
+		</div><!-- /#event_header-data -->
 
 		<div id="event_header-form" style="display: none">
 			<div class="row">
@@ -195,30 +195,31 @@ $(document).ready(function(){
 				<div class="col-xs-6 col-sm-2"><input type="reset" value="Hætta við" class="btn btn-default toggle-form form-control" data-form_id-prefix="event_header" onclick="$('#results').slideUp();" /></div>
 				<div class="col-xs-6 col-sm-2"><input type="submit" value="Vista" class="btn btn-primary form-control" data-form_id-prefix="event_header" /></div>
 			</div><!-- /.row-->
-		</div><!-- #event_header-form-->
+		</div><!-- /#event_header-form-->
 
+	</div><!-- /#event_header -->
+
+	<div id="response"></div>
+
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="alert" style="padding-top: 4px; padding-bottom: 4px; display:none" id="results"></div>
+		</div>
 	</div>
 
-<div id="response"></div>
+	<div class="row">
+		<div class="col-xs-12 col-sm-5 col-md-4">
+			<section id="event_roles">
 
-<div class="row">
-	<div class="col-sm-12">
-		<div class="alert" style="padding-top: 4px; padding-bottom: 4px; display:none" id="results"></div>
-	</div>
-</div>
-<div class="row">
-	<div class="col-xs-12 col-sm-5 col-md-4">
-		<section id="event_roles">
-
-			<div id="event_roles-data">
-				<ul class="nav nav-pills">
-					<li class="active"><a class="success" href="#attending" data-toggle="tab">Mæting <span id="total_attending">{{ total_attending }}</span></a></li>
-					<li><a class="important" href="#absent" data-toggle="tab">Fjarri <span id="total_absent">{{ total_absent }}</span></a></li>
-					<li><a class="warning" href="#unclear" data-toggle="tab">Óvíst <span id="total_unclear">{{ total_unclear }}</span></a></li>
-					<li><a href="#invitation" data-toggle="tab">Boðun</a></li>
-				</ul><!-- nav-pills -->
+				<div id="event_roles-data">
+					<ul class="nav nav-pills">
+						<li class="active"><a class="success" href="#attending" data-toggle="tab">Mæting <span id="total_attending">{{ total_attending }}</span></a></li>
+						<li><a class="important" href="#absent" data-toggle="tab">Fjarri <span id="total_absent">{{ total_absent }}</span></a></li>
+						<li><a class="warning" href="#unclear" data-toggle="tab">Óvíst <span id="total_unclear">{{ total_unclear }}</span></a></li>
+						<li><a href="#invitation" data-toggle="tab">Boðun</a></li>
+					</ul><!-- nav-pills -->
 	
-				<div class="tab-content" style="overflow:visible">
+					<div class="tab-content" style="overflow:visible">
 
 {# Create a tab pane for each status: #}
 {% for status in status_list %} {# attending absent unclear #}
@@ -244,7 +245,7 @@ $(document).ready(function(){
 
 		{# Display the event role title and maximum and minimum number of people required #}
 				<span class="role_entry-title" style="display:inline-block">{{ role.eventrole.role.title }}</span>
-				<span class="role_entry-bttns">{{ role.eventrole.minimum }}〜{% if role.eventrole.maximum == 0 %}∞{% else %}{{ role.eventrole.maximum }}{% endif %}</span>
+				<span class="role_entry-minmax">{{ role.eventrole.minimum }}〜{% if role.eventrole.maximum == 0 %}∞{% else %}{{ role.eventrole.maximum }}{% endif %}</span>
 
 		{# If the current member is invited, show the response icons/buttons #}
 		{% if not role.cm_status == 'not invited' %}
@@ -297,7 +298,7 @@ $(document).ready(function(){
 		<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_invitations"></i><br />
 		<ul style="list-style: none; margin-left:0; padding-left: 0;">
 {% for event_role in event.eventrole_set.all %}
-			<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;"><span class="role_entry-title">{{ event_role.role.title }}</span> <span style="font-size:smaller; color: gray; float: right;">{{ event_role.minimum }}〜{% if event_role.maximum == 0 %}∞{% else %}{{ event_role.maximum }}{% endif %}</span></div>
+			<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;"><span class="role_entry-title">{{ event_role.role.title }}</span> <span class="role_entry-minmax">{{ event_role.minimum }}〜{% if event_role.maximum == 0 %}∞{% else %}{{ event_role.maximum }}{% endif %}</span></div>
 				<ul>
 	{% for group in event_role.invited_groups.all %}
 					<li><a href="/hopur/{{ group.slug }}">{{ group.title }}</a></li>
@@ -332,9 +333,8 @@ $(document).ready(function(){
 				<div class="role_entry-title" style="float:left">{{ event_role.role.title }}</div>
 				<input type="hidden" name="role[{{ event_role.role.id }}][id]" value="{{ event_role.role.id }}" />
 				<div style="float:right"><i id="{{ event_role.role.id }}" class="delete-role-entry icon-remove-sign pull-right" style="cursor: pointer"></i></div>
-<!--				<div style="float:right; margin-right: .5em;">mest:   <input name="role[{{ event_role.role.id }}][max]" class="col-sm-6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>
-				<div style="float:right; margin-right: .5em;">minnst: <input name="role[{{ event_role.role.id }}][min]" class="col-sm-6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>
--->
+				<div style="float:right; margin-right: .5em; display:none;">mest:   <input name="role[{{ event_role.role.id }}][max]" class="col-sm-6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>
+				<div style="float:right; margin-right: .5em; display:none;">minnst: <input name="role[{{ event_role.role.id }}][min]" class="col-sm-6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>
 				<div>
 					<select name="role[{{ event_role.role.id }}][participants][]" multiple data-placeholder="Veldu þáttakendur" class="select-participants">
 						<optgroup label="Hópar og flokkar">
@@ -357,12 +357,11 @@ $(document).ready(function(){
 	</div><!-- /#event_invitations-form -->
 </div><!-- /.tab-pane#invitation -->
 
-				</div><!-- class="tab-content" -->
-			</div><!-- id="event_roles-data" -->
+					</div><!-- class="tab-content" -->
+				</div><!-- id="event_roles-data" -->
 
 		</section>
 	</div><!-- class="col-sm-4" -->
-
 
 	<div class="col-xs-12 col-sm-7 col-md-8">
 		<section id="event_description">

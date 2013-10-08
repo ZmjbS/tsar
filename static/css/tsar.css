@@ -62,7 +62,7 @@ div#profile-picture {
 
 .role_entry_header { border-bottom: 1px solid #eee; }
 .role_entry-title  { display:inline-block; }
-.role_entry-bttns  { font-size:smaller; color: gray; width: 3em; text-align: right; float: right; }
+.role_entry-minmax  { display:none; font-size:smaller; color: gray; width: 3em; text-align: right; float: right; }
 
 .event-list-item { padding: 2px; overflow: hidden; white-space: nowrap; }
 .eventrole-list-item { padding: 2px; }
