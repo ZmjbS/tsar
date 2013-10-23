@@ -3,7 +3,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponse
 from members.models import Member
 from groups.models import Group, Membership
-from events.models import Event
+from events.models import Event, EventRole, MemberResponse
 
 import datetime
 
@@ -93,3 +93,50 @@ def save_group(request):
 						return HttpResponse('unable to delete membership')
 		# All is done. Return a successful response to the template. :-)
 		return HttpResponse(json.dumps({ 'type': 'success' }))
+
+def group_stats(request, slug):
+	g = get_object_or_404(Group, slug=slug)
+
+	# Get the last N events (that match cerctain criteria, such as the group is the organiser?)
+	# Get all participants in those last events (or restrict to group members?)
+	# Create an array (dictionary) with members and events.
+	# Add a line for total attendance for each member and each event
+	# In template:
+	# * Create table
+	# * make table sortable by attendance
+	# * Plot a bar-chart with attendance vs. event
+	#import pprint
+	#pprint.pprint(g.members.all())
+
+	recent_events_list=Event.objects.filter(eventrole__groupinvitation__group__slug=slug).filter(date_time_begin__lte=now).distinct()
+	#recent_events_list=Event.objects.all()
+	events = []
+	total_members = set()
+	gm = Member.objects.filter(membership__group__slug=slug)
+	for event in recent_events_list:
+		active_members = []
+		for eventrole in EventRole.objects.filter(event=event):
+			# TODO: We need to change this into an attendance to see who actually attended (check Tóti's part).
+			for mr in MemberResponse.objects.filter(event_role=eventrole):# with event.memberresponse.response == 'Y':
+				if mr.member in gm and mr.response == 'Y':
+					active_members.append(mr.member)
+					total_members.add(mr.member)
+		events.append({ 'event': event, 'members': active_members })
+
+	print gm 
+	import pprint
+	pprint.pprint(events)
+			
+	managers = [ membership.member for membership in Membership.objects.filter(group=g).filter(is_manager=True) ]
+	om = Member.objects.exclude(membership__group__slug=slug)
+	return render_to_response('groups/group_stats.html', {
+		'group': g,
+		'managers': managers,
+		'members': om,
+		'recent_events_list': recent_events_list,
+		'user': request.user,
+		'events': events,
+		'total_members': total_members,
+		'group_members': gm,
+	})
+

@@ -201,6 +201,8 @@ def event_response(request):
 	return HttpResponse(json.dumps(data))##, mimetype='application/javascript')
 	#return HttpResponse(jsondata)
 
+from django.contrib.auth.decorators import login_required
+@login_required
 def display_event(request, pk):
 	event = get_object_or_404(Event, id=pk)
 	cm = request.user.member
