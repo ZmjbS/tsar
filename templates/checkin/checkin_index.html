@@ -1,0 +1,115 @@
+{% extends "tsar.html" %}
+
+{% block head %}
+<style>
+.events_list { list-style: none; margin-left: 0.3em; }
+.overflow { display: none; }
+</style>
+<script>
+$(document).ready(function(){
+   $('.respond-icon').click(function(event) { event.stopPropagation(); checkin(this, 'Checkin'); } );
+});
+</script>
+{% endblock %}
+
+{% block page_title %}Innskráning í húsi{% endblock %}
+
+{% block content %}
+	
+<div class="row">
+	<div class="span3">
+		<section>
+			<h5>{{events_list.0.title}}</h5>
+			<ul id="checkin0" class="events_list">
+			{% for event_role in events_list.0.eventrole_set.all %}		
+			<div style="border-bottom: 1px solid #eee;">{{event_role.role.title}}<br></div>
+				<ul class="events_list">
+         {% for member_response in event_role.memberresponse_set.all %}
+            {% if member_response.response == 'Y' %}
+            	<li>
+            		<span id="event_attend-{{event_role.role.id}}_{{ member_response.member.id }}_status_icon" class="icon-circle status-icon unclear-icon"></span>
+            		{{ member_response.member }}{{ event_role.title }}
+					<span id="attend-{{event_role.role.id}}_{{ member_response.member.id }}" data-member="{{ member_response.member.id }}" data-eventid="{{events_list.0.id}}" data-roleid="{{event_role.role.id}}" data-action="attend" class="respond-icon icon-plus-sign"></span>
+            	</li>{% endif %}
+         {% endfor %}
+               </ul>
+			</li>
+			{% endfor %}
+			</ul>
+		</section>
+	</div>
+
+	<div class="span3">
+		<section>
+			<h5>{{events_list.1.title}}</h5>
+			<ul id="checkin1" class="events_list">
+			{% for event_role in events_list.1.eventrole_set.all %}		
+			<div style="border-bottom: 1px solid #eee;">{{event_role.role.title}}<br></div>
+				<ul class="events_list">
+         {% for member_response in event_role.memberresponse_set.all %}
+            {% if member_response.response == 'Y' %}
+            	<li>
+            		<span id="event_{{ event_role.role.id }}_status_icon" class="icon-circle status-icon unclear-icon"></span>
+            		{{ member_response.member }}
+					<span id="attend-{{ ed.invitedroles_dictionaries_list.1.eventrole.id }}" data-action="attend" class="respond-icon icon-plus-sign"></span>
+            	</li>{% endif %}
+         {% endfor %}
+               </ul>
+			</li>
+			{% endfor %}
+			</ul>
+		</section>
+	</div>
+
+	<div class="span3">
+		<section>
+			<h5>{{events_list.2.title}}</h5>
+			<ul style="list-style: none; margin-left:0;">
+			{% for event_role in events_list.3.eventrole_set.all %}		
+			<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;">{{event_role.role.title}}<br>
+			</li>
+			{% endfor %}
+			</ul>
+		</section>
+	</div>
+</div>
+
+<div class="row">
+	<div class="span3">
+		<section>
+			<h5>{{events_list.3.title}}</h5>
+			<ul style="list-style: none; margin-left:0;">
+			{% for event_role in events_list.4.eventrole_set.all %}		
+			<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;">{{event_role.role.title}}<br>
+			</li>
+			{% endfor %}
+			</ul>
+		</section>
+	</div>
+
+	<div class="span3">
+		<section>
+			<h5>{{events_list.4.title}}</h5>
+			<ul style="list-style: none; margin-left:0;">
+			{% for event_role in events_list.5.eventrole_set.all %}		
+			<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;">{{event_role.role.title}}<br>
+			</li>
+			{% endfor %}
+			</ul>
+		</section>
+	</div>
+
+	<div class="span3">
+		<section>
+			<h5>{{events_list.5.title}}</h5>
+			<ul style="list-style: none; margin-left:0;">
+			{% for event_role in events_list.6.eventrole_set.all %}		
+			<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;">{{event_role.role.title}}<br>
+			</li>
+			{% endfor %}
+			</ul>
+		</section>
+	</div>
+</div>
+
+{% endblock %}

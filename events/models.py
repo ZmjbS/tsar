@@ -3,6 +3,7 @@ from django.db import models
 from groups.models import Group
 from members.models import Member
 from django.db.models import get_model
+import datetime
 from django import forms
 from django.forms import ModelForm
 from django.forms.extras.widgets import SelectDateWidget
@@ -130,6 +131,20 @@ class MemberResponse(models.Model):
 
 	def __unicode__(self):
 		return self.event_role.__unicode__() +'>'+ self.member.user.username
+
+class MemberAttendance(models.Model):
+	event_role = models.ForeignKey(EventRole)
+	member = models.ForeignKey(Member)
+	EVENT_ATTENDANCE = (
+		(u'Y',u'Attended'),
+		(u'N',u'Absent'),
+	)
+	attendance = models.CharField(max_length=1, choices=EVENT_ATTENDANCE)
+	time_checkin = models.DateTimeField(blank=True, null=True)
+	time_checkout = models.DateTimeField(blank=True, null=True)
+
+	def __unicode__(self):
+		return u'%s %s %s %s %s' % (self.event_role, self.member, self.attendance, self.time_checkin, self.time_checkout)
 
 # TODO: Need to implement some sort of confirmation/response class. Maybe something like:
 #class Attendance(models.Model):
