@@ -131,10 +131,12 @@ INSTALLED_APPS = (
     'members',
     'groups',
     'events',
+    'checkin',
     'django_evolution',
     'django.contrib.humanize',
 #	'native_tags',
 	'django.contrib.markup',
+    #'south',
 )
 
 #NATIVE_TAGS = (
