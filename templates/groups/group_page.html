@@ -273,11 +273,11 @@ non_members[{{ member.id }}]='{{ member }}';
 
 
 	<div class="input-append edit-interface pull-right">
-	<div id="group_save_buttons">
+		<span id="group_save_buttons">
     		<input type="reset" value="Hætta við" class="btn btn-default" onclick="reset_members_list();toggle_edit_interface();" />
     		<input type="submit" value="Vista" class="btn btn-primary" onclick="toggle_edit_interface();" />
-	</div>
-		<select id="non_members_list" class="ull-right" name="new_members[]" data-placeholder="Nafn">
+		</span>
+		<select id="non_members_list" style="margin-left: .4em;" name="new_members[]" data-placeholder="Nafn">
 			<option></option>
 			{% for member in members %}
 			<option value="{{ member.id }}">{{ member }}</option>
