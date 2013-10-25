@@ -13,23 +13,23 @@ function respond_to_event(button, pagetype) {
 	 *  - pagetype: the page type (Event page, My page) so that we can update the structure and styles accordingly.
 	 *  */
 
-	/* First a bit of debuggin...
-   console.log('responding ----------------------');
+	 /*
+	First a bit of debuggin...
+    console.log('responding ----------------------');
 	console.log('Page is: '+pagetype);
 	console.log('attribute: '+$(button).attr('id'))
 	*/
+	
 
 	// extract the action and eventrole from button
 	//action = $(button).attr('id').substring(0,6);
 	action = $(button).data('action');
 	//eventrole = $(button).attr('id').substring(7);
 	eventrole = $(button).parent().data('eventrole');
-
-	/* More debug
+	/*
 	console.log('action: '+action);
 	console.log('eventrole: '+eventrole);
-	console.log($(button).parent().data('eventrole'));
-	*/
+	console.log($(button).parent().data('eventrole'));*/
 
 	var node='init';
 
@@ -102,7 +102,7 @@ function respond_to_event(button, pagetype) {
 				// If the call comes from 'templates/my_page.html'
 				//
 				// Change the colour of the eventrole status icon -------------------------
-				// DEBUG: console.log('Change eventrole status icon colour');
+				// console.log('Change eventrole status icon colour');
 				if (action == 'attend') {
 					$('#eventrole_'+obj.eventrole_id+'_status_icon').css('color', 'rgb(70, 136, 71)');
 					$('#eventrole_'+obj.eventrole_id+'_status_icon').attr('data-status', 'attending');
@@ -177,9 +177,55 @@ function respond_to_event(button, pagetype) {
 				// ======================================================= End of "My page"
 				break;
 
+
 		}
 
      });
 
    return false;
+};
+
+function checkin(button, pagetype) {
+
+	action = $(button).data('action');
+	member_id = $(button).data('member');
+	event_id = $(button).data('event-id');
+	role_id = $(button).data('role-id');
+	id = $(button).data('id');
+
+	console.log('member_id: '+id);
+
+	//eventrole = $(button).attr('id').substring(7);
+	/*
+	console.log('action: '+action);
+	console.log('eventrole: '+eventrole);
+	console.log($(button).parent().data('eventrole'));*/
+	console.log('before init');
+	var node='init';
+	console.log('before post');
+	// Submit the response via an AJAX POST:
+   	var posting = $.post("/checkin/add", {'action': action, 'member_id': member_id, 'event_id': event_id, 'role_id': role_id,});
+
+
+	console.log('after post');
+
+    posting.done(function(data, node) {
+		obj = JSON && JSON.parse(data) || $.parseJSON(data);
+
+		action_r = obj.action_r
+		//eventrole = $(button).attr('id').substring(7);
+		//eventrole = $(button).parent().data('eventrole');
+
+		console.log('responding ----------------------');
+		console.log('Page is: '+action_r);
+
+		switch ( pagetype ) {
+			case "Checkin":
+				if (action == 'attend') {
+					$('#event_'+$(button).attr('id')+'_status_icon').css('color', 'rgb(70, 136, 71)');
+				};
+			break;
+		}
+	});
+	return false;
 };
