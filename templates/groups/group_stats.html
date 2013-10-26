@@ -84,19 +84,30 @@ $(document).ready(function(){
 <table>
 	<tr>
 		<th>Nafn</th>
-{% for event in events %}
+{% for event in events_list %}
 		<th class="event_title"><div><span><a href="/vidburdur/{{ event.event.id }}">{{ event.event }}</a><br /><date style="margin-left: .2em;">{{ event.event.date_time_begin }}</date></span></div></th>	
 {% endfor %}
+		<th class="attendences_number">Mætingar</th>
 	</tr>
-{# for member in total_members #}
-{% for member in group_members %}
+{% for member in members_list %}
+{# for member in group_members #}
 	<tr>
-		<td>{{ member }}</td>
-	{% for event in events %}
-		<td>{% if member in event.members %}<span class="icon-check"></span>{% endif %}</td>
+		<td>{{ member.member }}</td>
+	{% for event in events_list %}
+		<td>{% if member.member in event.attendees %}<span class="icon-check"></span>{% endif %}</td>
 	{% endfor %}
+		<td>{{ member.attendences }}</td>
 	</tr>
 {% endfor %}
+
+	<tr>
+		<th>Fjöldi</th>
+{% for event in events_list %}
+		<td class="event_total_number">{{ event.attendees|length }}</th>	
+{% endfor %}
+	</tr>
+
 </table>
+
 </div><!-- /.row -->
 {% endblock %}

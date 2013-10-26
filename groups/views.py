@@ -98,7 +98,6 @@ def group_stats(request, slug):
 	g = get_object_or_404(Group, slug=slug)
 
 	# Get the last N events (that match cerctain criteria, such as the group is the organiser?)
-	# Get all participants in those last events (or restrict to group members?)
 	# Create an array (dictionary) with members and events.
 	# Add a line for total attendance for each member and each event
 	# In template:
@@ -108,35 +107,46 @@ def group_stats(request, slug):
 	#import pprint
 	#pprint.pprint(g.members.all())
 
-	recent_events_list=Event.objects.filter(eventrole__groupinvitation__group__slug=slug).filter(date_time_begin__lte=now).distinct()
-	#recent_events_list=Event.objects.all()
-	events = []
-	total_members = set()
 	gm = Member.objects.filter(membership__group__slug=slug)
+	recent_events_list=Event.objects.filter(eventrole__groupinvitation__group__slug=slug).filter(date_time_begin__lte=now).distinct()
+	events_list = []
 	for event in recent_events_list:
-		active_members = []
+		attendees = []
 		for eventrole in EventRole.objects.filter(event=event):
 			# TODO: We need to change this into an attendance to see who actually attended (check Tóti's part).
 			for mr in MemberResponse.objects.filter(event_role=eventrole):# with event.memberresponse.response == 'Y':
 				if mr.member in gm and mr.response == 'Y':
-					active_members.append(mr.member)
-					total_members.add(mr.member)
-		events.append({ 'event': event, 'members': active_members })
+					attendees.append(mr.member)
+		events_list.append({ 'event': event, 'attendees': attendees})
+
+	# Count the number of times each member has attended:
+	members_list = []
+	for member in gm:
+		attendences = 0
+		for event in events_list:
+			if member in event['attendees']:
+				attendences += 1
+		members_list.append({'member': member, 'attendences': attendences})
+
+	print members_list
+		#for event in events_list:
+			#if member in event['attendees']:
+				#members_list.append({ 'member': member, 'attendences': members
 
 	print gm 
 	import pprint
-	pprint.pprint(events)
+	pprint.pprint(events_list)
 			
 	managers = [ membership.member for membership in Membership.objects.filter(group=g).filter(is_manager=True) ]
 	om = Member.objects.exclude(membership__group__slug=slug)
 	return render_to_response('groups/group_stats.html', {
 		'group': g,
+		'group_members': gm,
 		'managers': managers,
 		'members': om,
 		'recent_events_list': recent_events_list,
 		'user': request.user,
-		'events': events,
-		'total_members': total_members,
-		'group_members': gm,
+		'events_list': events_list,
+		'members_list': members_list,
 	})
 
