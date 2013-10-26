@@ -3,7 +3,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponse
 from members.models import Member
 from groups.models import Group, Membership
-from events.models import Event, EventRole, MemberResponse
+from events.models import Event, EventRole, MemberResponse, EventType
 
 import datetime
 
@@ -104,8 +104,6 @@ def group_stats(request, slug):
 	# * Create table
 	# * make table sortable by attendance
 	# * Plot a bar-chart with attendance vs. event
-	#import pprint
-	#pprint.pprint(g.members.all())
 
 	gm = Member.objects.filter(membership__group__slug=slug)
 	recent_events_list=Event.objects.filter(eventrole__groupinvitation__group__slug=slug).filter(date_time_begin__lte=now).distinct()
@@ -128,14 +126,13 @@ def group_stats(request, slug):
 				attendences += 1
 		members_list.append({'member': member, 'attendences': attendences})
 
-	print members_list
-		#for event in events_list:
-			#if member in event['attendees']:
-				#members_list.append({ 'member': member, 'attendences': members
-
 	print gm 
 	import pprint
 	pprint.pprint(events_list)
+
+	# Data to plot. TODO: rename, prettify and add more if we want to plot more stuff.
+	data = list({ 'event': item['event'].title, 'number': len(item['attendees'])} for item in events_list)
+	pprint.pprint(data)
 			
 	managers = [ membership.member for membership in Membership.objects.filter(group=g).filter(is_manager=True) ]
 	om = Member.objects.exclude(membership__group__slug=slug)
@@ -148,5 +145,6 @@ def group_stats(request, slug):
 		'user': request.user,
 		'events_list': events_list,
 		'members_list': members_list,
+		'data': json.dumps(data),
 	})
 

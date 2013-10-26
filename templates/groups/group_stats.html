@@ -7,6 +7,8 @@
 	<link type="text/css" rel="stylesheet" href="/static/css/chosen.css" />
 <!-- Added for proper sorting: -->
 	<script type="text/javascript" src="/static/js/sugar-1.3.9-custom.min.js"></script>
+<!-- Added for charting: -->
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <!-- jQuery tablesorter -->
 	<script type="text/javascript" src="/static/js/jquery.tablesorter.min.js"></script>
 	<script type="text/javascript" src="/static/js/jquery.tablesorter.parser-input-select.js"></script>
@@ -68,10 +70,123 @@
 	margin: -1.5em 0 10em
 	0%;
 }
+
+
+/* d3 chart stuff */
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.bar {
+  fill: steelblue;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.chart rect {
+	fill-opacity: 0.5;
+	stroke-opacity: 1;
+}
+
 </style>
 <script type="text/javascript">
 $(document).ready(function(){
-};
+
+var data = [ {% for event in events_list %}{{ event.attendees|length }}, {% endfor %} ];
+var type = [ {% for event in events_list %}"{{ event.event.event_type.title }}", {% endfor %} ];
+var colour = [ {% for event in events_list %}"{% if event.event.event_type.title == 'Fundur' %}rgb(197,255,105){% elif event.event.event_type.title == 'Æfing' %}rgb(255,197,0){% else %}rgb(107,97,86){% endif %}", {% endfor %} ];
+
+var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var formatPercent = d3.format(".0%");
+
+var x = d3.scale.ordinal()
+    .rangeRoundBands([0, width], .1);
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .tickFormat(formatPercent);
+
+/*var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+*/
+
+var svg = d3.select("body").append("svg")
+		.attr("class", "chart")
+		.attr("height", height)
+		.attr("width", width);
+
+var y = d3.scale.linear()
+		.domain([0, d3.max(data)])
+		.range([0, 420]);
+
+svg.selectAll("rect")
+		.data(data)
+		.enter().append("rect")
+		.attr("x", function(d, i) { return i * width/data.length; })
+		.attr("width", width/data.length - 5)
+      .attr("y", function(d) { return height - y(d); })
+      .attr("style", function(d, i) { return 'stroke: '+colour[i]+'; fill: '+colour[i]+';'})
+      .attr("data-type", function(d, i) { return type[i] })
+      .attr("height", function(d) { return y(d); });
+
+/*
+d3.tsv("/templates/groups/data.tsv", type, function(error, data) {
+  x.domain(data.map(function(d) { return d.letter; }));
+  y.domain([0, d3.max(data, function(d) { return d.frequency; })]);
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Frequency");
+
+  svg.selectAll(".bar")
+      .data(data)
+    .enter().append("rect")
+      .attr("class", "bar")
+      .attr("x", function(d) { return x(d.letter); })
+      .attr("width", x.rangeBand())
+      .attr("y", function(d) { return y(d.frequency); })
+      .attr("height", function(d) { return height - y(d.frequency); });
+
+});
+
+function type(d) {
+  d.frequency = +d.frequency;
+  return d;
+}
+*/
+
+
+});
 </script>
 {% endblock %}
 
