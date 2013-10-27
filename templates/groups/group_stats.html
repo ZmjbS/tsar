@@ -88,7 +88,7 @@
   display: none;
 }
 
-.chart rect {
+svg g rect {
 	fill-opacity: 0.5;
 	stroke-opacity: 1;
 }
@@ -96,10 +96,28 @@
 </style>
 <script type="text/javascript">
 $(document).ready(function(){
+});
 
-var data = [ {% for event in events_list %}{{ event.attendees|length }}, {% endfor %} ];
-var type = [ {% for event in events_list %}"{{ event.event.event_type.title }}", {% endfor %} ];
-var colour = [ {% for event in events_list %}"{% if event.event.event_type.title == 'Fundur' %}rgb(197,255,105){% elif event.event.event_type.title == 'Æfing' %}rgb(255,197,0){% else %}rgb(107,97,86){% endif %}", {% endfor %} ];
+</script>
+{% endblock %}
+
+{% block page_title %}<h1>{{ group.title }} - Tölfræði</h1>{% endblock %}
+
+{% block content %}
+<script type="text/javascript">
+var events = [
+	{% for event in events_list %}
+		 {
+			'title': "{{ event.event.title }}",
+			'attendees': {{ event.attendees|length }},
+			'type': "{{ event.event.event_type }}",
+			'colour': {% if event.event.event_type.title == 'Fundur' %}"rgb(197,255,105)"
+						{% elif event.event.event_type.title == 'Æfing' %}"rgb(255,197,0)"
+						{% else %}"rgb(107,97,86)"
+						{% endif %},
+			},
+	{% endfor %}
+		];
 
 var margin = {top: 20, right: 20, bottom: 30, left: 40},
     width = 960 - margin.left - margin.right,
@@ -107,11 +125,12 @@ var margin = {top: 20, right: 20, bottom: 30, left: 40},
 
 var formatPercent = d3.format(".0%");
 
-var x = d3.scale.ordinal()
-    .rangeRoundBands([0, width], .1);
+var x = d3.scale.linear()
+    .range([0, width]).domain([0,events.length]);
 
 var y = d3.scale.linear()
-    .range([height, 0]);
+    .domain([0, d3.max(events, function(datum) { return datum.attendees; })])
+	 .rangeRound([0, height]);
 
 var xAxis = d3.svg.axis()
     .scale(x)
@@ -122,77 +141,60 @@ var yAxis = d3.svg.axis()
     .orient("left")
     .tickFormat(formatPercent);
 
-/*var svg = d3.select("body").append("svg")
+var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
-  .append("g")
+    .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-*/
 
-var svg = d3.select("body").append("svg")
-		.attr("class", "chart")
-		.attr("height", height)
-		.attr("width", width);
+console.log(events);
 
-var y = d3.scale.linear()
-		.domain([0, d3.max(data)])
-		.range([0, 420]);
+var barWidth = width/events.length - 5;
 
 svg.selectAll("rect")
-		.data(data)
+		.data(events)
 		.enter().append("rect")
-		.attr("x", function(d, i) { return i * width/data.length; })
-		.attr("width", width/data.length - 5)
-      .attr("y", function(d) { return height - y(d); })
-      .attr("style", function(d, i) { return 'stroke: '+colour[i]+'; fill: '+colour[i]+';'})
-      .attr("data-type", function(d, i) { return type[i] })
-      .attr("height", function(d) { return y(d); });
+		.attr("x", function(d, i) { return i * width/events.length; })
+		.attr("width", barWidth)
+      .attr("y", function(d) { return height-y(d.attendees); })
+      .attr("height", function(d) { return y(d.attendees); })
+      .attr("style", function(d, i) { return 'stroke: '+events[i].colour+'; fill: '+events[i].colour+';'})
+      //.attr("data-type", function(d, i) { return events[i] })
+;/*
 
-/*
-d3.tsv("/templates/groups/data.tsv", type, function(error, data) {
-  x.domain(data.map(function(d) { return d.letter; }));
-  y.domain([0, d3.max(data, function(d) { return d.frequency; })]);
-
-  svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
-
-  svg.append("g")
-      .attr("class", "y axis")
-      .call(yAxis)
-    .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("Frequency");
-
-  svg.selectAll(".bar")
-      .data(data)
-    .enter().append("rect")
-      .attr("class", "bar")
-      .attr("x", function(d) { return x(d.letter); })
-      .attr("width", x.rangeBand())
-      .attr("y", function(d) { return y(d.frequency); })
-      .attr("height", function(d) { return height - y(d.frequency); });
-
-});
-
-function type(d) {
-  d.frequency = +d.frequency;
-  return d;
-}
 */
 
+/*
+var y = d3.scale.linear()
+		.domain([0, d3.max(events['attendees'])])
+		.range([0, 420]);
 
-});
+x.domain(data.map(function(d) { return d.letter; }));
+*/
+
+svg.selectAll("text.yAxis")
+		.data(events)
+		.enter().append('svg:text')
+		//.attr("transform", "rotate(-90)")
+		.attr('x', function(datum, index) { return x(index) + barWidth; })
+		.attr('y', height + 18)
+		.attr("dx", -barWidth/2)
+		.attr("text-anchor", "middle")
+		.text(function(datum) { return datum.title; })
+		.attr("class", "yAxis")
+;
+
+svg.append("g")
+		.attr("class", "y axis")
+		.call(yAxis)
+		.append("text")
+		.attr("transform", "rotate(-90)")
+		.attr("y", 6)
+		.attr("dy", ".71em")
+		.style("text-anchor", "end")
+		.text("Frequency");
+
 </script>
-{% endblock %}
-
-{% block page_title %}<h1>{{ group.title }} - Tölfræði</h1>{% endblock %}
-
-{% block content %}
 
 <div class="row">
 
@@ -204,6 +206,14 @@ function type(d) {
 {% endfor %}
 		<th class="attendences_number">Mætingar</th>
 	</tr>
+
+	<tr>
+		<th>Fjöldi</th>
+{% for event in events_list %}
+		<td class="event_total_number">{{ event.attendees|length }}</th>	
+{% endfor %}
+	</tr>
+
 {% for member in members_list %}
 {# for member in group_members #}
 	<tr>
@@ -214,13 +224,6 @@ function type(d) {
 		<td>{{ member.attendences }}</td>
 	</tr>
 {% endfor %}
-
-	<tr>
-		<th>Fjöldi</th>
-{% for event in events_list %}
-		<td class="event_total_number">{{ event.attendees|length }}</th>	
-{% endfor %}
-	</tr>
 
 </table>
 
