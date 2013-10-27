@@ -189,11 +189,9 @@ function checkin(button, pagetype) {
 
 	action = $(button).data('action');
 	member_id = $(button).data('member');
-	event_id = $(button).data('event-id');
-	role_id = $(button).data('role-id');
-	id = $(button).data('id');
-
-	console.log('member_id: '+id);
+	event_id = $(button).data('eventid');
+	role_id = $(button).data('roleid');
+	event_role_id = $(button).data('eventroleid');
 
 	//eventrole = $(button).attr('id').substring(7);
 	/*
@@ -204,7 +202,7 @@ function checkin(button, pagetype) {
 	var node='init';
 	console.log('before post');
 	// Submit the response via an AJAX POST:
-   	var posting = $.post("/checkin/add", {'action': action, 'member_id': member_id, 'event_id': event_id, 'role_id': role_id,});
+   	var posting = $.post("/checkin/add", {'action': action, 'member_id': member_id, 'event_id': event_id, 'role_id': role_id, 'event_role_id': event_role_id,});
 
 
 	console.log('after post');
