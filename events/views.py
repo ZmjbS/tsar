@@ -335,7 +335,9 @@ def display_or_save_event_form(request):
 #TODO: Reorder these try-s to shorten them so that the exceptions make more sense.
 def save_event(request):
 	print 'Saving event'
-	if request.is_ajax() or True:
+	if not request.is_ajax():
+		return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Hello, world. Not AJAX request.'}))
+	else:
 		print 'Is AJAX'
 		# TODO: Add handler for these below. They are required and must be submitted or else the form will not validate. Or perhaps the clean_fields() exception is enough...?
 		import pprint
@@ -375,172 +377,165 @@ def save_event(request):
 		print 'Nú eru öll gögnin komin. Athugum hvort event_id sé gefið.'
 		try:
 			event_id = data['event_id']
-			if event_id == '':
-			# If no event id has been supplied, we'll create a new event.
-				event = Event(title=t, description=d, date_time_begin=dtb, date_time_end=dte, event_type_id=et_id)
-			else:
-			# else we update the existing one.
-				event = Event.objects.get(pk=event_id)
-				event.title = t
-				event.description = d
-				event.date_time_begin = dtb
-				event.date_time_end = dte
-				event.event_type_id = et_id
-
-			# Now save the event
-			try:
-				event.clean_fields()
-				event.save()
-				print 'The event is: ------'
-				print (vars(event))
-				print '--------------------'
-			except:
-				return HttpResponse (json.dumps({ 'type': 'error', 'message': 'Could not save event.'}))
-
-			# Now that the event has been taken care of, let's sort out the event roles etc.
-			# Flow:
-			# For each role:
-			for role in Role.objects.all():
-				print 'Role ID %s' % role.id
-				print 'Role is %s' % role
-				try: #if we want the role:
-					currentparticipants = [] # This will be populated below if the event exists (and currently has any participants).
-					currentgroups = [] # This will be populated below if the event exists (and currently has any participants).
-					currentmembers= [] # This will be populated below if the event exists (and currently has any participants).
-
-					wantedparticipantIDs = data['role'][role.id]['participants']
-					print 'Wanted participantsID: {}'.format(wantedparticipantIDs)
-					wantedgroups = [Group.objects.get(pk=int(groupid[1:])) for groupid in wantedparticipantIDs if groupid[0]=='g']
-					print 'We want event role {} with groups {}'.format(role, wantedgroups)
-					wantedmembers= [Member.objects.get(pk=int(memberid[1:])) for memberid in wantedparticipantIDs if memberid[0]=='m']
-					print 'We want event role {} with members {}'.format(role, wantedmembers)
-					try: #check whether the EventRole already exists
-						# In the event that an EventRole already exists, we have to:
-						#  1. Get the EventRole, stored in eventrole.
-						#  2. Remove unwanted participants
-						# Adding wanted participants is shared with EventRoles that
-						# need to be created so we're doing that later on.
-						#  3. Update the minimum and maximum number of participants
-
-						# 1.
-						eventrole = EventRole.objects.get(event_id=event.id,role_id=role.id)
-						print 'EventRole "{}" already exists.'.format(eventrole)
-
-						# 2.
-						#currentgroups= GroupInvitation.objects.filter(event_role=eventrole)
-						currentgroups = eventrole.invited_groups.all()
-						currentmembers= eventrole.invited_members.all()
-						print 'currentgroups: {}'.format(currentgroups)
-						print 'currentmembers: {}'.format(currentmembers)
-						print 'EventRole already has these invitations:'
-						for group in currentgroups:
-							print '>>{} ({})'.format(group, group.id)
-							#print 'Comare {} with {}'.format(group.id,wantedgroups)
-							if group not in wantedgroups:
-								print '-- ID is {}: We don\'t want {}.'.format(group.id,group)
-								#gi = GroupInvitation(event_role=eventrole,group=group)
-								#print 'Removing group {} from eventrole {}'.format(group,eventrole)
-								#print 'DEBUG'
-								try:
-									print 'DEBUG: {}'.format(eventrole.invited_groups)
-									gi = GroupInvitation.objects.get(event_role=eventrole,group=group)
-									#print gi
-									gi.delete()
-									print 'BINGO'
-								except:
-									print 'Could not remove group {} from {}'.format(group,currentgroups)
-							else:
-								print '++ ID is {}: We keep {}.'.format(group.id,group)
-						for member in currentmembers:
-							print '>>{} ({})'.format(member, member.id)
-							if member not in wantedmembers:
-								print '-- ID is {}: We don\'t want {}.'.format(member.id,member)
-								try:
-									print 'DEBUG: {}'.format(eventrole.invited_members)
-									mi = MemberInvitation.objects.get(event_role=eventrole,member=member)
-									#print mi
-									mi.delete()
-									print 'BINGO'
-								except:
-									print 'Could not remove member {} from {}'.format(member,currentmembers)
-							else:
-								print '++ ID is {}: We keep {}.'.format(member.id,member)
-						# 3.
-						if eventrole.minimum != int(data['role'][role.id]['min']) or eventrole.maximum != int(data['role'][role.id]['max']):
-							eventrole.minimum = int(data['role'][role.id]['min'])
-							eventrole.maximum = int(data['role'][role.id]['max'])
-							try:
-								eventrole.clean_fields()
-								eventrole.save()
-								print 'eventrole saved: {}.'.format(eventrole)
-							except:
-								return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not update eventrole max/min numbers.' }))
-					except: #else
-						# Since there is no existing EventRole, we need to:
-						#  1. Create an EventRole, and save it as eventrole.
-						# and that's it! Adding participants is done below for both
-						# existing and recently created EventRoles.
-						eventrole = EventRole(event_id=event.id,role_id=role.id,minimum=int(data['role'][role.id]['min']), maximum=int(data['role'][role.id]['max']))
-						print 'No EventRole exists, creating {}.'.format(eventrole)
-						try:
-							eventrole.clean_fields()
-							eventrole.save()
-							print 'eventrole saved: {}.'.format(eventrole)
-						except:
-							return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not save eventrole.' }))
-
-					# Now that we have the eventrole and it has been stripped of its
-					# unwanted participatns, let's add the wanted ones.
-					# Workflow:
-					# For each wanted participant,
-					#   if they're not currently invited,
-					#     create a GroupInvitation and attach it to the EventRole
-
-					# For each participant
-					print 'Adding invitations:'
-					print 'Wanted groups: {}'.format(wantedgroups)
-					print 'Wanted members: {}'.format(wantedmembers)
-					for group in wantedgroups:
-						print '>>{} ({})'.format(group, group.id)
-						if group not in currentgroups:
-							print '++ Group {} is not invited: Create GroupInvitation!'.format(group)
-							gi = GroupInvitation(event_role=eventrole, group=group)
-							print '++ GroupInvitation created: '.format(gi)
-							try:
-								gi.clean_fields()
-								gi.save()
-								print '++ GroupInvitation saved'
-							except:
-								print 'ERROR: Could not save GroupInvitation {}'.format(gi)
-						else:
-							print '.. Group {} already invited: nothing to do. :-)'.format(group)
-					print 'Groups done!'
-					for member in wantedmembers:
-						print '>>{} ({})'.format(member, member.id)
-						if member not in currentmembers:
-							print '++ Member {} is not invited: Create MemberInvitation!'.format(member)
-							mi = MemberInvitation(event_role=eventrole, member=member)
-							print '++ MemberInvitation created: '.format(mi)
-							try:
-								mi.clean_fields()
-								mi.save()
-								print '++ MemberInvitation saved'
-							except:
-								print 'ERROR: Could not save MemberInvitation {}'.format(mi)
-						else:
-							print '.. Member {} already invited: nothing to do. :-)'.format(member)
-					print 'All done!'
-				except: #if we don't want the role:
-					print 'No role wanted.'
-					try: # check if the role exists and must be removed
-						eventrole = EventRole.objects.get(event__id=event.id,role__id=role.id)
-						print 'Removing eventrole: %s' % eventrole
-						eventrole.delete()
-					except: # No role wanted. No role exists. All good.
-						print 'No role exists. All good.'
-				print ' ..... '
 		except:
 			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not create event', }))
+		if event_id == '':
+			# If no event id has been supplied, we'll create a new event.
+			event = Event(title=t, description=d, date_time_begin=dtb, date_time_end=dte, event_type_id=et_id)
+		else:
+			# else we update the existing one.
+			event = Event.objects.get(pk=event_id)
+			event.title = t
+			event.description = d
+			event.date_time_begin = dtb
+			event.date_time_end = dte
+			event.event_type_id = et_id
+
+		# Now save the event
+		try:
+			event.clean_fields()
+			event.save()
+			print 'The event is: ------'
+			print (vars(event))
+			print '--------------------'
+		except:
+			return HttpResponse (json.dumps({ 'type': 'error', 'message': 'Could not save event.'}))
+
+		# Now that the event has been taken care of, let's sort out the event roles etc.
+		# Flow:
+		# For each role:
+		for role in Role.objects.all():
+			print 'Role ID %s' % role.id
+			print 'Role is %s' % role
+			if data['role'][role.id]:
+				# If we want eventroles, check whether these need to be created and otherwise update them.
+
+				currentparticipants = [] # This will be populated below if the event exists (and currently has any participants).
+				currentgroups = [] # This will be populated below if the event exists (and currently has any participants).
+				currentmembers= [] # This will be populated below if the event exists (and currently has any participants).
+
+				wantedparticipantIDs = data['role'][role.id]['participants']
+				print 'Wanted participantsID: {}'.format(wantedparticipantIDs)
+				wantedgroups = [Group.objects.get(pk=int(groupid[1:])) for groupid in wantedparticipantIDs if groupid[0]=='g']
+				print 'We want event role {} with groups {}'.format(role, wantedgroups)
+				wantedmembers= [Member.objects.get(pk=int(memberid[1:])) for memberid in wantedparticipantIDs if memberid[0]=='m']
+				print 'We want event role {} with members {}'.format(role, wantedmembers)
+
+				# Workflow:
+				#  1. Get or create the EventRole.
+				#  2. Remove unwanted invitations.
+				#  3. Update the minimum and maximum number of participants.
+				#  4. Adding wanted invitations
+
+				try: # check whether the EventRole already exists
+					# 1. Get the EventRole, stored in eventrole.
+					eventrole = EventRole.objects.get(event_id=event.id,role_id=role.id)
+					print 'EventRole "{}" already exists.'.format(eventrole)
+				except:
+					# Since there is no existing EventRole, we need to:
+					#  1. Create an EventRole, and save it as eventrole.
+					# and that's it! Adding participants is done below for both
+					# existing and recently created EventRoles.
+					eventrole = EventRole(event_id=event.id,role_id=role.id,minimum=int(data['role'][role.id]['min']), maximum=int(data['role'][role.id]['max']))
+					print 'No EventRole exists, creating {}.'.format(eventrole)
+					try:
+						eventrole.clean_fields()
+						eventrole.save()
+						print 'eventrole saved: {}.'.format(eventrole)
+					except:
+						return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not save eventrole.' }))
+
+				# 2. Remove unwanted invitations.
+				currentgroups = eventrole.invited_groups.all()
+				currentmembers= eventrole.invited_members.all()
+				print 'currentgroups: {}'.format(currentgroups)
+				print 'currentmembers: {}'.format(currentmembers)
+				print 'EventRole already has these invitations:'
+				for group in currentgroups:
+					print '>>{} ({})'.format(group, group.id)
+					if group not in wantedgroups:
+						print '-- ID is {}: We don\'t want {}.'.format(group.id,group)
+						try:
+							#print 'DEBUG: {}'.format(eventrole.invited_groups)
+							gi = GroupInvitation.objects.get(event_role=eventrole,group=group)
+							gi.delete()
+						except:
+							print 'Could not remove group {} from {}'.format(group,currentgroups)
+					else:
+						print '++ ID is {}: We keep group {}.'.format(group.id,group)
+				for member in currentmembers:
+					print '>>{} ({})'.format(member, member.id)
+					if member not in wantedmembers:
+						print '-- ID is {}: We don\'t want {}.'.format(member.id,member)
+						try:
+							#print 'DEBUG: {}'.format(eventrole.invited_members)
+							mi = MemberInvitation.objects.get(event_role=eventrole,member=member)
+							mi.delete()
+						except:
+							print 'Could not remove member {} from {}'.format(member,currentmembers)
+					else:
+						print '++ ID is {}: We keep member {}.'.format(member.id,member)
+
+				# 3. Update the minimum and maximum number of participants.
+				if eventrole.minimum != int(data['role'][role.id]['min']) or eventrole.maximum != int(data['role'][role.id]['max']):
+					eventrole.minimum = int(data['role'][role.id]['min'])
+					eventrole.maximum = int(data['role'][role.id]['max'])
+					try:
+						eventrole.clean_fields()
+						eventrole.save()
+						print 'eventrole saved: {}.'.format(eventrole)
+					except:
+						return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not update eventrole max/min numbers.' }))
+
+				# 4. Adding wanted invitations
+				# Now that we have the eventrole and it has been stripped of its
+				# unwanted participatns, let's add the wanted ones.
+				# Workflow:
+				# For each wanted participant,
+				#   if they're not currently invited,
+				#     create a GroupInvitation and attach it to the EventRole
+
+				# For each participant
+				print 'Adding invitations:'
+				print 'Wanted groups: {}'.format(wantedgroups)
+				print 'Wanted members: {}'.format(wantedmembers)
+				for group in wantedgroups:
+					print '>>{} ({})'.format(group, group.id)
+					if group not in currentgroups:
+						print '++ Group {} is not invited: Create GroupInvitation!'.format(group)
+						gi = GroupInvitation(event_role=eventrole, group=group)
+						print '++ GroupInvitation created: '.format(gi)
+						try:
+							gi.clean_fields()
+							gi.save()
+							print '++ GroupInvitation saved'
+						except:
+							print 'ERROR: Could not save GroupInvitation {}'.format(gi)
+					else:
+						print '.. Group {} already invited: nothing to do. :-)'.format(group)
+				print 'Groups done!'
+				for member in wantedmembers:
+					print '>>{} ({})'.format(member, member.id)
+					if member not in currentmembers:
+						print '++ Member {} is not invited: Create MemberInvitation!'.format(member)
+						mi = MemberInvitation(event_role=eventrole, member=member)
+						print '++ MemberInvitation created: '.format(mi)
+						try:
+							mi.clean_fields()
+							mi.save()
+							print '++ MemberInvitation saved'
+						except:
+							print 'ERROR: Could not save MemberInvitation {}'.format(mi)
+					else:
+						print '.. Member {} already invited: nothing to do. :-)'.format(member)
+				print 'All done!'
+			else: #if we don't want the role:
+				print 'No role wanted.'
+				try: # check if the role exists and must be removed
+					eventrole = EventRole.objects.get(event__id=event.id,role__id=role.id)
+					print 'Removing eventrole: %s' % eventrole
+					eventrole.delete()
+				except: # No role wanted. No role exists. All good.
+					print 'No role exists. All good.'
+			print ' ..... '
 		return HttpResponse(json.dumps({ 'type': 'success', 'event_id': event.id }))
-	else:
-		return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Hello, world. Not AJAX request.'}))
