@@ -87,7 +87,7 @@ $(document).ready(function(){
 //		+						'<input name="role['+role_id+'][closed]" class="btn btn-danger col-sm-12" type="button" value="lokað" onclick="$(this).toggleClass(\'btn-danger btn-success\');($(this).val()==\'lokað\')?$(this).val(\'opið\'):$(this).val(\'lokað\');" />'
 //		+					'</div>'
 		+		'<div>'
-		+			'<select name="role['+role_id+']["participants"][]" multiple data-placeholder="Veldu þáttakendur" class="select-participants">'
+		+			'<select name="role['+role_id+'][participants][]" multiple data-placeholder="Veldu þáttakendur" class="select-participants">'
 		+				'<optgroup label="Hópar og flokkar">'
 		+					'{% for group in groups %}'
 		+					'<option value="g{{ group.id }}">{{ group.title }}</option>'
@@ -289,7 +289,7 @@ $(document).ready(function(){
 				<div style="float:right; margin-right: .5em; display:none;">mest:   <input name="role[{{ event_role.role.id }}][max]" class="col-sm-6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>
 				<div style="float:right; margin-right: .5em; display:none;">minnst: <input name="role[{{ event_role.role.id }}][min]" class="col-sm-6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>
 				<div>
-					<select name="role[{{ event_role.role.id }}]['participants'][]" multiple data-placeholder="Veldu þáttakendur" class="select-participants">
+					<select name="role[{{ event_role.role.id }}][participants][]" multiple data-placeholder="Veldu þáttakendur" class="select-participants">
 						<optgroup label="Hópar og flokkar">
 		{% for group in groups %}
 							<option value="g{{ group.id }}"{% if group in event_role.invited_groups.all %} selected="selected"{% endif %}>{{ group.title }}</option>
@@ -383,8 +383,8 @@ $(document).ready(function(){
 				</div><!-- /#event_location-map -->
 
 			</div>
-			</form>
 		</section>
 	</div>
 </div><!-- /.row -->
+</form>
 {% endblock %}
