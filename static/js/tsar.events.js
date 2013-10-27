@@ -106,34 +106,54 @@ function change_event_response(button) {
 /* Add functions that apply to elements on the page */
 $(document).ready(function(){
 
-// Serialise the input data and submit the form.
-// TODO: It's probably best to use a class to select this rather than have it apply to all forms where this script is included.
-		console.log('tsar.events.js read');
+	// Serialise the input data and submit the form.
+	// TODO: It's probably best to use a class to select this rather than have it apply to all forms where this script is included.
+	console.log('tsar.events.js read');
 	$('form').submit(function() {
+		/*
+			This function submits events to the events view for creation.
+		*/
+		/* DEBUG
 		console.log('serialising');
+		*/
 		json = JSON.stringify($(this).serializeJSON());
 		csrf = $.cookie('csrftoken');
+		/* DEBUG
 		console.log('CSRF: '+csrf);
 		console.log('JSON: '+json);
+		*/
+
+		// Post the data
 		var posting = $.post("/vidburdur/nyskraning/vista", {'csrfmiddlewaretoken': csrf, 'data': json});
 		posting.done(function(data) {
+			/* DEBUG
 			console.log('posting done!');
+			*/
+			// Retrieve the response from the view.
 			response = JSON && JSON.parse(data) || $.parseJSON(data);
 			switch (response['type']) {
 				case 'success':
+					// if successful, change the location to the event URI:
+					/* DEBUG
 					console.log('SUCCESS!!!');
 					console.log('response[type]: '+response['type']);
 					console.log('response[event_id]: '+response['event_id']);
+					*/
 					location.href = "/vidburdur/"+response['event_id'];
-					//print_result('Viðburður númer '+data+' búinn til eða lagaður.','alert-success');
 					break;
 				case 'error':
+					// if there was an error, print the result.
+					/* DEBUG
 					console.log('ERROR.');
+					*/
 					print_result(response['message'], 'alert-error');
 					break;
 				default:
+					// This should never happen...
+					/* DEBUG
 					console.log('response: '+data);
 					console.log('response[type]: '+response['type']);
+					*/
 					print_result('Unfamiliar response: '+response['type']+'. Message: '+response['message'], 'alert-error');
 					break;
 			}
