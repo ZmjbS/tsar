@@ -42,23 +42,31 @@ def save_group(request):
 	if not request.is_ajax():
 		return False
 	else:
-		print request.POST
+		# print request.POST
 		data = json.loads(request.POST['data'])
-		print data['member']
+		#print data['members']
+		#members = ast.literal_eval(data['members'][1])
+		#print type(members)
+		#print members['member_id']
 		# Check whether the group exists:
 		try:
 			group = get_object_or_404(Group, id=data['group_id'])
+			print group
 		except:
 			return HttpResponse('no such group')
 
 		# Iterate over the membership array
-		for (member_id,group_status) in enumerate(data['member'][1:]):
-			print '>> Member {}: {}'.format(member_id+1,group_status)
+		for datum in data['members']:
+			import ast
+			members = ast.literal_eval(datum)
+			member_id = members['member_id']
+			group_status = members['status']
+			print '>> Member {}: {}'.format(member_id,group_status)
 			if group_status != None or group_status != 'member':
 				# Check whether the member exists:
 				try:
-					print 'Finding member {}'.format(member_id+1)
-					member = get_object_or_404(Member, id=member_id+1)
+					print 'Finding member {}'.format(member_id)
+					member = get_object_or_404(Member, id=member_id)
 					print 'member {} found'.format(member)
 				except:
 					print 'member not found'
@@ -91,6 +99,11 @@ def save_group(request):
 						membership.delete()
 					except:
 						return HttpResponse('unable to delete membership')
+				elif group_status == 'member':
+					print 'already a member...'
+				else:
+					print 'unknown group_status:'
+					print group_status
 		# All is done. Return a successful response to the template. :-)
 		return HttpResponse(json.dumps({ 'type': 'success' }))
 
