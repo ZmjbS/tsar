@@ -349,41 +349,50 @@ def save_event(request):
 
 		# Sanitise some of the data and return messages if it fails.
 		# The title must be non-zero and no longer than ... TODO!!
+		print 'Submitted data:'
 		t = data['title']
 		if t == "":
 			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Title missing.', }))
+		import sys
+		print sys.stdout.encoding
+		print type(t)
+		print '--title: {}'.format(t.encode('UTF-8'))
 		# There are no restrictions on the description field other than being cleaned. It may be blank and arbitrarily long.
 		d = data['description']
 		# The dates must be supplied and the beginning must precede the end.
+		print '--description: {}'.format(d.encode('UTF-8'))
 		if data['date_time_begin'] == "":
 			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Beginning date missing.', }))
 		dtb = timezone.make_aware(parser.parse(data['date_time_begin']),timezone.get_default_timezone())
+		print '--begins: {}'.format(dtb)
 		if data['date_time_end'] == "":
 			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'End date missing.', }))
 		try:
 			dte = timezone.make_aware(parser.parse(data['date_time_end']),timezone.get_default_timezone())
-			print 'Hæ'
 		except:
 			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Not a valid datetime', }))
-		print dte
 		if dte <= dtb:
 			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'The event start time must precede the end.', }))
+		print '--ends: {}'.format(dte)
 		# The event-type must be supplied.
 		et_id = data['event_type']
-		print et_id
+		print '--type ID: {}'.format(et_id)
 		if et_id== "":
 			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'No event type supplied.', }))
 
 		print 'Nú eru öll gögnin komin. Athugum hvort event_id sé gefið.'
 		try:
 			event_id = data['event_id']
+			print 'event_id: {}'.format(event_id)
 		except:
-			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not create event', }))
+			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'No event_id submitted.', }))
 		if event_id == '':
 			# If no event id has been supplied, we'll create a new event.
+			print 'Creating event...'
 			event = Event(title=t, description=d, date_time_begin=dtb, date_time_end=dte, event_type_id=et_id)
 		else:
 			# else we update the existing one.
+			print 'Updating event...'
 			event = Event.objects.get(pk=event_id)
 			event.title = t
 			event.description = d
@@ -396,7 +405,7 @@ def save_event(request):
 			event.clean_fields()
 			event.save()
 			print 'The event is: ------'
-			print (vars(event))
+			pprint.pprint(vars(event))
 			print '--------------------'
 		except:
 			return HttpResponse (json.dumps({ 'type': 'error', 'message': 'Could not save event.'}))
@@ -436,8 +445,16 @@ def save_event(request):
 					#  1. Create an EventRole, and save it as eventrole.
 					# and that's it! Adding participants is done below for both
 					# existing and recently created EventRoles.
-					eventrole = EventRole(event_id=event.id,role_id=role.id,minimum=int(data['role'][role.id]['min']), maximum=int(data['role'][role.id]['max']))
-					print 'No EventRole exists, creating {}.'.format(eventrole)
+					try:
+						print 'event_id: {}'.format(event.id)
+						print 'role_id: {}'.format(role.id)
+						# TODO: Later feature...
+						#eventrole = EventRole(event_id=event.id,role_id=role.id,minimum=int(data['role'][role.id]['min']), maximum=int(data['role'][role.id]['max']))
+						eventrole = EventRole(event_id=event.id,role_id=role.id,)
+						print 'No EventRole exists, creating {}.'.format(eventrole)
+					except:
+						print 'Could not create eventrole.'
+						return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not create eventrole.' }))
 					try:
 						eventrole.clean_fields()
 						eventrole.save()
@@ -477,15 +494,16 @@ def save_event(request):
 						print '++ ID is {}: We keep member {}.'.format(member.id,member)
 
 				# 3. Update the minimum and maximum number of participants.
-				if eventrole.minimum != int(data['role'][role.id]['min']) or eventrole.maximum != int(data['role'][role.id]['max']):
-					eventrole.minimum = int(data['role'][role.id]['min'])
-					eventrole.maximum = int(data['role'][role.id]['max'])
-					try:
-						eventrole.clean_fields()
-						eventrole.save()
-						print 'eventrole saved: {}.'.format(eventrole)
-					except:
-						return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not update eventrole max/min numbers.' }))
+				# TODO: Later feature...
+				#if eventrole.minimum != int(data['role'][role.id]['min']) or eventrole.maximum != int(data['role'][role.id]['max']):
+				#	eventrole.minimum = int(data['role'][role.id]['min'])
+				#	eventrole.maximum = int(data['role'][role.id]['max'])
+				#	try:
+				#		eventrole.clean_fields()
+				#		eventrole.save()
+				#		print 'eventrole saved: {}.'.format(eventrole)
+				#	except:
+				#		return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not update eventrole max/min numbers.' }))
 
 				# 4. Adding wanted invitations
 				# Now that we have the eventrole and it has been stripped of its
