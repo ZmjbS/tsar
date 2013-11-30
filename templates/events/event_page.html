@@ -343,7 +343,10 @@ $(document).ready(function(){
 						<h3>Merki</h3>
 						<dl class="dl-horizontal" style="margin-top: 0">
 							<dt>Umsjón:<dt><dd>Bækistöðvarhópur</dd>
-							<dt>Verkefni:</dt><dd>Fyrsta hjálp</dd>
+		  {% for tagtype in tagtypes %}
+					 <dt>{{ tagtype.title }}</dt>
+					 <dd>{% for tag in tagtype.tag_set.all %}{{ tag.title }}{% endfor %}</dd>
+		  {% endfor %}
 							<dt>Aðstæður:</dt><dd>Innanhúss, innanbæjar</dd>
 							<dt>Tækjanotkun:</dt><dd>Reykur 1, Reykur 4</dd>
 						</dl>

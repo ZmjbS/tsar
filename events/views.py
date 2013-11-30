@@ -3,7 +3,7 @@ from django.shortcuts import render_to_response, render
 from django.template import RequestContext
 from members.models import Member
 from groups.models import Group
-from events.models import Role, EventType, Event, EventRole, EventCreation, EventRoleForm, GroupInvitation, MemberInvitation, MemberResponse
+from events.models import Role, EventType, Event, EventRole, EventCreation, EventRoleForm, GroupInvitation, MemberInvitation, MemberResponse, TagType
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
@@ -323,13 +323,21 @@ def display_or_save_event_form(request):
 	members = Member.objects.all()
 	groups = Group.objects.all()
 	form = EventCreation(request.POST)
+	tagtypes = TagType.objects.all()
 	#if request.method == 'POST':
 	#	event_role_form = EventRoleForm(request.POST)
 	#	if (form.is_valid()):
 	#		form.save()
 	#	return HttpResponse(json.dumps({ 'form': form, 'event_role_form': event_role_form, 'event_types': event_types, 'event_roles': event_roles, 'members': members, 'groups': groups, }))
 	#else:
-	return render(request, 'events/create_event.html', { 'form': form, 'event_types': event_types, 'event_roles': event_roles, 'members': members, 'groups': groups, })
+	return render(request, 'events/create_event.html', {
+			  'form': form,
+			  'event_types': event_types,
+			  'event_roles': event_roles,
+			  'members': members,
+			  'groups': groups,
+			  'tagtypes': tagtypes,
+			  })
 
 #TODO: Do we need to remove orphaned invitations once an EventRole has been removed?
 #TODO: Reorder these try-s to shorten them so that the exceptions make more sense.
