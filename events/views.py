@@ -299,6 +299,9 @@ def display_event(request, pk):
 	total_unclear = total_unclear.difference(total_attending)
 	total_unclear = total_unclear.difference(total_absent)
 
+	# Pass possible tag types so that we can edit the event.
+	tagtypes = TagType.objects.all()
+
 	# Add the groups and members.
 	members = Member.objects.all()
 	groups = Group.objects.all()
@@ -314,6 +317,7 @@ def display_event(request, pk):
 		'total_attending': len(total_attending),
 		'total_absent': len(total_absent),
 		'total_unclear': len(total_unclear),
+		'tagtypes': tagtypes,
 		'members': members, 'groups': groups,
 	})
 
