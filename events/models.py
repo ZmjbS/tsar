@@ -49,7 +49,7 @@ class Event(models.Model):
 	date_time_begin = models.DateTimeField()
 	date_time_end = models.DateTimeField()
 	event_type = models.ForeignKey(EventType)
-	#tags = models.ManyToManyField(Tag, through='EventTag', related_name='tag_events', blank=True, null=True)
+	tags = models.ManyToManyField(Tag, through='EventTag', related_name='tag_events', blank=True, null=True)
 
 #	objects = EventManager()
 	def invited_roles(self, member):
