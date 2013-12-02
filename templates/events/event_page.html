@@ -16,6 +16,8 @@
 
 #id_title, #event_type, #id_date_time_begin, #id_date_time_end {width: 100% !important; }
 
+div[id*='tag_type_id'] { width: 100% !important; }
+
 </style>
 <script type="text/javascript" src="/static/js/tsar.events.js"></script>
 <script type="text/javascript" src="/static/js/chosen.jquery.min.js"></script>
@@ -46,6 +48,7 @@ $(document).ready(function(){
 	$('#event_description-textarea').autosize({append: "\n"});
 
 	$('.select-participants').chosen();
+	$('.tag-type').chosen();
 	$('.chosen').chosen();
 	$('.chzn-container.chzn-container-multi, .chzn-drop').css('width','100%');
 
@@ -325,12 +328,13 @@ $(document).ready(function(){
 				<div style="margin:0 .5em .5em .5em;">{{ event.description|textile }}</div>
 			</div><!-- /#event_description-data -->
 
-			<div id="event_description-form" style="display: none">
-				<textarea class="col-sm-12" id="event_description-textarea" name="description">{{ event.description }}</textarea>
-				<div style="text-align: right">
-					<input type="reset" value="Hætta við" class="col-xs-6 col-sm-2 btn btn-default toggle-form" data-form_id-prefix="event_description" onclick="$('#results').slideUp();" />
-					<input type="submit" value="Vista" class="col-xs-6 col-sm-2 btn btn-primary" data-form_id-prefix="event_description" />
+			<div id="event_description-form" style="display: none;">
+				<div style="float:right;">
+					<input type="reset" value="Hætta við" class="btn-xs-6 btn-sm-2 btn btn-default toggle-form" data-form_id-prefix="event_description" onclick="$('#results').slideUp();" />
+					<input type="submit" value="Vista" class="btn-xs-6 btn-sm-2 btn btn-primary" data-form_id-prefix="event_description" />
 				</div>
+				<h3>Lýsing</h3>
+				<textarea class="col-sm-12" id="event_description-textarea" name="description">{{ event.description }}</textarea>
 			</div><!-- /#event_description-form -->
 		</section>
 
@@ -342,27 +346,38 @@ $(document).ready(function(){
 						<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_tag"></i>
 						<h3>Merki</h3>
 						<dl class="dl-horizontal" style="margin-top: 0">
-							<dt>Umsjón:<dt><dd>Bækistöðvarhópur</dd>
 		  {% for tagtype in tagtypes %}
-					 <dt>{{ tagtype.title }}</dt>
-					 <dd>{% for tag in tagtype.tag_set.all %}{{ tag.title }}{% endfor %}</dd>
+					 <dt tyle="width: auto; padding-right: .5em;">{{ tagtype.title }} </dt>
+					 <dd tyle="margin-left: 3em;">{% for tag in event.tags.all %}{% if tag in tagtype.tag_set.all %}{{ tag.title }}, {% endif %}{% endfor %}</dd>
 		  {% endfor %}
-							<dt>Aðstæður:</dt><dd>Innanhúss, innanbæjar</dd>
-							<dt>Tækjanotkun:</dt><dd>Reykur 1, Reykur 4</dd>
 						</dl>
 					</div><!-- /#event_tag-data -->
 
-					<div id="event_tag-form" style="display: none">
+					<div id="event_tag-form" style="display: none;">
 						<h3>Merki</h3>
-						<div style="text-align: right">
+						<table style="width: 100%">
+								  {# Create a form for each TagType and mark it with the EventTypes it goes with. Then when the EventType is changed, we have to change the visibility of TagTypes that don't belong to both the new and old EventType #}
+								  {% for tagtype in tagtypes %}
+								  <tr>
+											 <td>{{ tagtype.title }}</td>
+											 <td>
+														<select id="tag_type_id-{{ tagtype.id }}" class="tag-type" multiple data-placeholder="Merktu umsjónaraðila">
+																  {% for tag in tagtype.tag_set.all %}
+																  <option {% if tag in event.tags.all %}selected=selected{% endif %}>{{ tag.title }}</option>
+																  {% endfor %}
+											 </select>
+								  </tr>
+								  {% endfor %}
+						</table>
+						<div style="ext-align: right; verflow: visible;">
 							{# TODO: The cancel button should reset the form and toggle back to displaying the data #}
-							<input type="button" value="Hætta við" class="col-sm-4 btn btn-default toggle-form toggle-form" data-form_id-prefix="event_tag" />
+							<input type="button" value="Hætta við" class="btn-sm-4 btn btn-default toggle-form toggle-form" data-form_id-prefix="event_tag" />
 							{# TODO: The submit button should post the data and only on success toggle back to displaying the data #}
-							<input type="button" value="Vista" class="col-sm-4 btn btn-primary toggle-form" data-form_id-prefix="event_tag" />
+							<input type="button" value="Vista" class="btn-sm-4 btn btn-primary toggle-form" data-form_id-prefix="event_tag" />
 						</div>
 					</div><!-- /#event_description-form -->
 
-					<div id="event_location-data">
+					<div id="event_location-data" style="clear:both;">
 						<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_location"></i>
 						<h3>Staðsetning</h3>
 						<table style="margin-top: 0;">
@@ -370,8 +385,21 @@ $(document).ready(function(){
 							<tr><td>N 64°34,392'	V 21°39,291'</td><td>Upphafsstaður æfingar.</td></tr>
 						</table>
 					</div><!-- /#event_location-data -->
-					<div id="event_location-form" style="display: none">
+					<div id="event_location-form" style="clear: both; display: none;">
 						<h3>Staðsetning</h3>
+						<div>
+								<span class="col-xs-3">Lengd</span>
+								<span class="col-xs-3">Breidd</span>
+								<span class="col-xs-6">Lýsing</span>
+								<input type="text" class="col-xs-3" value="N 65°01,039''" />
+								<input type="text" class="col-xs-3" value="V 21°33,029'" />
+								<input type="text" class="col-xs-6" value="Söfnunarsvæði slasaðra." />
+								<br />
+								<input type="text" class="col-xs-3" value="N 64°34,392''" />
+								<input type="text" class="col-xs-3" value="V 21°39,291'" />
+								<input type="text" class="col-xs-6" value="Upphafsstaður æfingar." />
+								<br />
+					 </div>
 						<div style="text-align: right">
 							{# TODO: The cancel button should reset the form and toggle back to displaying the data #}
 							<input type="button" value="Hætta við" class="col-sm-4 btn btn-default toggle-form toggle-form" data-form_id-prefix="event_location" />
