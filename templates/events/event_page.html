@@ -50,7 +50,7 @@ $(document).ready(function(){
 	$('.select-participants').chosen();
 	$('.tag-type').chosen();
 	$('.chosen').chosen();
-	$('.chzn-container.chzn-container-multi, .chzn-drop').css('width','100%');
+	$('.chosen-container.chosen-container-multi, .chosen-drop').css('width','100%');
 
 	/*
 		Delegate listeners
@@ -111,6 +111,12 @@ $(document).ready(function(){
 		$('.select-participants').chosen();
 	}));
 });
+
+function resetSelect(selector) {
+	$(selector+' option').prop('selected', false);
+	$(selector+' option[data-saved=true]').prop('selected', true);
+	$(selector).trigger('chosen:updated');
+}
 </script>
 
 {% endblock %}
@@ -348,7 +354,18 @@ $(document).ready(function(){
 						<dl class="dl-horizontal" style="margin-top: 0">
 		  {% for tagtype in tagtypes %}
 					 <dt tyle="width: auto; padding-right: .5em;">{{ tagtype.title }} </dt>
-					 <dd tyle="margin-left: 3em;">{% for tag in event.tags.all %}{% if tag in tagtype.tag_set.all %}{{ tag.title }}, {% endif %}{% endfor %}</dd>
+					 <dd tyle="margin-left: 3em;">{% for tag in event.tags.all %}{% if tag in tagtype.tag_set.all %}<span style="border-radius: 3px 3px 3px 3px;
+						 background-clip: padding-box;
+						 background-color: rgb(228, 228, 228);
+						 background-image: -moz-linear-gradient(center top , rgb(244, 244, 244) 20%, rgb(240, 240, 240) 50%, rgb(232, 232, 232) 52%, rgb(238, 238, 238) 100%);
+						 box-shadow: 0px 0px 2px rgb(255, 255, 255) inset, 0px 1px 0px rgba(0, 0, 0, 0.05);
+						 color: rgb(51, 51, 51);
+						 border: 1px solid rgb(170, 170, 170);
+						 line-height: 13px;
+						 padding: 3px 20px 3px 5px;
+						 margin: 3px 0px 3px 5px;
+						 position: relative;
+						 cursor: default;">{{ tag.title }}</span> {% endif %}{% endfor %}</dd>
 		  {% endfor %}
 						</dl>
 					</div><!-- /#event_tag-data -->
@@ -363,7 +380,7 @@ $(document).ready(function(){
 											 <td>
 														<select id="tag_type_id-{{ tagtype.id }}" class="tag-type" multiple data-placeholder="Merktu umsjónaraðila">
 																  {% for tag in tagtype.tag_set.all %}
-																  <option {% if tag in event.tags.all %}selected=selected{% endif %}>{{ tag.title }}</option>
+																  <option {% if tag in event.tags.all %}selected=selected data-saved="true"{% endif %}>{{ tag.title }}</option>
 																  {% endfor %}
 											 </select>
 								  </tr>
@@ -371,9 +388,9 @@ $(document).ready(function(){
 						</table>
 						<div style="ext-align: right; verflow: visible;">
 							{# TODO: The cancel button should reset the form and toggle back to displaying the data #}
-							<input type="button" value="Hætta við" class="btn-sm-4 btn btn-default toggle-form toggle-form" data-form_id-prefix="event_tag" />
+							<input type="button" value="Hætta við" class="btn-sm-4 btn btn-default toggle-form" data-form_id-prefix="event_tag" onclick="resetSelect('.tag-type');$('#results').slideUp();" />
 							{# TODO: The submit button should post the data and only on success toggle back to displaying the data #}
-							<input type="button" value="Vista" class="btn-sm-4 btn btn-primary toggle-form" data-form_id-prefix="event_tag" />
+							<input type="submit" value="Vista" class="btn-sm-4 btn btn-primary toggle-form" data-form_id-prefix="event_tag" />
 						</div>
 					</div><!-- /#event_description-form -->
 
@@ -391,20 +408,20 @@ $(document).ready(function(){
 								<span class="col-xs-3">Lengd</span>
 								<span class="col-xs-3">Breidd</span>
 								<span class="col-xs-6">Lýsing</span>
-								<input type="text" class="col-xs-3" value="N 65°01,039''" />
+								<input type="text" class="col-xs-3" value="N 65°01,039'" />
 								<input type="text" class="col-xs-3" value="V 21°33,029'" />
 								<input type="text" class="col-xs-6" value="Söfnunarsvæði slasaðra." />
 								<br />
-								<input type="text" class="col-xs-3" value="N 64°34,392''" />
+								<input type="text" class="col-xs-3" value="N 64°34,392'" />
 								<input type="text" class="col-xs-3" value="V 21°39,291'" />
 								<input type="text" class="col-xs-6" value="Upphafsstaður æfingar." />
 								<br />
 					 </div>
-						<div style="text-align: right">
+						<div style="ext-align: right">
 							{# TODO: The cancel button should reset the form and toggle back to displaying the data #}
-							<input type="button" value="Hætta við" class="col-sm-4 btn btn-default toggle-form toggle-form" data-form_id-prefix="event_location" />
+							<input type="reset" value="Hætta við" class="col-sm-4 btn btn-default toggle-form toggle-form" data-form_id-prefix="event_location" />
 							{# TODO: The submit button should post the data and only on success toggle back to displaying the data #}
-							<input type="button" value="Vista" class="col-sm-4 btn btn-primary toggle-form" data-form_id-prefix="event_location" />
+							<input type="submit" value="Vista" class="col-sm-4 btn btn-primary toggle-form" data-form_id-prefix="event_location" />
 						</div>
 					</div><!-- /#event_location-form -->
 				</div><!-- /.col-sm-6 -->
