@@ -378,9 +378,9 @@ function resetSelect(selector) {
 								  <tr>
 											 <td>{{ tagtype.title }}</td>
 											 <td>
-														<select id="tag_type_id-{{ tagtype.id }}" class="tag-type" multiple data-placeholder="Merktu umsjónaraðila">
+														<select id="tag_type_id-{{ tagtype.id }}" name="tag_type[{{ tagtype.id }}][]" class="tag-type" multiple data-placeholder="Merktu umsjónaraðila">
 																  {% for tag in tagtype.tag_set.all %}
-																  <option {% if tag in event.tags.all %}selected=selected data-saved="true"{% endif %}>{{ tag.title }}</option>
+																  <option {% if tag in event.tags.all %}selected=selected data-saved="true"{% endif %} value="{{ tag.id }}">{{ tag.title }}</option>
 																  {% endfor %}
 											 </select>
 								  </tr>
