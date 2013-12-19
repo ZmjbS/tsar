@@ -17,6 +17,7 @@
 #id_title, #event_type, #id_date_time_begin, #id_date_time_end {width: 100% !important; }
 
 div[id*='tag_type_id'] { width: 100% !important; }
+[class*='event_type_id'] { display: none; }
 
 </style>
 <script type="text/javascript" src="/static/js/tsar.events.js"></script>
@@ -51,6 +52,8 @@ $(document).ready(function(){
 	$('.tag-type').chosen();
 	$('.chosen').chosen();
 	$('.chosen-container.chosen-container-multi, .chosen-drop').css('width','100%');
+
+	$('.event_type_id-{{ event.event_type.id }}').show();
 
 	/*
 		Delegate listeners
@@ -353,19 +356,15 @@ function resetSelect(selector) {
 						<h3>Merki</h3>
 						<dl class="dl-horizontal" style="margin-top: 0">
 		  {% for tagtype in tagtypes %}
-					 <dt tyle="width: auto; padding-right: .5em;">{{ tagtype.title }} </dt>
-					 <dd tyle="margin-left: 3em;">{% for tag in event.tags.all %}{% if tag in tagtype.tag_set.all %}<span style="border-radius: 3px 3px 3px 3px;
-						 background-clip: padding-box;
-						 background-color: rgb(228, 228, 228);
-						 background-image: -moz-linear-gradient(center top , rgb(244, 244, 244) 20%, rgb(240, 240, 240) 50%, rgb(232, 232, 232) 52%, rgb(238, 238, 238) 100%);
-						 box-shadow: 0px 0px 2px rgb(255, 255, 255) inset, 0px 1px 0px rgba(0, 0, 0, 0.05);
-						 color: rgb(51, 51, 51);
-						 border: 1px solid rgb(170, 170, 170);
-						 line-height: 13px;
-						 padding: 3px 20px 3px 5px;
-						 margin: 3px 0px 3px 5px;
-						 position: relative;
-						 cursor: default;">{{ tag.title }}</span> {% endif %}{% endfor %}</dd>
+							<div class="{% for eventtype in tagtype.event_type.all %}event_type_id-{{ eventtype.id }} {% endfor %}">
+								<dt tyle="width: auto; padding-right: .5em;">{{ tagtype.title }} </dt>
+								<dd tyle="margin-left: 3em;">{% for tag in event.tags.all %}{% if tag in tagtype.tag_set.all %}<span style="display: inline-block; border-radius: 3px 3px 3px 3px;
+									background-image: -moz-linear-gradient(center top , rgb(244, 244, 244) 20%, rgb(240, 240, 240) 50%, rgb(232, 232, 232) 52%, rgb(238, 238, 238) 100%);
+									border: 1px solid rgb(170, 170, 170);
+									padding: 1px 5px 1px 5px;
+									margin: 3px 0px 3px 5px;
+									">{{ tag.title }}</span> {% endif %}{% endfor %}</dd>
+					 		</div>
 		  {% endfor %}
 						</dl>
 					</div><!-- /#event_tag-data -->
@@ -375,8 +374,8 @@ function resetSelect(selector) {
 						<table style="width: 100%">
 								  {# Create a form for each TagType and mark it with the EventTypes it goes with. Then when the EventType is changed, we have to change the visibility of TagTypes that don't belong to both the new and old EventType #}
 								  {% for tagtype in tagtypes %}
-								  <tr>
-											 <td>{{ tagtype.title }}</td>
+								  <tr class="{% for eventtype in tagtype.event_type.all %}event_type_id-{{ eventtype.id }} {% endfor %}">
+									  <td>{{ tagtype.title }} (types: </td>
 											 <td>
 														<select id="tag_type_id-{{ tagtype.id }}" name="tag_type[{{ tagtype.id }}][]" class="tag-type" multiple data-placeholder="Merktu umsjónaraðila">
 																  {% for tag in tagtype.tag_set.all %}
