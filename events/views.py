@@ -580,8 +580,22 @@ def save_event(request):
 		print TagType.objects.all()
 
 		print 'Iterate over eventtags'
+		print data['tag_type']
 		for tag in event.tags.all():
-			if str(tag.id) not in data['tag_type'][tag.tag_type.id]:
+			try:
+				print 'trying'
+				tagslist=data['tag_type'][tagtype.id]
+				#if tagslist == None:
+				#	tagslist=[]
+				#else:
+				#	tagslist='hi'
+				print 'tried'
+			except:
+				print 'excepting'
+				tagslist=[]
+				print 'excepted'
+			print 'tagslist: '+str(tagslist)
+			if str(tag.id) not in tagslist:
 				print 'tag id '+str(tag.id)+' is not in '+str(data['tag_type'][tag.tag_type.id])
 				print 'delete eventtag(event=event,tag='+str(tag)+')'
 				try:
@@ -601,13 +615,16 @@ def save_event(request):
 				print tagtype
 				print tagtype.id
 				try:
-					print 'trying'
+					print 'I am trying'
 					tagslist=data['tag_type'][tagtype.id]
-					print 'tried'
+					print tagslist
+					if tagslist == None:
+						tagslist=[]
+					print 'I tried'
 				except:
-					print 'excepting'
+					print 'I am excepting'
 					tagslist=[]
-					print 'excepted'
+					print 'I have excepted'
 				print 'tagslist: '+str(tagslist)
 				for tag_id in tagslist:
 					tag=Tag.objects.get(pk=tag_id)
