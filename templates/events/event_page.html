@@ -17,7 +17,7 @@
 #id_title, #event_type, #id_date_time_begin, #id_date_time_end {width: 100% !important; }
 
 div[id*='tag_type_id'] { width: 100% !important; }
-[class*='event_type_id'] { display: none; }
+//[class*='event_type_id'] { display: none; }
 
 </style>
 <script type="text/javascript" src="/static/js/tsar.events.js"></script>
@@ -53,8 +53,12 @@ $(document).ready(function(){
 	$('.chosen').chosen();
 	$('.chosen-container.chosen-container-multi, .chosen-drop').css('width','100%');
 
-	$('.event_type_id-{{ event.event_type.id }}').show();
-
+	// Hide the tag types that don't apply to this event type:
+	updateEnabledSelect({{ event.event_type.id }});
+	// Set a listener to the event type select to refresh the tag type select:
+	$('#event_type').change(function() {
+			updateEnabledSelect($(this).val());
+		});
 	/*
 		Delegate listeners
 	*/
@@ -119,6 +123,17 @@ function resetSelect(selector) {
 	$(selector+' option').prop('selected', false);
 	$(selector+' option[data-saved=true]').prop('selected', true);
 	$(selector).trigger('chosen:updated');
+	// update the tag selects (done here since this function is (still?) only called from the reset buttons that affect the tag selects:
+	updateEnabledSelect($('#event_type').val());
+
+}
+
+function updateEnabledSelect(id) {
+	//console.log('id: '+id);
+	$("[class|='event_type_id']"+  ".event_type_id-"+id    ).show();
+	$("[class|='event_type_id']:not(.event_type_id-"+id+")").hide();
+	$("[class|='event_type_id']"+  ".event_type_id-"+id+"  .tag-type").prop('disabled', false).trigger('chosen:updated');
+	$("[class|='event_type_id']:not(.event_type_id-"+id+") .tag-type").prop('disabled','disabled').trigger('chosen:updated');
 }
 </script>
 
@@ -146,7 +161,7 @@ function resetSelect(selector) {
 				<div class="col-xs-4 col-sm-2">
 					<select id="event_type" name="event_type">
 		{% for type in event_types %}
-						<option value="{{ type.pk }}"{% if type.pk == event.event_type.id %} selected="selected"{% endif %}>{{ type.title }}</option>
+						<option value="{{ type.pk }}"{% if type.pk == event.event_type.id %} selected="selected" data-saved="true"{% endif %}>{{ type.title }}</option>
 		{% endfor %}
 					</select>
 				</div>
@@ -157,7 +172,7 @@ function resetSelect(selector) {
 				<!-- Possibly allow duplication, but multiple events is probably overdoing it ...
 				<a class="btn col-sm-1" id="add_dates_btn" onclick="$('#add_days').slideToggle();$('#add_days_icon').toggleClass('icon-minus');"><i id="add_days_icon" class="icon-plus"></i></a>
 				-->
-				<div class="col-xs-6 col-sm-2"><input type="reset" value="Hætta við" class="btn btn-default toggle-form form-control" data-form_id-prefix="event_header" onclick="$('#results').slideUp();" /></div>
+				<div class="col-xs-6 col-sm-2"><input type="reset" value="Hætta við" class="btn btn-default toggle-form form-control" data-form_id-prefix="event_header" onclick="resetSelect('#event_type');$('#results').slideUp();" /></div>
 				<div class="col-xs-6 col-sm-2"><input type="submit" value="Vista" class="btn btn-primary form-control" data-form_id-prefix="event_header" /></div>
 			</div><!-- /.row-->
 		</div><!-- /#event_header-form-->
@@ -356,7 +371,7 @@ function resetSelect(selector) {
 						<h3>Merki</h3>
 						<dl class="dl-horizontal" style="margin-top: 0">
 		  {% for tagtype in tagtypes %}
-							<div class="{% for eventtype in tagtype.event_type.all %}event_type_id-{{ eventtype.id }} {% endfor %}">
+							<div class="{% for eventtype in tagtype.event_type.all %}event_type_id-{{ eventtype.id }} {% endfor %}tagtype-container">
 								<dt tyle="width: auto; padding-right: .5em;">{{ tagtype.title }} </dt>
 								<dd tyle="margin-left: 3em;">{% for tag in event.tags.all %}{% if tag in tagtype.tag_set.all %}<span style="display: inline-block; border-radius: 3px 3px 3px 3px;
 									background-image: -moz-linear-gradient(center top , rgb(244, 244, 244) 20%, rgb(240, 240, 240) 50%, rgb(232, 232, 232) 52%, rgb(238, 238, 238) 100%);
@@ -374,12 +389,12 @@ function resetSelect(selector) {
 						<table style="width: 100%">
 								  {# Create a form for each TagType and mark it with the EventTypes it goes with. Then when the EventType is changed, we have to change the visibility of TagTypes that don't belong to both the new and old EventType #}
 								  {% for tagtype in tagtypes %}
-								  <tr class="{% for eventtype in tagtype.event_type.all %}event_type_id-{{ eventtype.id }} {% endfor %}">
+								  <tr class="{% for eventtype in tagtype.event_type.all %}event_type_id-{{ eventtype.id }} {% endfor %}tagtype-container">
 									  <td>{{ tagtype.title }} (types: </td>
 											 <td>
 														<select id="tag_type_id-{{ tagtype.id }}" name="tag_type[{{ tagtype.id }}][]" class="tag-type" multiple data-placeholder="Merktu umsjónaraðila">
 																  {% for tag in tagtype.tag_set.all %}
-																  <option {% if tag in event.tags.all %}selected=selected data-saved="true"{% endif %} value="{{ tag.id }}">{{ tag.title }}</option>
+																  <option {% if tag in event.tags.all %}selected=selected data-saved="true" {% endif %} value="{{ tag.id }}">{{ tag.title }}</option>
 																  {% endfor %}
 											 </select>
 								  </tr>
