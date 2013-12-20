@@ -1,4 +1,4 @@
-from events.models import Event,EventRole,Role,GroupInvitation,MemberInvitation,MemberResponse,EventType,MemberAttendance
+from events.models import Event,EventRole,Role,GroupInvitation,MemberInvitation,MemberResponse,EventType,MemberAttendance,EventTag,Tag,TagType
 from django.contrib import admin
 
 #class RoleInline(admin.StackedInline):
@@ -38,12 +38,22 @@ class EventRoleInline(admin.StackedInline):
 	model = EventRole
 	extra = 1
 
+class EventTagsInline(admin.StackedInline):
+	model = EventTag
+	extra = 1
+
 class EventAdmin(admin.ModelAdmin):
-	inlines = [EventRoleInline]
+	inlines = (EventRoleInline,EventTagsInline)
+
+class EventTagInline(admin.StackedInline):
+	model = EventTag
+	extra = 1
+
+#class TagTypeAdmin(admin.ModelAdmin):
+	#inlines = [EventTagInline]
 
 class AttendanceAdmin(admin.ModelAdmin):
 	list_display = ('event_role', 'member', 'attendance', 'time_checkin', 'time_checkout')
-
 
 admin.site.register(Event, EventAdmin)
 #admin.site.register(Role, RoleAdmin)
@@ -53,4 +63,7 @@ admin.site.register(GroupInvitation)
 admin.site.register(MemberInvitation)
 admin.site.register(MemberResponse)
 admin.site.register(EventType)
+admin.site.register(TagType)#,TagTypeAdmin)
+admin.site.register(EventTag)
+admin.site.register(Tag)
 admin.site.register(MemberAttendance, AttendanceAdmin)

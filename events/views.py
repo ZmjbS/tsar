@@ -3,7 +3,7 @@ from django.shortcuts import render_to_response, render
 from django.template import RequestContext
 from members.models import Member
 from groups.models import Group
-from events.models import Role, EventType, Event, EventRole, EventCreation, EventRoleForm, GroupInvitation, MemberInvitation, MemberResponse
+from events.models import Role, EventType, Event, EventRole, EventCreation, EventRoleForm, GroupInvitation, MemberInvitation, MemberResponse, TagType, Tag, EventTag
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
@@ -299,6 +299,9 @@ def display_event(request, pk):
 	total_unclear = total_unclear.difference(total_attending)
 	total_unclear = total_unclear.difference(total_absent)
 
+	# Pass possible tag types so that we can edit the event.
+	tagtypes = TagType.objects.all()
+
 	# Add the groups and members.
 	members = Member.objects.all()
 	groups = Group.objects.all()
@@ -314,6 +317,7 @@ def display_event(request, pk):
 		'total_attending': len(total_attending),
 		'total_absent': len(total_absent),
 		'total_unclear': len(total_unclear),
+		'tagtypes': tagtypes,
 		'members': members, 'groups': groups,
 	})
 
@@ -323,13 +327,21 @@ def display_or_save_event_form(request):
 	members = Member.objects.all()
 	groups = Group.objects.all()
 	form = EventCreation(request.POST)
+	tagtypes = TagType.objects.all()
 	#if request.method == 'POST':
 	#	event_role_form = EventRoleForm(request.POST)
 	#	if (form.is_valid()):
 	#		form.save()
 	#	return HttpResponse(json.dumps({ 'form': form, 'event_role_form': event_role_form, 'event_types': event_types, 'event_roles': event_roles, 'members': members, 'groups': groups, }))
 	#else:
-	return render(request, 'events/create_event.html', { 'form': form, 'event_types': event_types, 'event_roles': event_roles, 'members': members, 'groups': groups, })
+	return render(request, 'events/create_event.html', {
+			  'form': form,
+			  'event_types': event_types,
+			  'event_roles': event_roles,
+			  'members': members,
+			  'groups': groups,
+			  'tagtypes': tagtypes,
+			  })
 
 #TODO: Do we need to remove orphaned invitations once an EventRole has been removed?
 #TODO: Reorder these try-s to shorten them so that the exceptions make more sense.
@@ -556,4 +568,82 @@ def save_event(request):
 				except: # No role wanted. No role exists. All good.
 					print 'No role exists. All good.'
 			print ' ..... '
+
+		# for current tags:
+		#	if tag not in submitted data:
+		#		delete eventtag(event=event,tag=tag)
+		# for all TagTypes:
+		#	for submitted tags:
+		#		if tag not currently saved:
+		#			create eventtag(event=event,tag=tag)
+		print 'Do tags.'
+		print TagType.objects.all()
+
+		print 'Iterate over eventtags'
+		print data['tag_type']
+		for tag in event.tags.all():
+			try:
+				print 'trying'
+				tagslist=data['tag_type'][tagtype.id]
+				#if tagslist == None:
+				#	tagslist=[]
+				#else:
+				#	tagslist='hi'
+				print 'tried'
+			except:
+				print 'excepting'
+				tagslist=[]
+				print 'excepted'
+			print 'tagslist: '+str(tagslist)
+			if str(tag.id) not in tagslist:
+				print 'tag id '+str(tag.id)+' is not in '+str(data['tag_type'][tag.tag_type.id])
+				print 'delete eventtag(event=event,tag='+str(tag)+')'
+				try:
+					et=EventTag.objects.get(event=event,tag=tag)
+					try:
+						et.delete()
+					except:
+						print 'Could not delete EventTag.'
+				except:
+					print 'Could not get EventTag.'
+			else:
+				print 'tag id '+str(tag.id)+' is in '+str(data['tag_type'][tag.tag_type.id])
+				print 'Do nothing...'
+		print 'Iterate over tagtypes'
+		for tagtype in TagType.objects.all():
+			if event.event_type in tagtype.event_type.all():
+				print tagtype
+				print tagtype.id
+				try:
+					print 'I am trying'
+					tagslist=data['tag_type'][tagtype.id]
+					print tagslist
+					if tagslist == None:
+						tagslist=[]
+					print 'I tried'
+				except:
+					print 'I am excepting'
+					tagslist=[]
+					print 'I have excepted'
+				print 'tagslist: '+str(tagslist)
+				for tag_id in tagslist:
+					tag=Tag.objects.get(pk=tag_id)
+					print tag
+					if tag not in event.tags.all():
+						print 'tag '+str(tag)+' is not in '+str(event.tags.all())
+						print 'create eventtag(event=event,tag='+str(tag)+')'
+						try:
+							et=EventTag(event=event,tag=tag)
+							try:
+								et.save()
+							except:
+								print 'Could not save EventTag.'
+						except:
+							print 'Could not create EventTag.'
+					else:
+						print 'tag '+str(tag)+' is already in '+str(event.tags.all())
+						print 'Nothing to do...'
+			else:
+				print 'tagtype '+str(tagtype)+' is not valid for this event'
+
 		return HttpResponse(json.dumps({ 'type': 'success', 'event_id': event.id }))

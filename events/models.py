@@ -17,15 +17,29 @@ class Role(models.Model):
 		return self.title
 
 class EventType(models.Model):
-	# Evetns may be of several different types that one may like to distinguish between (e.g. exercise, course, meeting, social, etc.). One may even wish to serve different sets of tags for each.
+	# Events may be of several different types that one may like to distinguish between (e.g. exercise, course, meeting, social, etc.). One may even wish to serve different sets of tags for each.
 	title = models.CharField(max_length=64)
 	description = models.TextField(blank=True)
 
 	def __unicode__(self):
 		return self.title
 
-#class EventManager(models.Manager):
+class TagType(models.Model):
+	# Event tags can have different types of tags, such as organiser, task, conditions, equipment etc.
+	title = models.CharField(max_length=64)
+	# An event tag type is associated with different event types. Most event types will have an organiser but different event types will have different tasks.
+	event_type = models.ManyToManyField(EventType)
 
+	def __unicode__(self):
+		return self.title + ": " + ", ".join([et.title for et in self.event_type.all()])
+
+class Tag(models.Model):
+	title = models.CharField(max_length=64)
+	tag_type = models.ForeignKey(TagType)
+
+	def __unicode__(self):
+		return self.title
+		  
 class Event(models.Model):
 	# The fundamental object. Most of the magic happens in EventRole, however.
 	# An event may have several roles and members can be invited to one or more roles, either as members, or through groups which they belong to.
@@ -35,6 +49,7 @@ class Event(models.Model):
 	date_time_begin = models.DateTimeField()
 	date_time_end = models.DateTimeField()
 	event_type = models.ForeignKey(EventType)
+	tags = models.ManyToManyField(Tag, through='EventTag', related_name='tag_events', blank=True, null=True)
 
 #	objects = EventManager()
 	def invited_roles(self, member):
@@ -60,6 +75,13 @@ class Event(models.Model):
 
 	def __unicode__(self):
 		return self.title
+
+class EventTag(models.Model):
+	event = models.ForeignKey(Event)
+	tag = models.ForeignKey(Tag)
+
+	def __unicode__(self):
+		return self.event.title +' <-> '+ self.tag.title
 
 class EventRole(models.Model):
 	# An event may have several roles, and the same group or member may be invited to each of these. So for each role on each event we need an “event role”.
@@ -145,18 +167,6 @@ class MemberAttendance(models.Model):
 
 	def __unicode__(self):
 		return u'%s %s %s %s %s' % (self.event_role, self.member, self.attendance, self.time_checkin, self.time_checkout)
-
-# TODO: Need to implement some sort of confirmation/response class. Maybe something like:
-#class Attendance(models.Model):
-#	# Logs whether a member attends an eventrole.
-#	# TODO: Do we want to have people attend event_roles or events?!? Hmmm...
-#	event_role = models.ForeignKey(EventRole)
-#	member = models.ForeignKey(Member)
-#	time_responded = models.DateTimeField(auto_now_add=True) #auto_now_add hides this field from the admin
-#	start = models.DateTimeField(default=datetime.now)
-#	from datetime import timedelta
-#	finish = models.DateTimeField(default=obj.start += timedelta(hours=2), blank=True)
-	
 
 class EventCreation(ModelForm):
 	class Meta:

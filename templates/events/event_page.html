@@ -16,6 +16,9 @@
 
 #id_title, #event_type, #id_date_time_begin, #id_date_time_end {width: 100% !important; }
 
+div[id*='tag_type_id'] { width: 100% !important; }
+//[class*='event_type_id'] { display: none; }
+
 </style>
 <script type="text/javascript" src="/static/js/tsar.events.js"></script>
 <script type="text/javascript" src="/static/js/chosen.jquery.min.js"></script>
@@ -46,9 +49,16 @@ $(document).ready(function(){
 	$('#event_description-textarea').autosize({append: "\n"});
 
 	$('.select-participants').chosen();
+	$('.tag-type').chosen();
 	$('.chosen').chosen();
-	$('.chzn-container.chzn-container-multi, .chzn-drop').css('width','100%');
+	$('.chosen-container.chosen-container-multi, .chosen-drop').css('width','100%');
 
+	// Hide the tag types that don't apply to this event type:
+	updateEnabledSelect({{ event.event_type.id }});
+	// Set a listener to the event type select to refresh the tag type select:
+	$('#event_type').change(function() {
+			updateEnabledSelect($(this).val());
+		});
 	/*
 		Delegate listeners
 	*/
@@ -108,6 +118,23 @@ $(document).ready(function(){
 		$('.select-participants').chosen();
 	}));
 });
+
+function resetSelect(selector) {
+	$(selector+' option').prop('selected', false);
+	$(selector+' option[data-saved=true]').prop('selected', true);
+	$(selector).trigger('chosen:updated');
+	// update the tag selects (done here since this function is (still?) only called from the reset buttons that affect the tag selects:
+	updateEnabledSelect($('#event_type').val());
+
+}
+
+function updateEnabledSelect(id) {
+	//console.log('id: '+id);
+	$("[class|='event_type_id']"+  ".event_type_id-"+id    ).show();
+	$("[class|='event_type_id']:not(.event_type_id-"+id+")").hide();
+	$("[class|='event_type_id']"+  ".event_type_id-"+id+"  .tag-type").prop('disabled', false).trigger('chosen:updated');
+	$("[class|='event_type_id']:not(.event_type_id-"+id+") .tag-type").prop('disabled','disabled').trigger('chosen:updated');
+}
 </script>
 
 {% endblock %}
@@ -134,7 +161,7 @@ $(document).ready(function(){
 				<div class="col-xs-4 col-sm-2">
 					<select id="event_type" name="event_type">
 		{% for type in event_types %}
-						<option value="{{ type.pk }}"{% if type.pk == event.event_type.id %} selected="selected"{% endif %}>{{ type.title }}</option>
+						<option value="{{ type.pk }}"{% if type.pk == event.event_type.id %} selected="selected" data-saved="true"{% endif %}>{{ type.title }}</option>
 		{% endfor %}
 					</select>
 				</div>
@@ -145,7 +172,7 @@ $(document).ready(function(){
 				<!-- Possibly allow duplication, but multiple events is probably overdoing it ...
 				<a class="btn col-sm-1" id="add_dates_btn" onclick="$('#add_days').slideToggle();$('#add_days_icon').toggleClass('icon-minus');"><i id="add_days_icon" class="icon-plus"></i></a>
 				-->
-				<div class="col-xs-6 col-sm-2"><input type="reset" value="Hætta við" class="btn btn-default toggle-form form-control" data-form_id-prefix="event_header" onclick="$('#results').slideUp();" /></div>
+				<div class="col-xs-6 col-sm-2"><input type="reset" value="Hætta við" class="btn btn-default toggle-form form-control" data-form_id-prefix="event_header" onclick="resetSelect('#event_type');$('#results').slideUp();" /></div>
 				<div class="col-xs-6 col-sm-2"><input type="submit" value="Vista" class="btn btn-primary form-control" data-form_id-prefix="event_header" /></div>
 			</div><!-- /.row-->
 		</div><!-- /#event_header-form-->
@@ -325,12 +352,13 @@ $(document).ready(function(){
 				<div style="margin:0 .5em .5em .5em;">{{ event.description|textile }}</div>
 			</div><!-- /#event_description-data -->
 
-			<div id="event_description-form" style="display: none">
-				<textarea class="col-sm-12" id="event_description-textarea" name="description">{{ event.description }}</textarea>
-				<div style="text-align: right">
-					<input type="reset" value="Hætta við" class="col-xs-6 col-sm-2 btn btn-default toggle-form" data-form_id-prefix="event_description" onclick="$('#results').slideUp();" />
-					<input type="submit" value="Vista" class="col-xs-6 col-sm-2 btn btn-primary" data-form_id-prefix="event_description" />
+			<div id="event_description-form" style="display: none;">
+				<div style="float:right;">
+					<input type="reset" value="Hætta við" class="btn-xs-6 btn-sm-2 btn btn-default toggle-form" data-form_id-prefix="event_description" onclick="$('#results').slideUp();" />
+					<input type="submit" value="Vista" class="btn-xs-6 btn-sm-2 btn btn-primary" data-form_id-prefix="event_description" />
 				</div>
+				<h3>Lýsing</h3>
+				<textarea class="col-sm-12" id="event_description-textarea" name="description">{{ event.description }}</textarea>
 			</div><!-- /#event_description-form -->
 		</section>
 
@@ -342,24 +370,45 @@ $(document).ready(function(){
 						<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_tag"></i>
 						<h3>Merki</h3>
 						<dl class="dl-horizontal" style="margin-top: 0">
-							<dt>Umsjón:<dt><dd>Bækistöðvarhópur</dd>
-							<dt>Verkefni:</dt><dd>Fyrsta hjálp</dd>
-							<dt>Aðstæður:</dt><dd>Innanhúss, innanbæjar</dd>
-							<dt>Tækjanotkun:</dt><dd>Reykur 1, Reykur 4</dd>
+		  {% for tagtype in tagtypes %}
+							<div class="{% for eventtype in tagtype.event_type.all %}event_type_id-{{ eventtype.id }} {% endfor %}tagtype-container">
+								<dt tyle="width: auto; padding-right: .5em;">{{ tagtype.title }} </dt>
+								<dd tyle="margin-left: 3em;">{% for tag in event.tags.all %}{% if tag in tagtype.tag_set.all %}<span style="display: inline-block; border-radius: 3px 3px 3px 3px;
+									background-image: -moz-linear-gradient(center top , rgb(244, 244, 244) 20%, rgb(240, 240, 240) 50%, rgb(232, 232, 232) 52%, rgb(238, 238, 238) 100%);
+									border: 1px solid rgb(170, 170, 170);
+									padding: 1px 5px 1px 5px;
+									margin: 3px 0px 3px 5px;
+									">{{ tag.title }}</span> {% endif %}{% endfor %}</dd>
+					 		</div>
+		  {% endfor %}
 						</dl>
 					</div><!-- /#event_tag-data -->
 
-					<div id="event_tag-form" style="display: none">
+					<div id="event_tag-form" style="display: none;">
 						<h3>Merki</h3>
-						<div style="text-align: right">
+						<table style="width: 100%">
+								  {# Create a form for each TagType and mark it with the EventTypes it goes with. Then when the EventType is changed, we have to change the visibility of TagTypes that don't belong to both the new and old EventType #}
+								  {% for tagtype in tagtypes %}
+								  <tr class="{% for eventtype in tagtype.event_type.all %}event_type_id-{{ eventtype.id }} {% endfor %}tagtype-container">
+									  <td>{{ tagtype.title }} (types: </td>
+											 <td>
+														<select id="tag_type_id-{{ tagtype.id }}" name="tag_type[{{ tagtype.id }}][]" class="tag-type" multiple data-placeholder="Merktu umsjónaraðila">
+																  {% for tag in tagtype.tag_set.all %}
+																  <option {% if tag in event.tags.all %}selected=selected data-saved="true" {% endif %} value="{{ tag.id }}">{{ tag.title }}</option>
+																  {% endfor %}
+											 </select>
+								  </tr>
+								  {% endfor %}
+						</table>
+						<div style="ext-align: right; verflow: visible;">
 							{# TODO: The cancel button should reset the form and toggle back to displaying the data #}
-							<input type="button" value="Hætta við" class="col-sm-4 btn btn-default toggle-form toggle-form" data-form_id-prefix="event_tag" />
+							<input type="button" value="Hætta við" class="btn-sm-4 btn btn-default toggle-form" data-form_id-prefix="event_tag" onclick="resetSelect('.tag-type');$('#results').slideUp();" />
 							{# TODO: The submit button should post the data and only on success toggle back to displaying the data #}
-							<input type="button" value="Vista" class="col-sm-4 btn btn-primary toggle-form" data-form_id-prefix="event_tag" />
+							<input type="submit" value="Vista" class="btn-sm-4 btn btn-primary" data-form_id-prefix="event_tag" />
 						</div>
 					</div><!-- /#event_description-form -->
 
-					<div id="event_location-data">
+					<div id="event_location-data" style="clear:both;">
 						<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_location"></i>
 						<h3>Staðsetning</h3>
 						<table style="margin-top: 0;">
@@ -367,13 +416,26 @@ $(document).ready(function(){
 							<tr><td>N 64°34,392'	V 21°39,291'</td><td>Upphafsstaður æfingar.</td></tr>
 						</table>
 					</div><!-- /#event_location-data -->
-					<div id="event_location-form" style="display: none">
+					<div id="event_location-form" style="clear: both; display: none;">
 						<h3>Staðsetning</h3>
-						<div style="text-align: right">
+						<div>
+								<span class="col-xs-3">Lengd</span>
+								<span class="col-xs-3">Breidd</span>
+								<span class="col-xs-6">Lýsing</span>
+								<input type="text" class="col-xs-3" value="N 65°01,039'" />
+								<input type="text" class="col-xs-3" value="V 21°33,029'" />
+								<input type="text" class="col-xs-6" value="Söfnunarsvæði slasaðra." />
+								<br />
+								<input type="text" class="col-xs-3" value="N 64°34,392'" />
+								<input type="text" class="col-xs-3" value="V 21°39,291'" />
+								<input type="text" class="col-xs-6" value="Upphafsstaður æfingar." />
+								<br />
+					 </div>
+						<div style="ext-align: right">
 							{# TODO: The cancel button should reset the form and toggle back to displaying the data #}
-							<input type="button" value="Hætta við" class="col-sm-4 btn btn-default toggle-form toggle-form" data-form_id-prefix="event_location" />
+							<input type="reset" value="Hætta við" class="col-sm-4 btn btn-default toggle-form toggle-form" data-form_id-prefix="event_location" />
 							{# TODO: The submit button should post the data and only on success toggle back to displaying the data #}
-							<input type="button" value="Vista" class="col-sm-4 btn btn-primary toggle-form" data-form_id-prefix="event_location" />
+							<input type="submit" value="Vista" class="col-sm-4 btn btn-primary toggle-form" data-form_id-prefix="event_location" />
 						</div>
 					</div><!-- /#event_location-form -->
 				</div><!-- /.col-sm-6 -->
