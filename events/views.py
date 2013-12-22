@@ -428,7 +428,11 @@ def save_event(request):
 		for role in Role.objects.all():
 			print 'Role ID %s' % role.id
 			print 'Role is %s' % role
-			if data['role'][role.id]:
+			try:
+				role_exists = data['role'][role.id]
+			except:
+				role_exists = False
+			if role_exists:
 				# If we want eventroles, check whether these need to be created and otherwise update them.
 
 				currentparticipants = [] # This will be populated below if the event exists (and currently has any participants).
