@@ -131,6 +131,7 @@ $(document).ready(function(){
 			*/
 			// Retrieve the response from the view.
 			response = JSON && JSON.parse(data) || $.parseJSON(data);
+			console.log(response);
 			switch (response['type']) {
 				case 'success':
 					// if successful, change the location to the event URI:
@@ -144,9 +145,9 @@ $(document).ready(function(){
 				case 'error':
 					// if there was an error, print the result.
 					/* DEBUG
-					console.log('ERROR.');
 					*/
-					print_result(response['message'], 'alert-error');
+					console.log('ERROR.');
+					print_result(response['message'], 'alert-danger');
 					break;
 				default:
 					// This should never happen...
@@ -166,9 +167,10 @@ $(document).ready(function(){
 	function print_result(message,type){
 		$('#results').slideDown()
 		$('#results').html(message)
+		console.log(type);
+		// Now change the style accordingly:
 		if (type) {
-			//$('#results').removeClass()
-			$('#results').addClass('alert '+type)
+			$('#results').addClass(type)
 		}
 	}
 

@@ -360,39 +360,53 @@ def save_event(request):
 		pprint.pprint(data)
 
 		# Sanitise some of the data and return messages if it fails.
+
+		### TITLE ###
 		# The title must be non-zero and no longer than ... TODO!!
 		print 'Submitted data:'
 		t = data['title']
 		if t == "":
 			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Title missing.', }))
+		elif len(t) > 64:
+			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'The title is currently '+str(len(t))+' characters long but the maximum is 64.', }))
 		import sys
 		print sys.stdout.encoding
 		print type(t)
 		print '--title: {}'.format(t.encode('UTF-8'))
+
+		### DESCRIPTION ###
 		# There are no restrictions on the description field other than being cleaned. It may be blank and arbitrarily long.
 		d = data['description']
 		# The dates must be supplied and the beginning must precede the end.
 		print '--description: {}'.format(d.encode('UTF-8'))
+
+		### DATES ###
 		if data['date_time_begin'] == "":
 			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Beginning date missing.', }))
-		dtb = timezone.make_aware(parser.parse(data['date_time_begin']),timezone.get_default_timezone())
+		try:
+			dtb = timezone.make_aware(parser.parse(data['date_time_begin']),timezone.get_default_timezone())
+		except:
+			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Beginning date-time is not a valid datetime.', }))
 		print '--begins: {}'.format(dtb)
 		if data['date_time_end'] == "":
 			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'End date missing.', }))
 		try:
 			dte = timezone.make_aware(parser.parse(data['date_time_end']),timezone.get_default_timezone())
 		except:
-			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Not a valid datetime', }))
+			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'End date-time is not a valid datetime', }))
 		if dte <= dtb:
 			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'The event start time must precede the end.', }))
 		print '--ends: {}'.format(dte)
+
+		### TYPE ###
 		# The event-type must be supplied.
 		et_id = data['event_type']
 		print '--type ID: {}'.format(et_id)
 		if et_id== "":
 			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'No event type supplied.', }))
 
-		print 'Nú eru öll gögnin komin. Athugum hvort event_id sé gefið.'
+		### EVENT ID ###
+		print 'All the data has been submitted. Check whether event_id has been supplied.'
 		try:
 			event_id = data['event_id']
 			print 'event_id: {}'.format(event_id)

@@ -146,6 +146,12 @@ function updateEnabledSelect(id) {
 <form>
 	<input type="hidden" name="event_id" id="event_id" value=" {{ event.id }}" />
 
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="alert" style="padding-top: 4px; padding-bottom: 4px; display:none" id="results"></div>
+		</div>
+	</div>
+
 	<div id="event_header">
 
 		<div id="event_header-data">
@@ -180,12 +186,6 @@ function updateEnabledSelect(id) {
 	</div><!-- /#event_header -->
 
 	<div id="response"></div>
-
-	<div class="row">
-		<div class="col-sm-12">
-			<div class="alert" style="padding-top: 4px; padding-bottom: 4px; display:none" id="results"></div>
-		</div>
-	</div>
 
 	<div class="row">
 		<div class="col-xs-12 col-sm-5 col-md-4">
