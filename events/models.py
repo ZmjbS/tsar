@@ -10,14 +10,21 @@ from django.forms.extras.widgets import SelectDateWidget
 from django.forms.widgets import SplitDateTimeWidget
 
 class Role(models.Model):
-	# The roles that participatns in an event may have (e.g. driver, organiser, instructor, etc.).
+	# Roles for participants in an event. (e.g. driver, organiser, instructor,
+	# etc.).
+
 	title = models.CharField(max_length=64)
 
 	def __unicode__(self):
 		return self.title
 
 class EventType(models.Model):
-	# Events may be of several different types that one may like to distinguish between (e.g. exercise, course, meeting, social, etc.). One may even wish to serve different sets of tags for each.
+	# Events may be of several different types that one may like to distinguish
+	# between (e.g. exercise, course, meeting, social, etc.).
+	#
+	# TagTypes also have EventTypes as an exercise may have different tags to a
+	# meeting.
+
 	title = models.CharField(max_length=64)
 	description = models.TextField(blank=True)
 
@@ -25,15 +32,26 @@ class EventType(models.Model):
 		return self.title
 
 class TagType(models.Model):
-	# Event tags can have different types of tags, such as organiser, task, conditions, equipment etc.
+	# TagTypes group tags by type such as organiser, task, conditions, equipment
+	# etc.
+	#
+	# A TagType is associated with one or more EventTypes to which it applies.
+	# Most event types will have an organiser but different event types will have
+	# different tasks.
+
 	title = models.CharField(max_length=64)
-	# An event tag type is associated with different event types. Most event types will have an organiser but different event types will have different tasks.
 	event_type = models.ManyToManyField(EventType)
 
 	def __unicode__(self):
 		return self.title + ": " + ", ".join([et.title for et in self.event_type.all()])
 
 class Tag(models.Model):
+	# Events have Tags for analysis. These should be chosen depending on which
+	# elements should be focused on in each type of event. Exercises could for
+	# example be tagged with first-aid, avalanche rescue or similar techniques.
+	#
+	# Tags are grouped into TagTypes (e.g. organiser, task, conditions, equipment,
+	# etc.).
 	title = models.CharField(max_length=64)
 	tag_type = models.ForeignKey(TagType)
 
@@ -42,8 +60,13 @@ class Tag(models.Model):
 		  
 class Event(models.Model):
 	# The fundamental object. Most of the magic happens in EventRole, however.
-	# An event may have several roles and members can be invited to one or more roles, either as members, or through groups which they belong to.
-	# Events come in various types, have locations and can be tagged with techniques employed or something similar that will aid in diagnosing events.
+	#
+	# An event may have several roles and members can be invited to one or more
+	# roles, either as members, or through groups which they belong to.
+	#
+	# Events come in various types, have locations and can be tagged with
+	# techniques employed or something similar that will aid in analysing events.
+
 	title = models.CharField(max_length=64)
 	description = models.TextField(blank=True)
 	date_time_begin = models.DateTimeField()
@@ -51,8 +74,9 @@ class Event(models.Model):
 	event_type = models.ForeignKey(EventType)
 	tags = models.ManyToManyField(Tag, through='EventTag', related_name='tag_events', blank=True, null=True)
 
-#	objects = EventManager()
 	def invited_roles(self, member):
+		# Returns a list of roles a member is invited to.
+
 		invitedroles = []
 		#print self.eventrole_set.all()
 		for eventrole in self.eventrole_set.all():
@@ -64,6 +88,8 @@ class Event(models.Model):
 		return invitedroles
 
 	def responded_roles(self, member):
+		# Returns a list of roles a member has responded to.
+
 		respondedroles = []
 		for eventrole in self.eventrole_set.all():
 			if member in eventrole.responses.all():
@@ -84,14 +110,18 @@ class EventTag(models.Model):
 		return self.event.title +' <-> '+ self.tag.title
 
 class EventRole(models.Model):
-	# An event may have several roles, and the same group or member may be invited to each of these. So for each role on each event we need an “event role”.
-	# These are associated with:
+	# An event may have several roles, and the same group or member may be
+	# invited to each of these. So for each role on each event we need an
+	# “event role” to which we'll hang the invitations.
+	#
+	# These EventRoles are associated with:
 	# * an event
 	# * a role
 	# * (optionally) one or more groups through GroupInvitation
 	# * (optionally) one or more members through MemberInvitation
 	# An event role may have a minimum or maximum number of participants and can even be open to anyone who may wish to join.
 	# TODO: Open/closed events. Simple boolean?
+
 	event = models.ForeignKey(Event)
 	role = models.ForeignKey(Role)
 	invited_groups = models.ManyToManyField(Group, through='GroupInvitation', blank=True, null=True)
@@ -102,6 +132,9 @@ class EventRole(models.Model):
 	is_hidden = models.BooleanField(default=False)
 
 	def invited(self, member):
+		# Returns boolean depending on whether the member is invited to the event.
+		# TODO: Unused?
+
 		for group in self.invited_groups.all():
 			if member in group.members.all():
 				return True
@@ -110,13 +143,16 @@ class EventRole(models.Model):
 		return False
 
 	def response(self, member):
-		#print 'XXX',self.memberresponse_set
+		# Returns the member's response to the event, unless there is none in
+		# which case the response is the string 'U'.
+		# TODO: Unused?
+
 		try:
 			mr = MemberResponse.objects.get(event_role=self,member=member)
-			print 'XXX',mr.response
+			#print 'XXX',mr.response
 			return mr.response
 		except:
-			print 'XXX NO RESPONSE'
+			#print 'XXX NO RESPONSE'
 			return 'U'
 
 	def __unicode__(self):
@@ -124,6 +160,7 @@ class EventRole(models.Model):
 
 class GroupInvitation(models.Model):
 	# An intermediary model between an event role and a group.
+
 	event_role = models.ForeignKey(EventRole)
 	group = models.ForeignKey(Group)
 
@@ -132,6 +169,7 @@ class GroupInvitation(models.Model):
 
 class MemberInvitation(models.Model):
 	# An intermediary model between an event role and a member.
+
 	event_role = models.ForeignKey(EventRole)
 	member = models.ForeignKey(Member)
 
@@ -139,6 +177,12 @@ class MemberInvitation(models.Model):
 		return self.event_role.__unicode__() +'>'+ self.member.user.username
 
 class MemberResponse(models.Model):
+	# An intermediary model between an event role and a member.
+	#
+	# The MemberResponse details the response (whether the member is attending or
+	# will be absent) and the time of the response (important for roles which
+	# have a maximum number of slots).
+
 	event_role = models.ForeignKey(EventRole)
 	member = models.ForeignKey(Member)
 	EVENT_RESPONSES = (
