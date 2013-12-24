@@ -239,17 +239,17 @@ function updateEnabledSelect(id) {
 		{# Display the members #}
 			<ul id="role_{{ role.eventrole.role.id }}_{{ status }}_members">
 		{% if status == "attending" %}
-			{% for member in role.attendingmembers %}
-				<li id="role_{{ role.eventrole.role.id }}_member_{{ member.user.id }}_entry">
-					<a href="/felagi/{{ member.user.username }}" style="display: inline-block;">{{ member.user.first_name }} {{ member.user.last_name }}</a>
+			{% for mr in role.attending_responses %}
+				<li id="role_{{ role.eventrole.role.id }}_member_{{ mr.member.user.id }}_entry">
+					<a href="/felagi/{{ mr.member.user.username }}" style="display: inline-block;">{{ mr.member.user.first_name }} {{ mr.member.user.last_name }}</a> ( {{ mr.time_responded }} )
 				{# TODO: condition this on having the rights, if we're going to limit them. #}
-					<span class="change-response {{ status }} edit-interface icon-remove-sign pull-right" style="display: none" data-member_id="{{ member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="absent" data-status="{{ status }}"></span>
+					<span class="change-response {{ status }} edit-interface icon-remove-sign pull-right" style="display: none" data-member_id="{{ mr.member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="absent" data-status="{{ status }}"></span>
 				</li>
 			{% endfor %}
 		{% elif status == "absent" %}
-			{% for member in role.absentmembers %}
-				<li id="role_{{ role.eventrole.role.id }}_member_{{ member.user.id }}_entry">
-					<a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a>
+			{% for mr in role.absent_responses %}
+				<li id="role_{{ role.eventrole.role.id }}_member_{{ mr.member.user.id }}_entry">
+					<a href="/felagi/{{ mr.member.user.username }}" style="display: inline-block;">{{ mr.member.user.first_name }} {{ mr.member.user.last_name }}</a> ( {{ mr.time_responded }} )
 				{# TODO: condition this on having the rights, if we're going to limit them. #}
 					<span class="change-response {{ status }} edit-interface icon-plus-sign pull-right" style="display: none" data-member_id="{{ member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="attend" data-status="{{ status }}"></span>
 				</li>
