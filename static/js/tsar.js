@@ -58,11 +58,11 @@ function respond_to_event(button, pagetype) {
 				$('#role_'+obj.role_id+'_member_'+obj.user_id+'_entry').remove();
 				// Add an entry to the new list
 				if (action == 'attend') {
-					$('#role_'+obj.role_id+'_attending_members').prepend('<li id="role_'+obj.role_id+'_member_'+obj.user_id+'_entry"><a href="/felagi/'+obj.username+'">'+obj.user_name+'</a></li>')
+					$('#role_'+obj.role_id+'_attending_members').prepend('<li id="role_'+obj.role_id+'_member_'+obj.user_id+'_entry"><a href="/felagi/'+obj.username+'">'+obj.user_name+'</a> ('+obj.time_responded+') </li>')
 					$('.role_'+obj.role_id+'_status_icon').removeClass('icon-ban-circle icon-circle-blank invited');
 					$('.role_'+obj.role_id+'_status_icon').addClass('icon-ok-circle');
 				} else {
-					$('#role_'+obj.role_id+'_absent_members').prepend('<li id="role_'+obj.role_id+'_member_'+obj.user_id+'_entry"><a href="/felagi/'+obj.username+'">'+obj.user_name+'</a></li>')
+					$('#role_'+obj.role_id+'_absent_members').prepend('<li id="role_'+obj.role_id+'_member_'+obj.user_id+'_entry"><a href="/felagi/'+obj.username+'">'+obj.user_name+'</a> ('+obj.time_responded+') </li>')
 					$('.role_'+obj.role_id+'_status_icon').removeClass('icon-ok-circle icon-circle-blank invited');
 					$('.role_'+obj.role_id+'_status_icon').addClass('icon-ban-circle');
 				}

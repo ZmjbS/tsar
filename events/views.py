@@ -107,6 +107,7 @@ def event_response_new(request):
 			mr = MemberResponse.objects.get(event_role=event_role, member=member)
 			print '>> MemberResponse {} found'.format(mr)
 			mr.response=act
+			mr.time_responded=now
 		# Otherwise create a new one:
 		except:
 			mr = MemberResponse(event_role=event_role, member=member, response=act)
@@ -130,6 +131,7 @@ def event_response_new(request):
 			'role_id': event_role.role.id,
 			'eventrole_id': event_role.id,
 			'action': action,
+			'time_responded': mr.time_responded,
 		}
 		print 'Data: {}'.format(data)
 		jsondata = json.dumps(data)
@@ -168,6 +170,7 @@ def event_response(request):
 			mr = MemberResponse.objects.get(event_role=event_role, member=cm)
 			print '>> MemberResponse {} found'.format(mr)
 			mr.response=act
+			mr.time_responded=now
 		except:
 			mr = MemberResponse(event_role=event_role, member=cm, response=act)
 			print '>> No MemberResponse found. Creating a new one: {}'.format(mr)
@@ -185,6 +188,7 @@ def event_response(request):
 	#else:
 		#print 'not ajax'
 	#TODO: Have to return the change so that the script can update the attendance list.
+	print mr.time_responded
 	data = {
 		'user_id': cm.user.id,
 		'user_name': cm.__unicode__(),
@@ -193,6 +197,7 @@ def event_response(request):
 		'role_id': event_role.role.id,
 		'eventrole_id': event_role.id,
 		'action': action,
+		'time_responded': str(mr.time_responded),
 	}
 	print 'Data: {}'.format(data)
 	jsondata = json.dumps(data)
@@ -228,14 +233,18 @@ def display_event(request, pk):
 		attending = []
 		absent = []
 		unclear = []
+		attending_responses = []
+		absent_responses = []
 
 		# First populate those attending or absent from existing responses.
 		for memberresponse in eventrole.memberresponse_set.all():
 #			print '> memberresponse: {}'.format(memberresponse)
 			if memberresponse.response == 'Y':
 				attending.append(memberresponse.member)
+				attending_responses.append(memberresponse)
 			if memberresponse.response == 'N':
 				absent.append(memberresponse.member)
+				absent_responses.append(memberresponse)
 #		print '> Attending members {}:'.format(attending)
 #		print '> Absent members: {}'.format(absent)
 
@@ -268,7 +277,15 @@ def display_event(request, pk):
 		if cm in attending:
 			cm_status = 'attending'
 
-		role_data.append({ 'eventrole': eventrole, 'unclearmembers': unclear, 'absentmembers': absent, 'attendingmembers': attending, 'cm_status': cm_status, })
+		role_data.append({
+			'eventrole': eventrole,
+			'unclearmembers': unclear,
+			'absentmembers': absent,
+			'attendingmembers': attending,
+			'cm_status': cm_status,
+			'attending_responses': attending_responses,
+			'absent_responses': absent_responses,
+			})
 
 	# Pass possible roles and event types so that we can edit the event.
 	event_types = EventType.objects.all()
@@ -344,7 +361,6 @@ def display_or_save_event_form(request):
 			  })
 
 #TODO: Do we need to remove orphaned invitations once an EventRole has been removed?
-#TODO: Reorder these try-s to shorten them so that the exceptions make more sense.
 def save_event(request):
 	print 'Saving event'
 	if not request.is_ajax():
@@ -508,6 +524,7 @@ def save_event(request):
 							gi.delete()
 						except:
 							print 'Could not remove group {} from {}'.format(group,currentgroups)
+							return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not remove group '+str(group)+' from '+currentgroups+'.' }))
 					else:
 						print '++ ID is {}: We keep group {}.'.format(group.id,group)
 				for member in currentmembers:
@@ -520,6 +537,7 @@ def save_event(request):
 							mi.delete()
 						except:
 							print 'Could not remove member {} from {}'.format(member,currentmembers)
+							return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not remove member '+str(member)+' from '+currentmembers+'.' }))
 					else:
 						print '++ ID is {}: We keep member {}.'.format(member.id,member)
 
@@ -559,6 +577,7 @@ def save_event(request):
 							print '++ GroupInvitation saved'
 						except:
 							print 'ERROR: Could not save GroupInvitation {}'.format(gi)
+							return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not save GroupInvitation '+gi+'.' }))
 					else:
 						print '.. Group {} already invited: nothing to do. :-)'.format(group)
 				print 'Groups done!'
@@ -574,6 +593,7 @@ def save_event(request):
 							print '++ MemberInvitation saved'
 						except:
 							print 'ERROR: Could not save MemberInvitation {}'.format(mi)
+							return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not save MemberInvitation '+mi+'.' }))
 					else:
 						print '.. Member {} already invited: nothing to do. :-)'.format(member)
 				print 'All done!'
@@ -622,8 +642,10 @@ def save_event(request):
 						et.delete()
 					except:
 						print 'Could not delete EventTag.'
+						return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not delete EventTag '+et+'.' }))
 				except:
 					print 'Could not get EventTag.'
+					return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not get EventTag.' }))
 			else:
 				print 'tag id '+str(tag.id)+' is in '+str(data['tag_type'][tag.tag_type.id])
 				print 'Do nothing...'
@@ -656,8 +678,10 @@ def save_event(request):
 								et.save()
 							except:
 								print 'Could not save EventTag.'
+								return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not save EventTag '+et+'.' }))
 						except:
 							print 'Could not create EventTag.'
+							return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not create EventTag.' }))
 					else:
 						print 'tag '+str(tag)+' is already in '+str(event.tags.all())
 						print 'Nothing to do...'
