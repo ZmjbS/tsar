@@ -51,7 +51,7 @@ function respond_to_event(button, pagetype) {
 		*/
 
 		switch ( pagetype ) {
-			case "Event page":
+			case "Event page": // ============================== Beginning of "Event page"
 				// If the call comes from 'templates/events/event_page.html'
 
 				// Remove the entry from the old list
@@ -67,38 +67,38 @@ function respond_to_event(button, pagetype) {
 					$('.role_'+obj.role_id+'_status_icon').addClass('icon-ban-circle');
 				}
 
-		// Fix the total number of attendees.
-      status=$(button).data('status');
-		console.log(status);
-      $('#total_'+status).text(parseInt($('#total_'+status).text()-1));
+				// Fix the total number of attendees.
+				status=$(button).data('status');
+				console.log(status);
+				$('#total_'+status).text(parseInt($('#total_'+status).text()-1));
 
-      switch (action) {
-         case 'attend':
-            number=parseInt($('#total_attending').text());
-            number++
-            $('#total_attending').text(number);
-            break;
-         case 'absent':
-            number=parseInt($('#total_absent').text());
-            number++
-            $('#total_absent').text(number);
-            break;
-      }
+				switch (action) {
+					case 'attend':
+						number=parseInt($('#total_attending').text());
+						number++
+						$('#total_attending').text(number);
+						break;
+					case 'absent':
+						number=parseInt($('#total_absent').text());
+						number++
+						$('#total_absent').text(number);
+						break;
+				}
 
-		// Fix the button current status:
-      switch (action) {
-         case 'attend':
-				$('.respond-icon').data('status','attending');
-            break;
-         case 'absent':
-				$('.respond-icon').data('status','absent');
-            break;
-      }
+				// Fix the button current status:
+				switch (action) {
+					case 'attend':
+						$('.respond-icon').data('status','attending');
+						break;
+					case 'absent':
+						$('.respond-icon').data('status','absent');
+						break;
+				}
 
 				// ==================================================== End of "Event page"
 				break;
 
-			case "My page":
+			case "My page": // ===================================== Beginning of My page"
 				// If the call comes from 'templates/my_page.html'
 				//
 				// Change the colour of the eventrole status icon -------------------------
@@ -177,10 +177,9 @@ function respond_to_event(button, pagetype) {
 				// ======================================================= End of "My page"
 				break;
 
+		} // switch ( pagetype )
 
-		}
-
-     });
+	}); // posting.done()
 
    return false;
 };
