@@ -13,43 +13,41 @@
 	}));
 
 function respond_to_event(button, pagetype) {
-	/* The respond_to_event function extracts information about the
-	 *  - action being taken (attend, absent, unclea)
-	 *  - id of the eventrole to which the response is
-	 *  The function takes two arguments:
-	 *  - button: The button object from which the response is made (so that we can refer to its attributes), and
-	 *  - pagetype: the page type (Event page, My page) so that we can update the structure and styles accordingly.
-	 *  */
+	/*
+		Submits data to the view to create a MemberResponse.
+		
+		The function takes two arguments:
+		 . button: The object that generates the event, and
+		 . pagetype: the page type (Event page, My page) so that we can update the
+			structure and styles accordingly.
 
-	 /*
-	First a bit of debuggin...
-    console.log('responding ----------------------');
+		From the button, the function extracts information about:
+		 . the action being taken (attend, absent, unclear)
+		 . the id of the eventrole to which the response is
+	 */
+
+	/* Collect the data on the response */
+	eventrole = $(button).parent().data('eventrole');
+	action = $(button).data('action');
+
+	/* DEBUG
+  	console.log('responding ----------------------');
 	console.log('Page is: '+pagetype);
 	console.log('attribute: '+$(button).attr('id'))
-	*/
-	
-
-	// extract the action and eventrole from button
-	//action = $(button).attr('id').substring(0,6);
-	action = $(button).data('action');
-	//eventrole = $(button).attr('id').substring(7);
-	eventrole = $(button).parent().data('eventrole');
-	/*
 	console.log('action: '+action);
 	console.log('eventrole: '+eventrole);
-	console.log($(button).parent().data('eventrole'));*/
-
-	var node='init';
+	*/
 
 	// Submit the response via an AJAX POST:
    var posting = $.post("/vidburdur/svara", {'action': action, 'eventrole': eventrole, });
+	/* DEBUG:
+	console.log('after post');
+	*/
 
-	// DEBUG: console.log('after post');
-
-   posting.done(function(data, node) {
+   posting.done(function(data) {
 		obj = JSON && JSON.parse(data) || $.parseJSON(data);
-		/* DEBUG:
 		console.log('posting done, let\'s format');
+		/* DEBUG:
 		console.log('Done: received '+obj);
 		console.log('User:  '+obj.user_name);
 		console.log('User ID:  '+obj.user_id);
@@ -66,13 +64,19 @@ function respond_to_event(button, pagetype) {
 				$('#role_'+obj.role_id+'_member_'+obj.user_id+'_entry').remove();
 				// Add an entry to the new list
 				if (action == 'attend') {
-					$('#role_'+obj.role_id+'_attending_members').prepend('<li id="role_'+obj.role_id+'_member_'+obj.user_id+'_entry"><a href="/felagi/'+obj.username+'">'+obj.user_name+'</a> ('+obj.time_responded+') </li>')
+				   $('#role_'+obj.role_id+'_attending_members').prepend('<li id="role_'+obj.role_id+'_member_'+obj.user_id+'_entry"><a href="/felagi/'+obj.username+'">'+obj.user_name+'</a> ('+obj.time_responded+') <span class="change-response attending edit-interface icon-remove-sign pull-right" data-member_id="'+obj.user_id+'" data-eventrole_id="'+obj.eventrole_id+'" data-action="absent" data-status="attending"></span></li>')
 					$('.role_'+obj.role_id+'_status_icon').removeClass('icon-ban-circle icon-circle-blank invited');
 					$('.role_'+obj.role_id+'_status_icon').addClass('icon-ok-circle');
+					if ($('#attending_roles').siblings('.form-edit-icon').data('toggle_state') == 'hidden') {
+						$('#role_'+obj.role_id+'_member_'+obj.user_id+'_entry').children('.change-response.edit-interface').css('display','none');
+					}
 				} else {
-					$('#role_'+obj.role_id+'_absent_members').prepend('<li id="role_'+obj.role_id+'_member_'+obj.user_id+'_entry"><a href="/felagi/'+obj.username+'">'+obj.user_name+'</a> ('+obj.time_responded+') </li>')
+				   $('#role_'+obj.role_id+'_absent_members').prepend('<li id="role_'+obj.role_id+'_member_'+obj.user_id+'_entry"><a href="/felagi/'+obj.username+'">'+obj.user_name+'</a> ('+obj.time_responded+') <span class="change-response absent edit-interface icon-plus-sign pull-right" data-member_id="'+obj.user_id+'" data-eventrole_id="'+obj.eventrole_id+'" data-action="attend" data-status="absent"></span></li></li>')
 					$('.role_'+obj.role_id+'_status_icon').removeClass('icon-ok-circle icon-circle-blank invited');
 					$('.role_'+obj.role_id+'_status_icon').addClass('icon-ban-circle');
+					if ($('#absent_roles').siblings('.form-edit-icon').data('toggle_state') == 'hidden') {
+						$('#role_'+obj.role_id+'_member_'+obj.user_id+'_entry').children('.change-response.edit-interface').css('display','none');
+					}
 				}
 
 				// Fix the total number of attendees.
@@ -214,9 +218,6 @@ function change_event_response(button) {
 	console.log('member_id:    '+member_id);
 	console.log('eventrole_id: '+eventrole_id);
 	console.log('action:       '+action);
-	*/
-
-	/* DEBUG
 	console.log('posting');
 	*/
 
