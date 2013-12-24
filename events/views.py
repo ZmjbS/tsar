@@ -13,6 +13,7 @@ from datetime import datetime
 from dateutil import parser
 
 import simplejson as json
+from django.core.serializers.json import DjangoJSONEncoder
 #import json
 
 def calendar_events_list(start, end):
@@ -134,10 +135,12 @@ def event_response_new(request):
 			'time_responded': mr.time_responded,
 		}
 		print 'Data: {}'.format(data)
-		jsondata = json.dumps(data)
+		#jsondata = json.dumps(data)
+		jsondata = json.dumps(data, cls=DjangoJSONEncoder)
 		print 'JSON: ',jsondata
 		print 'XXXXX responding'
-		return HttpResponse(json.dumps(data))##, mimetype='application/javascript')
+		#return HttpResponse(json.dumps(data))##, mimetype='application/javascript')
+		return HttpResponse(jsondata)##, mimetype='application/javascript')
 
 @csrf_exempt
 def event_response(request):
@@ -197,14 +200,14 @@ def event_response(request):
 		'role_id': event_role.role.id,
 		'eventrole_id': event_role.id,
 		'action': action,
-		'time_responded': str(mr.time_responded),
+		'time_responded': mr.time_responded,
 	}
 	print 'Data: {}'.format(data)
-	jsondata = json.dumps(data)
+	jsondata = json.dumps(data, cls=DjangoJSONEncoder)
 	print 'JSON: ',jsondata
 	print 'XXXXX responding'
-	return HttpResponse(json.dumps(data))##, mimetype='application/javascript')
-	#return HttpResponse(jsondata)
+	#return HttpResponse(json.dumps(data))##, mimetype='application/javascript')
+	return HttpResponse(jsondata)
 
 from django.contrib.auth.decorators import login_required
 @login_required
