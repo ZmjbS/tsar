@@ -15,8 +15,6 @@ from dateutil import parser
 import simplejson as json
 #import json
 
-now = datetime.now()
-
 def calendar_events_list(start, end):
 	# Get all events between the two dates:
 	print 'Retrieve events between {} and {}'.format(start, end)
@@ -68,7 +66,9 @@ def list_events(request):
 	if request.is_ajax():
 		# Prepare events for calendar
 		return calendar_events_list(request.GET['start'], request.GET['end'])
+
 	# Otherwise it's just a normal request for the events page.
+	now = datetime.now()
 	recent_events_list = Event.objects.filter(date_time_begin__lte=now).order_by('-date_time_begin')[:20]
 	coming_events_list = Event.objects.filter(date_time_begin__gte=now).order_by('date_time_begin')[:20]
 	#import pprint
@@ -107,7 +107,7 @@ def event_response_new(request):
 			mr = MemberResponse.objects.get(event_role=event_role, member=member)
 			print '>> MemberResponse {} found'.format(mr)
 			mr.response=act
-			mr.time_responded=now
+			mr.time_responded=datetime.now()
 		# Otherwise create a new one:
 		except:
 			mr = MemberResponse(event_role=event_role, member=member, response=act)
@@ -170,7 +170,7 @@ def event_response(request):
 			mr = MemberResponse.objects.get(event_role=event_role, member=cm)
 			print '>> MemberResponse {} found'.format(mr)
 			mr.response=act
-			mr.time_responded=now
+			mr.time_responded=datetime.now()
 		except:
 			mr = MemberResponse(event_role=event_role, member=cm, response=act)
 			print '>> No MemberResponse found. Creating a new one: {}'.format(mr)
