@@ -251,7 +251,7 @@ function updateEnabledSelect(id) {
 				<li id="role_{{ role.eventrole.role.id }}_member_{{ mr.member.user.id }}_entry">
 					<a href="/felagi/{{ mr.member.user.username }}" style="display: inline-block;">{{ mr.member.user.first_name }} {{ mr.member.user.last_name }}</a> ( {{ mr.time_responded }} )
 				{# TODO: condition this on having the rights, if we're going to limit them. #}
-					<span class="change-response {{ status }} edit-interface icon-plus-sign pull-right" style="display: none" data-member_id="{{ member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="attend" data-status="{{ status }}"></span>
+					<span class="change-response {{ status }} edit-interface icon-plus-sign pull-right" style="display: none" data-member_id="{{ mr.member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="attend" data-status="{{ status }}"></span>
 				</li>
 			{% endfor %}
 		{% else %}
