@@ -22,13 +22,24 @@ function respond_to_event(button, pagetype) {
 			structure and styles accordingly.
 
 		From the button, the function extracts information about:
-		 . the action being taken (attend, absent, unclear)
-		 . the id of the eventrole to which the response is
+		 . the action being taken (attend, absent, unclear),
+		 . the id of the eventrole to which the response is, and
+		 . the id of the member whose response is being changed.
+
+		The function then posts this information to the view where the
+		MemberResponse is taken care of. Upon success, the function then updates
+		the interface, depending on whether the function is called from „my page“
+		or the event_page.
 	 */
 
 	/* Collect the data on the response */
-	eventrole = $(button).parent().data('eventrole');
-	action = $(button).data('action');
+	action       = $(button).data('action'); // action is either "absent" or "attend"
+	member_id    = $(button).data('member_id');
+	eventrole_id = $(button).data('eventrole_id');
+
+	// TODO: The following data holders are no longer used for this function and should probably be removed.
+	//eventrole_id = $(button).parent().data('eventrole_id');
+	//action = $(button).data('action');
 
 	/* DEBUG
   	console.log('responding ----------------------');
@@ -39,7 +50,7 @@ function respond_to_event(button, pagetype) {
 	*/
 
 	// Submit the response via an AJAX POST:
-   var posting = $.post("/vidburdur/svara", {'action': action, 'eventrole': eventrole, });
+   var posting = $.post("/vidburdur/svara", {'action': action, 'eventrole_id': eventrole_id, });
 	/* DEBUG:
 	console.log('after post');
 	*/
@@ -64,18 +75,18 @@ function respond_to_event(button, pagetype) {
 				$('#role_'+obj.role_id+'_member_'+obj.user_id+'_entry').remove();
 				// Add an entry to the new list
 				if (action == 'attend') {
-				   $('#role_'+obj.role_id+'_attending_members').prepend('<li id="role_'+obj.role_id+'_member_'+obj.user_id+'_entry"><a href="/felagi/'+obj.username+'">'+obj.user_name+'</a> ('+obj.time_responded+') <span class="change-response attending edit-interface icon-remove-sign pull-right" data-member_id="'+obj.user_id+'" data-eventrole_id="'+obj.eventrole_id+'" data-action="absent" data-status="attending"></span></li>')
+				   $('#role_'+obj.role_id+'_attending_members').prepend('<li id="role_'+obj.role_id+'_member_'+obj.user_id+'_entry"><a href="/felagi/'+obj.username+'">'+obj.user_name+'</a> ('+obj.time_responded+') <span class="event_responder attending edit-interface icon-remove-sign pull-right" data-member_id="'+obj.user_id+'" data-eventrole_id="'+obj.eventrole_id+'" data-action="absent" data-status="attending"></span></li>')
 					$('.role_'+obj.role_id+'_status_icon').removeClass('icon-ban-circle icon-circle-blank invited');
 					$('.role_'+obj.role_id+'_status_icon').addClass('icon-ok-circle');
 					if ($('#attending_roles').siblings('.form-edit-icon').data('toggle_state') == 'hidden') {
-						$('#role_'+obj.role_id+'_member_'+obj.user_id+'_entry').children('.change-response.edit-interface').css('display','none');
+						$('#role_'+obj.role_id+'_member_'+obj.user_id+'_entry').children('.event_responder.edit-interface').css('display','none');
 					}
 				} else {
-				   $('#role_'+obj.role_id+'_absent_members').prepend('<li id="role_'+obj.role_id+'_member_'+obj.user_id+'_entry"><a href="/felagi/'+obj.username+'">'+obj.user_name+'</a> ('+obj.time_responded+') <span class="change-response absent edit-interface icon-plus-sign pull-right" data-member_id="'+obj.user_id+'" data-eventrole_id="'+obj.eventrole_id+'" data-action="attend" data-status="absent"></span></li></li>')
+				   $('#role_'+obj.role_id+'_absent_members').prepend('<li id="role_'+obj.role_id+'_member_'+obj.user_id+'_entry"><a href="/felagi/'+obj.username+'">'+obj.user_name+'</a> ('+obj.time_responded+') <span class="event_responder absent edit-interface icon-plus-sign pull-right" data-member_id="'+obj.user_id+'" data-eventrole_id="'+obj.eventrole_id+'" data-action="attend" data-status="absent"></span></li></li>')
 					$('.role_'+obj.role_id+'_status_icon').removeClass('icon-ok-circle icon-circle-blank invited');
 					$('.role_'+obj.role_id+'_status_icon').addClass('icon-ban-circle');
 					if ($('#absent_roles').siblings('.form-edit-icon').data('toggle_state') == 'hidden') {
-						$('#role_'+obj.role_id+'_member_'+obj.user_id+'_entry').children('.change-response.edit-interface').css('display','none');
+						$('#role_'+obj.role_id+'_member_'+obj.user_id+'_entry').children('.event_responder.edit-interface').css('display','none');
 					}
 				}
 
@@ -100,10 +111,10 @@ function respond_to_event(button, pagetype) {
 				// Fix the button current status:
 				switch (action) {
 					case 'attend':
-						$('.respond-icon').data('status','attending');
+						$('.event_responder').data('status','attending');
 						break;
 					case 'absent':
-						$('.respond-icon').data('status','absent');
+						$('.event_responder').data('status','absent');
 						break;
 				}
 
@@ -159,11 +170,11 @@ function respond_to_event(button, pagetype) {
 				$('#eventrole_'+obj.eventrole_id+'_response_icons').children().remove();
 				// Define the node to add
 				if (action == 'attend') {
-					node='<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="eventrole-absent-'+eventrole+'" data-action="absent"  class="respond-icon icon-remove-sign"></span>'
-						+ '<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="eventrole-unclea-'+eventrole+'" data-action="unclear" class="respond-icon icon-question-sign"></span>';
+					node='<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="eventrole-absent-'+eventrole_id+'" data-action="absent"  class="event_responder icon-remove-sign"></span>'
+						+ '<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="eventrole-unclea-'+eventrole_id+'" data-action="unclear" class="event_responder icon-question-sign"></span>';
 				} else {
-					node='<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="eventrole-unclea-'+eventrole+'" data-action="unclear" class="respond-icon icon-question-sign"></span>'
-						+ '<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="eventrole-attend-'+eventrole+'" data-action="attend"  class="respond-icon icon-plus-sign"></span>';
+					node='<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="eventrole-unclea-'+eventrole_id+'" data-action="unclear" class="event_responder icon-question-sign"></span>'
+						+ '<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="eventrole-attend-'+eventrole_id+'" data-action="attend"  class="event_responder icon-plus-sign"></span>';
 				}
 				// Add the new buttons
 				$('#eventrole_'+obj.eventrole_id+'_response_icons').append(node);
@@ -176,11 +187,11 @@ function respond_to_event(button, pagetype) {
 					$('#eventrole_'+obj.eventrole_id+'_response_icons').parents('.event-list-item').children('.response-icons').children().remove();
 					// Define the node to add
 					if (action == 'attend') {
-						node='<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="absent-'+eventrole+'" data-action="absent"  class="respond-icon icon-remove-sign"></span>'
-							+ '<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="unclea-'+eventrole+'" data-action="unclear" class="respond-icon icon-question-sign"></span>';
+						node='<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="absent-'+eventrole_id+'" data-action="absent"  class="event_responder icon-remove-sign"></span>'
+							+ '<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="unclea-'+eventrole_id+'" data-action="unclear" class="event_responder icon-question-sign"></span>';
 					} else {
-						node='<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="unclea-'+eventrole+'" data-action="unclear" class="respond-icon icon-question-sign"></span>'
-							+ '<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="attend-'+eventrole+'" data-action="attend"  class="respond-icon icon-plus-sign"></span>';
+						node='<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="unclea-'+eventrole_id+'" data-action="unclear" class="event_responder icon-question-sign"></span>'
+							+ '<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="attend-'+eventrole_id+'" data-action="attend"  class="event_responder icon-plus-sign"></span>';
 					}
 					// Add the new buttons
 					$('#eventrole_'+obj.eventrole_id+'_response_icons').parents('.event-list-item').children('.response-icons').append(node);
@@ -194,94 +205,6 @@ function respond_to_event(button, pagetype) {
 	}); // posting.done()
 
    return false;
-};
-
-function change_event_response(button) {
-	/*
-		Changes the response of a user.
-
-		The responses (attending, absent and unclear) can be changed
-		(to attending or absent) by activating the edit interface. That
-		pops up small icons to click on to change the response.
-
-		This function does the dirty work of passing the information on
-		to the view for processing and updating the interface so that
-		all the numbers add up and the members lists are correct.
-	*/
-
-	/* Collect the data on the response */
-	member_id    = $(button).data('member_id');
-	eventrole_id = $(button).data('eventrole_id');
-	action       = $(button).data('action'); // action is either "absent" or "attend"
-
-	/* DEBUG
-	console.log('member_id:    '+member_id);
-	console.log('eventrole_id: '+eventrole_id);
-	console.log('action:       '+action);
-	console.log('posting');
-	*/
-
-	// Begin by posting the information to the view:
-	var posting = $.post("/vidburdur/svaranytt", {'member_id': member_id, 'eventrole_id': eventrole_id, 'action': action, });
-	/* DEBUG
-	console.log('posted');
-	*/
-
-	// With the posting done, let's update the interface:
-	posting.done(function(data, node) {
-		/* DEBUG
-		console.log('posting done:');
-		*/
-
-		// Retrieve the data object from the view:
-		obj = JSON && JSON.parse(data) || $.parseJSON(data);
-
-		// Remove the entry from the old list
-		$('#role_'+obj.role_id+'_member_'+obj.user_id+'_entry').remove();
-
-		// Add an entry to the new list
-		switch (action) {
-			case 'attend':
-				$('#role_'+obj.role_id+'_attending_members').prepend('<li id="role_'+obj.role_id+'_member_'+obj.user_id+'_entry"><a href="/felagi/'+obj.username+'">'+obj.user_name+'</a><span class="change-response attending edit-interface icon-remove-sign pull-right" data-member_id="'+obj.user_id+'" data-eventrole_id="'+obj.eventrole_id+'" data-action="absent" data-status="attending"></span></li>')
-				if ($('#attending_roles').siblings('.form-edit-icon').data('toggle_state') == 'hidden') {
-					$('#role_'+obj.role_id+'_member_'+obj.user_id+'_entry').children('.change-response.edit-interface').css('display','none');
-				}
-// TODO: Update the attendance icons if the response belongs to the current member
-//			$('.role_'+obj.role_id+'_status_icon').removeClass('icon-ban-circle icon-circle-blank invited');
-//			$('.role_'+obj.role_id+'_status_icon').addClass('icon-ok-circle');
-				break;
-			case 'absent':
-				$('#role_'+obj.role_id+'_absent_members').prepend('<li id="role_'+obj.role_id+'_member_'+obj.user_id+'_entry"><a href="/felagi/'+obj.username+'">'+obj.user_name+'</a><span class="change-response absent edit-interface icon-plus-sign pull-right" data-member_id="'+obj.user_id+'" data-eventrole_id="'+obj.eventrole_id+'" data-action="attend" data-status="absent"></span></li></li>')
-				if ($('#absent_roles').siblings('.form-edit-icon').data('toggle_state') == 'hidden') {
-					$('#role_'+obj.role_id+'_member_'+obj.user_id+'_entry').children('.change-response.edit-interface').css('display','none');
-				}
-// TODO: Update the attendance icons if the response belongs to the current member
-//			$('.role_'+obj.role_id+'_status_icon').removeClass('icon-ok-circle icon-circle-blank invited');
-//			$('.role_'+obj.role_id+'_status_icon').addClass('icon-ban-circle');
-				break;
-		}
-		
-		// Fix the total number of attendees.
-		status=$(button).data('status');
-		console.log(status);
-		$('#total_'+status).text(parseInt($('#total_'+status).text()-1));
-
-		switch (action) {
-			case 'attend':
-				number=parseInt($('#total_attending').text());
-				number++
-				$('#total_attending').text(number);
-				break;
-			case 'absent':
-				number=parseInt($('#total_absent').text());
-				number++
-				$('#total_absent').text(number);
-				break;
-		}
-		
-
-	});
-
 };
 
 /* Add functions that apply to elements on the page */
