@@ -85,65 +85,6 @@ def list_events(request):
 from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
-def event_response_new(request):
-	print 'hi'
-	if not request.is_ajax():
-		print 'not AJAX'
-		return False
-	else:
-		# Get the necessary POST data:
-		member_id = request.POST['member_id']
-		eventrole_id = request.POST['eventrole_id']
-		action = request.POST['action']
-		if action == 'attend':
-			act = 'Y'
-		elif action == 'absent':
-			act = 'N'
-
-		# Get the relevant objects:
-		member = Member.objects.get(id=member_id)
-		event_role = get_object_or_404(EventRole, id=eventrole_id)
-
-		# See if there already exists a member response:
-		try:
-			mr = MemberResponse.objects.get(event_role=event_role, member=member)
-			print '>> MemberResponse {} found'.format(mr)
-			mr.response=act
-			mr.time_responded=datetime.now()
-		# Otherwise create a new one:
-		except:
-			mr = MemberResponse(event_role=event_role, member=member, response=act)
-			print '>> No MemberResponse found. Creating a new one: {}'.format(mr)
-
-		# Clean and save.
-		try:
-			mr.clean_fields()
-			mr.save()
-			print '>> SAVED'
-		except:
-			print '>> FAILED'
-			return HttpResponse('Failed: could not save member response')
-
-		# Return data to template.
-		data = {
-			'user_id': member.user.id,
-			'user_name': member.__unicode__(),
-			'username': member.user.username,
-			'event_id': event_role.event.id,
-			'role_id': event_role.role.id,
-			'eventrole_id': event_role.id,
-			'action': action,
-			'time_responded': mr.time_responded,
-		}
-		print 'Data: {}'.format(data)
-		#jsondata = json.dumps(data)
-		jsondata = json.dumps(data, cls=DjangoJSONEncoder)
-		print 'JSON: ',jsondata
-		print 'XXXXX responding'
-		#return HttpResponse(json.dumps(data))##, mimetype='application/javascript')
-		return HttpResponse(jsondata)##, mimetype='application/javascript')
-
-@csrf_exempt
 def event_response(request):
 	# Receives data with information about which MemberResposne must be modified
 	# or created. For this we need:
@@ -156,15 +97,21 @@ def event_response(request):
 	print 'in event_response'
 	# Ensure we're getting an AJAX POST.
 	if not request.is_ajax():
+		print 'not AJAX'
 		return False
 
+	print 'check member'
 	# Check whether we've been handed a member_id:
 	try:
 		member_id = request.POST['member_id']
+		print 'member_id sent through post: {}'.format(member_id)
 	except:
 		member_id = request.user.member.id
 	# Get the eventrole_id and action:
-	eventrole_id = request.POST['eventrole']
+	print 'get eventrole_id'
+	print request.POST
+	eventrole_id = request.POST['eventrole_id']
+	print 'eventrole_id: {}'.format(eventrole_id)
 	action = request.POST['action']
 	if action == 'attend':
 		act = 'Y'

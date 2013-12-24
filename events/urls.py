@@ -11,7 +11,6 @@ urlpatterns = patterns('events.views',
 	url(r'^(?P<pk>\d+)/$','display_event', name='events'),
 	url(r'^(?P<pk>\d+)/svara$','event_response', name='events'),
 	url(r'^svara$','event_response', name='events'),
-	url(r'^svaranytt$','event_response_new', name='events'),
 	#url(r'^(?P<pk>\d+)/breyta',
 	#	DetailView.as_view(
 	#		model=Event,template_name='events/create_event.html')
