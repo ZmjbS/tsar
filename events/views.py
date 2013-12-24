@@ -88,6 +88,7 @@ from django.views.decorators.csrf import csrf_exempt
 def event_response_new(request):
 	print 'hi'
 	if not request.is_ajax():
+		print 'not AJAX'
 		return False
 	else:
 		# Get the necessary POST data:
@@ -144,58 +145,69 @@ def event_response_new(request):
 
 @csrf_exempt
 def event_response(request):
+	# Receives data with information about which MemberResposne must be modified
+	# or created. For this we need:
+	#	. the member_id
+	#	. the eventrole_id
+	#	. the action
+	# If the member_id is missing, we use the currently logged on member.
+	# TODO: Perhaps it's just better to pass the member_id on with the other two from the view...
+
 	print 'in event_response'
-	#if not request.user.is_authenticated():
-		#cm = User.objects.get(id=2)
-	#else:
-		#cm = request.user.member
-	# Current member:
-	cm = request.user.member
-	#print cm
+	# Ensure we're getting an AJAX POST.
+	if not request.is_ajax():
+		return False
 
-	if request.is_ajax():
-		#import pprint
-		action = request.POST['action']
-		if action == 'attend':
-			act = 'Y'
-		elif action == 'absent':
-			act = 'N'
-		eventrole_id = request.POST['eventrole']
+	# Check whether we've been handed a member_id:
+	try:
+		member_id = request.POST['member_id']
+	except:
+		member_id = request.user.member.id
+	# Get the eventrole_id and action:
+	eventrole_id = request.POST['eventrole']
+	action = request.POST['action']
+	if action == 'attend':
+		act = 'Y'
+	elif action == 'absent':
+		act = 'N'
 
-		print 'action: {} or {}'.format(action,act)
-		print 'eventrole.id: {}'.format(eventrole_id)
+	print 'action: {} or {}'.format(action,act)
+	print 'eventrole.id: {}'.format(eventrole_id)
 
-		print 'OK, now for my second act...'
-		event_role = get_object_or_404(EventRole, id=eventrole_id)
-		#event_role = EventRole.objects.get(event_role__id=14)
-		print event_role.id
-		try:
-			mr = MemberResponse.objects.get(event_role=event_role, member=cm)
-			print '>> MemberResponse {} found'.format(mr)
-			mr.response=act
-			mr.time_responded=datetime.now()
-		except:
-			mr = MemberResponse(event_role=event_role, member=cm, response=act)
-			print '>> No MemberResponse found. Creating a new one: {}'.format(mr)
+	# Get the relevant objects:
+	member = Member.objects.get(id=member_id)
+	event_role = get_object_or_404(EventRole, id=eventrole_id)
+	#event_role = EventRole.objects.get(event_role__id=eventrole_id)
 
-		try:
-			mr.clean_fields()
-			mr.save()
-			print '>> SAVED'
-		except:
-			print '>> FAILED'
-			return HttpResponse('Failed: could not save member response')
-		##print 'Hér kemur JSON útgáfan:'
-		##data = json.loads(request.POST['data'])
-		##pprint.pprint(data)
-	#else:
-		#print 'not ajax'
-	#TODO: Have to return the change so that the script can update the attendance list.
+	# See if there already exists a member response:
+	try:
+		mr = MemberResponse.objects.get(event_role=event_role, member=member)
+		print '>> MemberResponse {} found'.format(mr)
+		mr.response=act
+		mr.time_responded=datetime.now()
+	# Otherwise create a new one:
+	except:
+		mr = MemberResponse(event_role=event_role, member=member, response=act)
+		print '>> No MemberResponse found. Creating a new one: {}'.format(mr)
+
+	# Clean and save:
+	try:
+		mr.clean_fields()
+		mr.save()
+		print '>> SAVED'
+	except:
+		print '>> FAILED'
+		return HttpResponse('Failed: could not save member response')
+
+	##print 'Hér kemur JSON útgáfan:'
+	##data = json.loads(request.POST['data'])
+	##pprint.pprint(data)
+
 	print mr.time_responded
 	data = {
-		'user_id': cm.user.id,
-		'user_name': cm.__unicode__(),
-		'username': cm.user.username,
+		'user_id': member.user.id,
+		'user_name': member.__unicode__(),
+		'username': member.user.username,
 		'event_id': event_role.event.id,
 		'role_id': event_role.role.id,
 		'eventrole_id': event_role.id,
