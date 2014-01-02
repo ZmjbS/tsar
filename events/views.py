@@ -340,7 +340,7 @@ def save_event(request):
 		# Sanitise some of the data and return messages if it fails.
 
 		### TITLE ###
-		# The title must be non-zero and no longer than ... TODO!!
+		# The title must be non-zero and no longer than 64 characters (defined in events/models.py).
 		print 'Submitted data:'
 		t = data['title']
 		if t == "":
