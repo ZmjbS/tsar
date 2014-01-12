@@ -16,8 +16,13 @@ import simplejson as json
 from django.core.serializers.json import DjangoJSONEncoder
 #import json
 
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
 def calendar_events_list(start, end):
+#def calendar_events_list(request):
 	# Get all events between the two dates:
+#	print request.POST
 	print 'Retrieve events between {} and {}'.format(start, end)
 	import time
 	#print time.gmtime(int(start))
@@ -50,6 +55,9 @@ def calendar_events_list(start, end):
 			backgroundcolor = '#0DDDFF'
 		else:
 			backgroundcolor = 'green'
+		print 'test'
+		#print request.user.member
+		#print event.responded_roles(event, response.member)
 		events_list.append({
 			'title': event.title,
 			'start': calendar.timegm(event.date_time_begin.utctimetuple()),
@@ -57,6 +65,9 @@ def calendar_events_list(start, end):
 			'id': event.id,
 			'url': '/vidburdur/'+str(event.id),
  			'backgroundColor': backgroundcolor,
+			# Let's also send some data to display the attendance status:
+			#'responded': event.responded_roles(event, response.member),
+			#'invited': event.invited_roles(event, response.member),
 		})
 	import pprint
 	pprint.pprint(events_list)
@@ -81,8 +92,6 @@ def list_events(request):
 		'coming_events_list': coming_events_list,
 		'user': request.user,
 	})
-
-from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
 def event_response(request):
@@ -421,10 +430,11 @@ def save_event(request):
 			print 'Role ID %s' % role.id
 			print 'Role is %s' % role
 			try:
-				role_exists = data['role'][role.id]
+				participants_exist = data['role'][role.id]['participants']
 			except:
-				role_exists = False
-			if role_exists:
+				participants_exists = False
+			print participants_exists
+			if participants_exists:
 				# If we want eventroles, check whether these need to be created and otherwise update them.
 
 				currentparticipants = [] # This will be populated below if the event exists (and currently has any participants).
@@ -580,7 +590,6 @@ def save_event(request):
 		print TagType.objects.all()
 
 		print 'Iterate over eventtags'
-		print data['tag_type']
 		for tag in event.tags.all():
 			try:
 				print 'trying'
