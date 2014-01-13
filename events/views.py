@@ -57,8 +57,25 @@ def calendar_events_list(member_id, start, end):
 			backgroundcolor = '#0DDDFF'
 		else:
 			backgroundcolor = 'green'
-		#print request.user.member
-		#print event.responded_roles(event, response.member)
+
+		# Finall indicate the member's response status to each event.
+		try:
+			if MemberResponse.objects.get(event_role__event=event, member=member, response='Y'):
+				status='attending'
+		except:
+			print 'no yes'
+			try:
+				print MemberResponse.objects.get(event_role__event=event, member=member, response='N')
+				status = 'absent'
+			except:
+				print 'no no'
+				if event.invited_roles(member) != []:
+					status = 'unclear'
+				else:
+					print 'Not invited'
+					status = 'notinvited'
+		print status
+
 		events_list.append({
 			'title': event.title,
 			'start': calendar.timegm(event.date_time_begin.utctimetuple()),
@@ -67,8 +84,7 @@ def calendar_events_list(member_id, start, end):
 			'url': '/vidburdur/'+str(event.id),
  			'backgroundColor': backgroundcolor,
 			# Let's also send some data to display the attendance status:
-			'responded': event.responded_roles(member),
-			'invited': event.invited_roles(member),
+			'status': status,
 		})
 	import pprint
 	pprint.pprint(events_list)

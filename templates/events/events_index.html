@@ -23,8 +23,12 @@ $(document).ready(function() {
         },
     },
 	 eventRender: function(event, element) {
-	 	console.log(event.responded);
-	 	console.log($(element).attr('class'));
+		if (event.status != 'notinvited') {
+			$(element).children('.fc-event-inner').prepend('<span class="icon-circle status-icon '+event.status+'-icon"></span>');
+		} else {
+			$(element).children('.fc-event-inner').prepend('<span class="icon-circle-blank status-icon '+event.status+'-icon"></span>');
+		}
+	 	console.log(event.status);
     },
 		firstDay: 1,
 		contentHeight: 400,
