@@ -433,9 +433,9 @@ def save_event(request):
 			try:
 				participants_exist = data['role'][role.id]['participants']
 			except:
-				participants_exists = False
-			print participants_exists
-			if participants_exists:
+				participants_exist = False
+			#print participants_exist
+			if participants_exist:
 				# If we want eventroles, check whether these need to be created and otherwise update them.
 
 				currentparticipants = [] # This will be populated below if the event exists (and currently has any participants).
