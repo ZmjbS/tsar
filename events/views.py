@@ -19,11 +19,13 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
-def calendar_events_list(start, end):
+def calendar_events_list(member_id, start, end):
 #def calendar_events_list(request):
 	# Get all events between the two dates:
-#	print request.POST
 	print 'Retrieve events between {} and {}'.format(start, end)
+	print member_id
+	member = Member.objects.get(id=member_id)
+	print member
 	import time
 	#print time.gmtime(int(start))
 	#print int(start)
@@ -55,7 +57,6 @@ def calendar_events_list(start, end):
 			backgroundcolor = '#0DDDFF'
 		else:
 			backgroundcolor = 'green'
-		print 'test'
 		#print request.user.member
 		#print event.responded_roles(event, response.member)
 		events_list.append({
@@ -66,8 +67,8 @@ def calendar_events_list(start, end):
 			'url': '/vidburdur/'+str(event.id),
  			'backgroundColor': backgroundcolor,
 			# Let's also send some data to display the attendance status:
-			#'responded': event.responded_roles(event, response.member),
-			#'invited': event.invited_roles(event, response.member),
+			'responded': event.responded_roles(member),
+			'invited': event.invited_roles(member),
 		})
 	import pprint
 	pprint.pprint(events_list)
@@ -77,7 +78,7 @@ def calendar_events_list(start, end):
 def list_events(request):
 	if request.is_ajax():
 		# Prepare events for calendar
-		return calendar_events_list(request.GET['start'], request.GET['end'])
+		return calendar_events_list(request.GET['member_id'], request.GET['start'], request.GET['end'])
 
 	# Otherwise it's just a normal request for the events page.
 	now = datetime.now()
