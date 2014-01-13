@@ -13,8 +13,6 @@
 	<script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
 	<script type="text/javascript" src="/static/js/tsar.groups.js"></script>
 <style>
-//	.edit-interface { display: none; }
-	#all_members_list_chzn { width: 80% !important; }
 	.unsaved_entry { background-color: #edb; }
 </style>
 <script type="text/javascript">
@@ -111,8 +109,8 @@ $(document).ready(function(){
 	 */
 	// We use the jQuery Chosen for the member selection, style it and add tablesorter to make it sortable:
 	$('#non_members_list').chosen();
-	$('#non_members_list_chzn').css('float', 'right').css('width','auto');
-	$('#non_members_list_chzn *').css('width','auto');
+	$('#non_members_list_chosen').css('float', 'right').css('width','auto');
+	$('#non_members_list_chosen *').css('width','auto');
 	$("#group_members_list").tablesorter({
 		sortList: [[0,0], [1,0]],
 		textSorter : sortBy,
