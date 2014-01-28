@@ -151,7 +151,7 @@ $(document).ready(function(){
 			$('#group_members_list tbody').prepend(member_entry);
 		};
 		$('#non_members_list option:selected').remove();
-      $('#non_members_list').trigger('liszt:updated');
+      $('#non_members_list').trigger('chosen:updated');
 	});
 
 	// Place the CSRF token in a js variable so that the form handler can send it to the view. 
