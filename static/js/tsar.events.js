@@ -50,7 +50,11 @@ function respond_to_event(button, pagetype) {
 	*/
 
 	// Submit the response via an AJAX POST:
-   var posting = $.post("/vidburdur/svara", {'action': action, 'eventrole_id': eventrole_id, });
+	if (member_id) {
+		var posting = $.post("/vidburdur/svara", {'action': action, 'eventrole_id': eventrole_id, 'member_id': member_id });
+	} else {
+		var posting = $.post("/vidburdur/svara", {'action': action, 'eventrole_id': eventrole_id });
+	}
 	/* DEBUG:
 	console.log('after post');
 	*/
