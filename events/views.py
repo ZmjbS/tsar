@@ -133,6 +133,15 @@ def event_response(request):
 		print 'member_id sent through post: {}'.format(member_id)
 	except:
 		member_id = request.user.member.id
+
+	# Check whether we're registering the currently logged in member:
+	if int(member_id) == request.user.member.id:
+		#print 'CM responding ( {} / {} )'.format(member_id,request.user.member.id)
+		cm_responding = True
+	else:
+		#print 'not CM responding( {} / {} )'.format(member_id,request.user.member.id)
+		cm_responding = False
+
 	# Get the eventrole_id and action:
 	print 'get eventrole_id'
 	print request.POST
@@ -181,6 +190,7 @@ def event_response(request):
 		'user_id': member.user.id,
 		'user_name': member.__unicode__(),
 		'username': member.user.username,
+		'cm_responding': cm_responding,
 		'event_id': event_role.event.id,
 		'role_id': event_role.role.id,
 		'eventrole_id': event_role.id,

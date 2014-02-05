@@ -80,17 +80,23 @@ function respond_to_event(button, pagetype) {
 				// Add an entry to the new list
 				if (action == 'attend') {
 				   $('#role_'+obj.role_id+'_attending_members').prepend('<li id="role_'+obj.role_id+'_member_'+obj.user_id+'_entry"><a href="/felagi/'+obj.username+'">'+obj.user_name+'</a> ('+obj.time_responded+') <span class="event_responder attending edit-interface icon-remove-sign pull-right" data-member_id="'+obj.user_id+'" data-eventrole_id="'+obj.eventrole_id+'" data-action="absent" data-status="attending"></span></li>')
-					$('.role_'+obj.role_id+'_status_icon').removeClass('icon-ban-circle icon-circle-blank invited');
-					$('.role_'+obj.role_id+'_status_icon').addClass('icon-ok-circle');
 					if ($('#attending_roles').siblings('.form-edit-icon').data('toggle_state') == 'hidden') {
 						$('#role_'+obj.role_id+'_member_'+obj.user_id+'_entry').children('.event_responder.edit-interface').css('display','none');
 					}
+					// If we're changing the currently logged in member response, then change the status icon.
+					if (obj.cm_responding) {
+						$('.role_'+obj.role_id+'_status_icon').removeClass('icon-ban-circle icon-circle-blank invited');
+						$('.role_'+obj.role_id+'_status_icon').addClass('icon-ok-circle');
+					}
 				} else {
 				   $('#role_'+obj.role_id+'_absent_members').prepend('<li id="role_'+obj.role_id+'_member_'+obj.user_id+'_entry"><a href="/felagi/'+obj.username+'">'+obj.user_name+'</a> ('+obj.time_responded+') <span class="event_responder absent edit-interface icon-plus-sign pull-right" data-member_id="'+obj.user_id+'" data-eventrole_id="'+obj.eventrole_id+'" data-action="attend" data-status="absent"></span></li></li>')
-					$('.role_'+obj.role_id+'_status_icon').removeClass('icon-ok-circle icon-circle-blank invited');
-					$('.role_'+obj.role_id+'_status_icon').addClass('icon-ban-circle');
 					if ($('#absent_roles').siblings('.form-edit-icon').data('toggle_state') == 'hidden') {
 						$('#role_'+obj.role_id+'_member_'+obj.user_id+'_entry').children('.event_responder.edit-interface').css('display','none');
+					}
+					// If we're changing the currently logged in member response, then change the status icon.
+					if (obj.cm_responding) {
+						$('.role_'+obj.role_id+'_status_icon').removeClass('icon-ok-circle icon-circle-blank invited');
+						$('.role_'+obj.role_id+'_status_icon').addClass('icon-ban-circle');
 					}
 				}
 
