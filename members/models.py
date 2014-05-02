@@ -33,6 +33,13 @@ class Member(models.Model):
 	def __unicode__(self):
 		return self.user.first_name +' '+ self.user.last_name
 
+	#TODO: Is this a good idea (if it works, that is?)
+	def email(self):
+		return Email.objects.filter(member=self, is_primary=True)
+
+	def phone(self):
+		return Phone.objects.filter(member=self, is_primary=True)
+
 class Phone(models.Model):
 	member = models.ForeignKey(Member)
 	number = models.IntegerField()
