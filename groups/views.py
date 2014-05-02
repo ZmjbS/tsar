@@ -26,8 +26,11 @@ def group_page(request, slug):
 	managers = [ membership.member for membership in Membership.objects.filter(group=g).filter(is_manager=True) ]
 	print managers
 	om = Member.objects.exclude(membership__group__slug=slug)
+	##timebegin=datetime.datetime.now()
+	##Event.objects.prefetch_related('eventrole')
 	recent_events_list=Event.objects.filter(eventrole__groupinvitation__group__slug=slug).filter(date_time_begin__lte=now).distinct()
 	coming_events_list=Event.objects.filter(eventrole__groupinvitation__group__slug=slug).filter(date_time_begin__gte=now).distinct()
+	##print datetime.datetime.now()-timebegin
 	return render_to_response('groups/group_page.html', {
 		'group': g,
 		'managers': managers,
