@@ -253,25 +253,32 @@ def display_event(request, pk):
 #		print '> Attending members {}:'.format(attending)
 #		print '> Absent members: {}'.format(absent)
 
-		# run through those who are invited but whose status is still unclear.
-#		print '>> Members invited through positions'
-		for member in Member.objects.filter(position__eventrole=eventrole):#filter(group__groupinvitation__event_role__event=event):
-#			print '>>   {}'.format(member.user.username)
-			if member not in unclear and member not in attending and member not in absent:
-				unclear.append(member)
-#				print '++   {}'.format(member)
-#		print '>> Members invited through groups'
-		for member in Member.objects.filter(group__groupinvitation__event_role=eventrole):#filter(group__groupinvitation__event_role__event=event):
-#			print '>>   {}'.format(member.user.username)
-			if member not in unclear and member not in attending and member not in absent:
-				unclear.append(member)
-#				print '++   {}'.format(member)
-#		print '>> Members invited directly'
-		for member in Member.objects.filter(memberinvitation__event_role=eventrole):#filter(memberinvitation__event_role__event=event):
-#			print '>>   {}'.format(member)
-			if member not in unclear and member not in attending and member not in absent:
-				unclear.append(member)
-#				print '++   {}'.format(member)
+		# Run through those who are invited but whose status is still unclear.
+		if eventrole.is_open:
+		# If it's an open event, check all members.
+			for member in Member.objects.all():
+				if member not in attending and member not in absent:
+					unclear.append(member)
+		else:
+		# If it isn't an open event, check invited members:
+#			print '>> Members invited through positions'
+			for member in Member.objects.filter(position__eventrole=eventrole):#filter(group__groupinvitation__event_role__event=event):
+#				print '>>   {}'.format(member.user.username)
+				if member not in unclear and member not in attending and member not in absent:
+					unclear.append(member)
+#					print '++   {}'.format(member)
+#			print '>> Members invited through groups'
+			for member in Member.objects.filter(group__groupinvitation__event_role=eventrole):#filter(group__groupinvitation__event_role__event=event):
+#				print '>>   {}'.format(member.user.username)
+				if member not in unclear and member not in attending and member not in absent:
+					unclear.append(member)
+#					print '++   {}'.format(member)
+#			print '>> Members invited directly'
+			for member in Member.objects.filter(memberinvitation__event_role=eventrole):#filter(memberinvitation__event_role__event=event):
+#				print '>>   {}'.format(member)
+				if member not in unclear and member not in attending and member not in absent:
+					unclear.append(member)
+#					print '++   {}'.format(member)
 
 		# Add these to the total:
 		total_attending.update(attending)
@@ -491,12 +498,16 @@ def save_event(request):
 
 				wantedparticipantIDs = data['role'][role.id]['participants']
 				print 'Wanted participantsID: {}'.format(wantedparticipantIDs)
+
 				wantedpositions = [Position.objects.get(pk=int(positionid[1:])) for positionid in wantedparticipantIDs if positionid[0]=='p']
 				print 'We want event role {} with positions {}'.format(role, wantedpositions)
 				wantedgroups = [Group.objects.get(pk=int(groupid[1:])) for groupid in wantedparticipantIDs if groupid[0]=='g']
 				print 'We want event role {} with groups {}'.format(role, wantedgroups)
 				wantedmembers= [Member.objects.get(pk=int(memberid[1:])) for memberid in wantedparticipantIDs if memberid[0]=='m']
 				print 'We want event role {} with members {}'.format(role, wantedmembers)
+
+				# Check whether the event is open.
+				is_open = ('a' in wantedparticipantIDs)
 
 				# Workflow:
 				#  1. Get or create the EventRole.
@@ -518,7 +529,7 @@ def save_event(request):
 						print 'role_id: {}'.format(role.id)
 						# TODO: Later feature...
 						#eventrole = EventRole(event_id=event.id,role_id=role.id,minimum=int(data['role'][role.id]['min']), maximum=int(data['role'][role.id]['max']))
-						eventrole = EventRole(event_id=event.id,role_id=role.id,)
+						eventrole = EventRole(event_id=event.id,role_id=role.id,is_open=is_open)
 						print 'No EventRole exists, creating {}.'.format(eventrole)
 					except:
 						print 'Could not create eventrole.'
@@ -577,6 +588,15 @@ def save_event(request):
 							return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not remove member '+str(member)+' from '+currentmembers+'.' }))
 					else:
 						print '++ ID is {}: We keep member {}.'.format(member.id,member)
+
+				# Finally set whether the EventRole is open to all members:
+				eventrole.is_open = is_open
+				try:
+					eventrole.clean_fields()
+					eventrole.save()
+					print 'eventrole saved: {}.'.format(eventrole)
+				except:
+					return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not update whether the EventRole is open numbers.' }))
 
 				# 3. Update the minimum and maximum number of participants.
 				# TODO: Later feature...

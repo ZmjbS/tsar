@@ -96,6 +96,7 @@ $(document).ready(function(){
 		+		'<div>'
 		+			'<select name="role['+role_id+'][participants][]" multiple data-placeholder="Veldu þáttakendur" class="select-participants">'
 		+				'<optgroup label="Stöður">'
+		+					'<option value="a">Allir</option>'
 		+					'{% for position in positions %}'
 		+					'<option value="p{{ position.id }}">{{ position.title }}</option>'
 		+					'{% endfor %}'
@@ -282,6 +283,9 @@ function updateEnabledSelect(id) {
 {% for event_role in event.eventrole_set.all %}
 			<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;"><span class="role_entry-title">{{ event_role.role.title }}</span> <span class="role_entry-minmax">{{ event_role.minimum }}〜{% if event_role.maximum == 0 %}∞{% else %}{{ event_role.maximum }}{% endif %}</span></div>
 				<ul>
+	{% if event_role.is_open %}
+					<li>Allir</li>
+	{% endif %}
 	{% for position in event_role.invited_positions.all %}
 					<li>{{ position.title }}</li>
 	{% endfor %}
@@ -307,15 +311,15 @@ function updateEnabledSelect(id) {
 			<div class="col-xs-12 col-sm-6 btn-group pull-right" style="padding: 0 0 0 5px;" id="event-invite-button">
 				<button class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown">Bæta við hlutverki <span class="caret"></span> </button>
 				<ul id="role-dropdown" class="dropdown-menu">
-   {% for role in event_roles %}
+ {% for role in event_roles %}
 					<li class="role-dropdown-item" id="{{ role.id}}"><a>{{ role.title }}</a></li>
-   {% endfor %}
+ {% endfor %}
 				</ul>
 			</div>
 		</div><!-- /#event-invite-button -->
 	<div id="invite-role-list" style="clear:both">
 
-	{% for event_role in event.eventrole_set.all %}
+{% for event_role in event.eventrole_set.all %}
 			<div class="role_entry">
 				<div class="role_entry-title" style="float:left">{{ event_role.role.title }}</div>
 				<input type="hidden" name="role[{{ event_role.role.id }}][id]" value="{{ event_role.role.id }}" />
@@ -325,24 +329,25 @@ function updateEnabledSelect(id) {
 				<div>
 					<select name="role[{{ event_role.role.id }}][participants][]" multiple data-placeholder="Veldu þáttakendur" class="select-participants">
 						<optgroup label="Stöður">
-		{% for position in positions %}
+							<option value="a" {% if event_role.is_open %}selected="selected"{% endif %}>Allir</option>
+	{% for position in positions %}
 							<option value="p{{ position.id }}"{% if position in event_role.invited_positions.all %} selected="selected"{% endif %}>{{ position.title }}</option>
-		{% endfor %}
+	{% endfor %}
 						</optgroup>
 						<optgroup label="Hópar og flokkar">
-		{% for group in groups %}
+	{% for group in groups %}
 							<option value="g{{ group.id }}"{% if group in event_role.invited_groups.all %} selected="selected"{% endif %}>{{ group.title }}</option>
-		{% endfor %}
+	{% endfor %}
 						</optgroup>
 						<optgroup label="Meðlimir">
-		{% for member in members %}
+	{% for member in members %}
 							<option value="m{{ member.id }}"{% if member in event_role.invited_members.all %} selected="selected"{% endif %}>{{ member }}</option>
-		{% endfor %}
+	{% endfor %}
 						</optgroup>
 					</select>
 				</div>
        		</div><!--/#role-entry-->
-	{% endfor %}
+{% endfor %}
 
        	</div><!--invite-role-list-->
       
