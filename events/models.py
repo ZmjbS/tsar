@@ -8,6 +8,7 @@ from django import forms
 from django.forms import ModelForm
 from django.forms.extras.widgets import SelectDateWidget
 from django.forms.widgets import SplitDateTimeWidget
+from paintstore.fields import ColorPickerField
 
 class Role(models.Model):
 	# Roles for participants in an event. (e.g. driver, organiser, instructor,
@@ -27,6 +28,7 @@ class EventType(models.Model):
 
 	title = models.CharField(max_length=64)
 	description = models.TextField(blank=True)
+	color = ColorPickerField(default="#ffffff")
 
 	def __unicode__(self):
 		return self.title

@@ -58,6 +58,10 @@ class EventTagInline(admin.StackedInline):
 class AttendanceAdmin(admin.ModelAdmin):
 	list_display = ('event_role', 'member', 'attendance', 'time_checkin', 'time_checkout')
 
+class EventTypeAdmin(admin.ModelAdmin):
+    list_display = ["title", "color",]
+    list_editable = ["color",]
+
 admin.site.register(Event, EventAdmin)
 #admin.site.register(Role, RoleAdmin)
 admin.site.register(Role)
@@ -66,7 +70,7 @@ admin.site.register(PositionInvitation)
 admin.site.register(GroupInvitation)
 admin.site.register(MemberInvitation)
 admin.site.register(MemberResponse)
-admin.site.register(EventType)
+admin.site.register(EventType, EventTypeAdmin)
 admin.site.register(TagType)#,TagTypeAdmin)
 admin.site.register(EventTag)
 admin.site.register(Tag)
