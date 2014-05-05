@@ -20,64 +20,45 @@ from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
 def calendar_events_list(member_id, start, end):
-#def calendar_events_list(request):
-	# Get all events between the two dates:
-	print 'Retrieve events between {} and {}'.format(start, end)
-	print member_id
+	# Get all events between the two dates.
+
+	#print 'Retrieve events between {} and {}'.format(start, end)
+	#print member_id
 	member = Member.objects.get(id=member_id)
-	print member
-	import time
-	#print time.gmtime(int(start))
-	#print int(start)
-	#print datetime.fromtimestamp(int(start))
+	#print member
+
+	import calendar
+
 	calendar_begins = datetime.fromtimestamp(int(start))
 	calendar_ends = datetime.fromtimestamp(int(end))
-	import calendar
-	print 'The calendar runs from {} to {}'.format(calendar_begins, calendar_ends)#time.strftime("%Y", time.gmtime(calendar.timegm(calendar_begins))), time.strftime("%Y", time.gmtime(calendar.timegm(calendar_ends))))
+	print 'The calendar runs from {} to {}'.format(calendar_begins, calendar_ends)
+
 	events = Event.objects.filter(date_time_end__gt=calendar_begins).filter(date_time_begin__lt=calendar_ends)
 	events_list = []
 	for event in events:
 		eventtype = event.event_type.title
-		print eventtype
-		if eventtype == u'Námskeið': #light-Orange
-			backgroundcolor = '#FFC600'
-		elif eventtype == u'Æfing': #Orange
-			backgroundcolor = '#Da9600'
-		elif eventtype == u'Vinnukvöld': #dark-orange
-			backgroundcolor = '#Bb6655'
-		elif eventtype == u'Skemmtun': #light-green
-			backgroundcolor = '#38FF0D'
-		elif eventtype == u'Ferð': #Green
-			backgroundcolor = '#2DCF0A'
-		elif eventtype == u'Fundur': #dark-green
-			backgroundcolor = '#209407'
-		elif eventtype == u'Fjáröflun': # dark-blue
-			backgroundcolor = '#0158EA'
-		elif eventtype == u'Sérverkefni': # light-blue
-			backgroundcolor = '#0DDDFF'
-		else:
-			backgroundcolor = 'green'
+#		print eventtype
 
 		# Finall indicate the member's response status to each event.
 		try:
 			if MemberResponse.objects.get(event_role__event=event, member=member, response='Y'):
 				status='attending'
 		except:
-			print 'no yes'
+#			print 'no yes'
 			try:
-				print MemberResponse.objects.get(event_role__event=event, member=member, response='N')
+#				print MemberResponse.objects.get(event_role__event=event, member=member, response='N')
 				status = 'absent'
 			except:
-				print 'no no'
-				print event
-				print member
-				print event.invited_roles(member)
+#				print 'no no'
+#				print event
+#				print member
+#				print event.invited_roles(member)
 				if event.invited_roles(member) != []:
 					status = 'unclear'
 				else:
-					print 'Not invited'
+#					print 'Not invited'
 					status = 'notinvited'
-		print status
+#		print status
 
 		events_list.append({
 			'title': event.title,
@@ -85,14 +66,14 @@ def calendar_events_list(member_id, start, end):
 			'end': calendar.timegm(event.date_time_end.utctimetuple()),
 			'id': event.id,
 			'url': '/vidburdur/'+str(event.id),
- 			'backgroundColor': backgroundcolor,
+ 			'backgroundColor': event.event_type.color,
 			# Let's also send some data to display the attendance status:
 			'status': status,
 		})
-	import pprint
-	pprint.pprint(events_list)
+#	import pprint
+#	pprint.pprint(events_list)
 	return HttpResponse(json.dumps(events_list), mimetype='application/javascript')
-	print 'FINISHED'
+#	print 'FINISHED'
 
 def list_events(request):
 	if request.is_ajax():
