@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from groups.models import Group
-from members.models import Member
+from members.models import Member, Position
 from django.db.models import get_model
 import datetime
 from django import forms
@@ -80,6 +80,9 @@ class Event(models.Model):
 		invitedroles = []
 		#print self.eventrole_set.all()
 		for eventrole in self.eventrole_set.all():
+			for position in eventrole.invited_positions.all():
+				if member in position.member_set.all() and eventrole not in invitedroles:
+					invitedroles.append(eventrole)
 			for group in eventrole.invited_groups.all():
 				if member in group.members.all() and eventrole not in invitedroles:
 					invitedroles.append(eventrole)
@@ -119,13 +122,20 @@ class EventRole(models.Model):
 	# * a role
 	# * (optionally) one or more groups through GroupInvitation
 	# * (optionally) one or more members through MemberInvitation
-	# An event role may have a minimum or maximum number of participants and can even be open to anyone who may wish to join.
-	# TODO: Open/closed events. Simple boolean?
+	# * (optionally) one or more positions through PositionInvitation
+	# * a boolean field indicating whether the event is open to all members
+	# * (optionally) one or more members through their responses to the event
+	# EventRoles furthermore have:
+	# * an optional maximum number of members allowed
+	# * an optional minimum number of members required
+	# * a boolean indicating whether the role details should be hidden to non-invited members
 
 	event = models.ForeignKey(Event)
 	role = models.ForeignKey(Role)
 	invited_groups = models.ManyToManyField(Group, through='GroupInvitation', blank=True, null=True)
 	invited_members = models.ManyToManyField(Member, through='MemberInvitation', related_name='eventrole_invitations', blank=True, null=True)
+	invited_positions = models.ManyToManyField(Position, through='PositionInvitation', blank=True, null=True)
+	is_open = models.BooleanField(default=False)
 	responses = models.ManyToManyField(Member, through='MemberResponse', related_name='eventrole_responses', blank=True, null=True)
 	minimum = models.SmallIntegerField(default=0)
 	maximum = models.SmallIntegerField(default=0)
@@ -135,6 +145,9 @@ class EventRole(models.Model):
 		# Returns boolean depending on whether the member is invited to the event.
 		# TODO: Unused?
 
+		for position in self.invited_positions.all():
+			if member in position.members.all():
+				return True
 		for group in self.invited_groups.all():
 			if member in group.members.all():
 				return True
@@ -157,6 +170,15 @@ class EventRole(models.Model):
 
 	def __unicode__(self):
 		return self.event.title +' '+ self.role.title
+
+class PositionInvitation(models.Model):
+	# An intermediary model between an event role and a position.
+
+	event_role = models.ForeignKey(EventRole)
+	position = models.ForeignKey(Position)
+
+	def __unicode__(self):
+		return self.event_role.__unicode__() +'>'+ self.position.title
 
 class GroupInvitation(models.Model):
 	# An intermediary model between an event role and a group.

@@ -13,3 +13,4 @@ class MemberAdmin(admin.ModelAdmin):
 	inlines = [PhoneInline, EmailInline]
 
 admin.site.register(Member, MemberAdmin)
+admin.site.register(Position)

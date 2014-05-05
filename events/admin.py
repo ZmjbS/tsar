@@ -1,4 +1,4 @@
-from events.models import Event,EventRole,Role,GroupInvitation,MemberInvitation,MemberResponse,EventType,MemberAttendance,EventTag,Tag,TagType
+from events.models import Event,EventRole,Role,GroupInvitation,MemberInvitation,PositionInvitation,MemberResponse,EventType,MemberAttendance,EventTag,Tag,TagType
 from django.contrib import admin
 
 #class RoleInline(admin.StackedInline):
@@ -30,8 +30,11 @@ class GroupInvitationInline(admin.StackedInline):
 class MemberInvitationInline(admin.StackedInline):
 	model = MemberInvitation
 	extra = 0
+class PositionInvitationInline(admin.StackedInline):
+	model = PositionInvitation
+	extra = 0
 class EventRoleAdmin(admin.ModelAdmin):
-	inlines = (MemberInvitationInline,GroupInvitationInline)
+	inlines = (MemberInvitationInline,GroupInvitationInline,PositionInvitationInline)
 ###
 
 class EventRoleInline(admin.StackedInline):
@@ -59,6 +62,7 @@ admin.site.register(Event, EventAdmin)
 #admin.site.register(Role, RoleAdmin)
 admin.site.register(Role)
 admin.site.register(EventRole, EventRoleAdmin)
+admin.site.register(PositionInvitation)
 admin.site.register(GroupInvitation)
 admin.site.register(MemberInvitation)
 admin.site.register(MemberResponse)

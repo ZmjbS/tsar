@@ -95,6 +95,11 @@ $(document).ready(function(){
 //		+					'</div>'
 		+		'<div>'
 		+			'<select name="role['+role_id+'][participants][]" multiple data-placeholder="Veldu þáttakendur" class="select-participants">'
+		+				'<optgroup label="Stöður">'
+		+					'{% for position in positions %}'
+		+					'<option value="p{{ position.id }}">{{ position.title }}</option>'
+		+					'{% endfor %}'
+		+				'</optgroup>'
 		+				'<optgroup label="Hópar og flokkar">'
 		+					'{% for group in groups %}'
 		+					'<option value="g{{ group.id }}">{{ group.title }}</option>'
@@ -269,7 +274,6 @@ function updateEnabledSelect(id) {
 	</ul>
 </div>
 {% endfor %}
-
 <!-- Invitations -->
 <div class="tab-pane" id="invitation">
 	<div id="event_invitations-data">
@@ -277,6 +281,11 @@ function updateEnabledSelect(id) {
 		<ul style="list-style: none; margin-left:0; padding-left: 0;">
 {% for event_role in event.eventrole_set.all %}
 			<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;"><span class="role_entry-title">{{ event_role.role.title }}</span> <span class="role_entry-minmax">{{ event_role.minimum }}〜{% if event_role.maximum == 0 %}∞{% else %}{{ event_role.maximum }}{% endif %}</span></div>
+				<ul>
+	{% for position in event_role.invited_positions.all %}
+					<li>{{ position.title }}</li>
+	{% endfor %}
+				</ul>
 				<ul>
 	{% for group in event_role.invited_groups.all %}
 					<li><a href="/hopur/{{ group.slug }}">{{ group.title }}</a></li>
@@ -315,6 +324,11 @@ function updateEnabledSelect(id) {
 				<div style="float:right; margin-right: .5em; display:none;">minnst: <input name="role[{{ event_role.role.id }}][min]" class="col-sm-6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>
 				<div>
 					<select name="role[{{ event_role.role.id }}][participants][]" multiple data-placeholder="Veldu þáttakendur" class="select-participants">
+						<optgroup label="Stöður">
+		{% for position in positions %}
+							<option value="p{{ position.id }}"{% if position in event_role.invited_positions.all %} selected="selected"{% endif %}>{{ position.title }}</option>
+		{% endfor %}
+						</optgroup>
 						<optgroup label="Hópar og flokkar">
 		{% for group in groups %}
 							<option value="g{{ group.id }}"{% if group in event_role.invited_groups.all %} selected="selected"{% endif %}>{{ group.title }}</option>

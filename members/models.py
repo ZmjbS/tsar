@@ -2,18 +2,25 @@ from django.db import models
 from django.contrib.auth.models import *
 from django.contrib.localflavor.is_.forms import ISIdNumberField, ISPhoneNumberField
 
+class Position(models.Model):
+	title = models.CharField(max_length=32)
+
+	def __unicode__(self):
+		return self.title
+
 class Member(models.Model):
 	user = models.OneToOneField(User)
 	member_id = models.IntegerField()
 	#id = models.ISIdNumberField()
-	POSITION_CHOICES = (
-		(u'OC', u'On call'),
-		(u'IT', u'In training'),
-		(u'NC', u'Off call'),
-		(u'QT', u'Quit'),
-	#TODO: Do we maybe want to make this editable by giving it a class of its own?
-	)
-	position = models.CharField(max_length=2, choices=POSITION_CHOICES)
+#	POSITION_CHOICES = (
+#		(u'OC', u'On call'),
+#		(u'IT', u'In training'),
+#		(u'NC', u'Off call'),
+#		(u'QT', u'Quit'),
+#	#TODO: Do we maybe want to make this editable by giving it a class of its own?
+#	)
+#	position = models.CharField(max_length=2, choices=POSITION_CHOICES)
+	position = models.ForeignKey(Position, default=Position.objects.filter(id=1))
 	# TODO: Probably drop this?
 	#BLOOD_TYPE_CHOICES = (
 	#	(u'AP', u'A RhD pos'),
