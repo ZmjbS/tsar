@@ -334,17 +334,17 @@ function updateEnabledSelect(id) {
 						<optgroup label="Stöður">
 							<option value="a" {% if event_role.is_open %}selected="selected"{% endif %}>Allir</option>
 	{% for position in positions %}
-							<option value="p{{ position.id }}"{% if position in event_role.invited_positions.all %} selected="selected"{% endif %}>{{ position.title }}</option>
+							<option value="p{{ position.id }}"{% if position in invited_positions %} selected="selected"{% endif %}>{{ position.title }}</option>
 	{% endfor %}
 						</optgroup>
 						<optgroup label="Hópar og flokkar">
 	{% for group in groups %}
-							<option value="g{{ group.id }}"{% if group in event_role.invited_groups.all %} selected="selected"{% endif %}>{{ group.title }}</option>
+							<option value="g{{ group.id }}"{% if group in invited_groups %} selected="selected"{% endif %}>{{ group.title }}</option>
 	{% endfor %}
 						</optgroup>
 						<optgroup label="Meðlimir">
 	{% for member in members %}
-							<option value="m{{ member.id }}"{% if member in event_role.invited_members.all %} selected="selected"{% endif %}>{{ member }}</option>
+							<option value="m{{ member.id }}"{% if member in invited_members %} selected="selected"{% endif %}>{{ member }}</option>
 	{% endfor %}
 						</optgroup>
 					</select>

@@ -273,6 +273,12 @@ def display_event(request, pk):
 		if cm in attending:
 			cm_status = 'attending'
 
+		# Compile lists of invited positions, groups and members so that the template can mark those as selected.
+		# TODO: can this be integrated to the code above?
+		invited_positions = eventrole.invited_positions.all
+		invited_groups = eventrole.invited_groups.all
+		invited_members = eventrole.invited_members.all
+
 		role_data.append({
 			'eventrole': eventrole,
 			'unclearmembers': unclear,
@@ -281,6 +287,9 @@ def display_event(request, pk):
 			'cm_status': cm_status,
 			'attending_responses': attending_responses,
 			'absent_responses': absent_responses,
+			'invited_positions': invited_positions,
+			'invited_groups': invited_groups,
+			'invited_members': invited_members,
 			})
 
 	# Pass possible roles and event types so that we can edit the event.
