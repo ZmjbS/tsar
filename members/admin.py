@@ -1,4 +1,4 @@
-from members.models import *
+from members.models import Phone, Email,Member,Position
 from django.contrib import admin
 
 class PhoneInline(admin.StackedInline):

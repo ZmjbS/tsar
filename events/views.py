@@ -191,7 +191,9 @@ def event_response(request):
 from django.contrib.auth.decorators import login_required
 @login_required
 def display_event(request, pk):
-	event = get_object_or_404(Event, id=pk)
+
+	print 'beginning def'
+	event = get_object_or_404(Event.objects.select_related('eventtype', 'eventrole_set', 'tags'), id=pk)
 	cm = request.user.member
 	# Compile a list of members who are invited.
 	# Workflow:
@@ -318,10 +320,18 @@ def display_event(request, pk):
 	# Pass possible tag types so that we can edit the event.
 	tagtypes = TagType.objects.all()
 
-	# Add the groups and members.
-	positions = Position.objects.all()
-	members = Member.objects.all()
-	groups = Group.objects.all()
+	# Generate position, group and member lists for the selection.
+	positions = []
+	for position in Position.objects.select_related(depth=0).all():
+		positions.append({ 'title': position.title, 'id': position.id, })
+	groups = []
+	for group in Group.objects.select_related(depth=0).all():
+		groups.append({ 'title': group.title, 'id': group.id, })
+	members = []
+	for member in Member.objects.select_related(depth=0).all():
+		members.append({ 'name': member.__unicode__(), 'id': member.id, })
+
+	print 'returning data to view'
 
 	return render_to_response('events/event_page.html', {
 		'user': request.user,

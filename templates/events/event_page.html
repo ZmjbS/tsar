@@ -26,7 +26,10 @@ div[id*='tag_type_id'] { width: 100% !important; }
 <script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
 <script type="text/javascript">
 
+console.log('reading document!!');
+
 $(document).ready(function(){
+		console.log('document read!!');
 
 	/*
 		Place the CSRF token in a js variable so that the form handler
@@ -54,7 +57,7 @@ $(document).ready(function(){
 	$('.chosen-container.chosen-container-multi, .chosen-drop').css('width','100%');
 
 	// Hide the tag types that don't apply to this event type:
-	updateEnabledSelect({{ event.event_type.id }});
+	//updateEnabledSelect({{ event.event_type.id }});
 	// Set a listener to the event type select to refresh the tag type select:
 	$('#event_type').change(function() {
 			updateEnabledSelect($(this).val());
@@ -108,7 +111,7 @@ $(document).ready(function(){
 		+				'</optgroup>'
 		+				'<optgroup label="Meðlimir">'
 		+					'{% for member in members %}'
-		+					'<option value="m{{ member.id }}">{{ member }}</option>'
+		+					'<option value="m{{ member.id }}">{{ member.name }}</option>'
 		+					'{% endfor %}'
 		+				'</optgroup>'
 		+			'</select>'
@@ -280,23 +283,23 @@ function updateEnabledSelect(id) {
 	<div id="event_invitations-data">
 		<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_invitations"></i><br />
 		<ul style="list-style: none; margin-left:0; padding-left: 0;">
-{% for event_role in event.eventrole_set.all %}
-			<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;"><span class="role_entry-title">{{ event_role.role.title }}</span> <span class="role_entry-minmax">{{ event_role.minimum }}〜{% if event_role.maximum == 0 %}∞{% else %}{{ event_role.maximum }}{% endif %}</span></div>
+{% for role in role_data %}
+			<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;"><span class="role_entry-title">{{ role.eventrole.role.title }}</span> <span class="role_entry-minmax">{{ role.eventrole.minimum }}〜{% if role.eventrole.maximum == 0 %}∞{% else %}{{ role.eventrole.maximum }}{% endif %}</span></div>
 				<ul>
-	{% if event_role.is_open %}
+	{% if role.eventrole.is_open %}
 					<li>Allir</li>
 	{% endif %}
-	{% for position in event_role.invited_positions.all %}
+	{% for position in role.eventrole.invited_positions.all %}
 					<li>{{ position.title }}</li>
 	{% endfor %}
 				</ul>
 				<ul>
-	{% for group in event_role.invited_groups.all %}
+	{% for group in role.eventrole.invited_groups.all %}
 					<li><a href="/hopur/{{ group.slug }}">{{ group.title }}</a></li>
 	{% endfor %}
 				</ul>
 				<ul>
-	{% for member in event_role.invited_members.all %}
+	{% for member in role.eventrole.invited_members.all %}
 					<li><a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a></li>
 	{% endfor %}
 				</ul>

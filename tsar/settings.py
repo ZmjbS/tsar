@@ -138,6 +138,7 @@ INSTALLED_APPS = (
 	'django.contrib.markup',
     #'south',
 	'paintstore',
+	'debug_toolbar',
 )
 
 #NATIVE_TAGS = (
