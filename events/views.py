@@ -114,17 +114,12 @@ def event_response(request):
 	# Check whether we've been handed a member_id:
 	try:
 		member_id = request.POST['member_id']
+		cm_responding = False
 		print 'member_id sent through post: {}'.format(member_id)
 	except:
 		member_id = request.user.member.id
-
-	# Check whether we're registering the currently logged in member:
-	if int(member_id) == request.user.member.id:
-		#print 'CM responding ( {} / {} )'.format(member_id,request.user.member.id)
 		cm_responding = True
-	else:
-		#print 'not CM responding( {} / {} )'.format(member_id,request.user.member.id)
-		cm_responding = False
+		print 'member_id set to current member'
 
 	# Get the eventrole_id and action:
 	print 'get eventrole_id'
@@ -348,7 +343,7 @@ def display_event(request, pk):
 		'positions': positions, 'members': members, 'groups': groups,
 	})
 
-def display_or_save_event_form(request):
+def display_event_form(request):
 	event_types = EventType.objects.all()
 	event_roles = Role.objects.all()
 	positions = Position.objects.all()
@@ -374,10 +369,9 @@ def display_or_save_event_form(request):
 def save_event(request):
 	print 'Saving event'
 	if not request.is_ajax():
-		return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Hello, world. Not AJAX request.'}))
+		return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Hello, world. Not an AJAX request.'}))
 	else:
 		print 'Is AJAX'
-		# TODO: Add handler for these below. They are required and must be submitted or else the form will not validate. Or perhaps the clean_fields() exception is enough...?
 		import pprint
 		print 'Hér kemur hrátt data:'
 		pprint.pprint(request.POST['data'])
@@ -704,14 +698,14 @@ def save_event(request):
 				print 'delete eventtag(event=event,tag='+str(tag)+')'
 				try:
 					et=EventTag.objects.get(event=event,tag=tag)
-					try:
-						et.delete()
-					except:
-						print 'Could not delete EventTag.'
-						return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not delete EventTag '+et+'.' }))
 				except:
 					print 'Could not get EventTag.'
 					return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not get EventTag.' }))
+				try:
+					et.delete()
+				except:
+					print 'Could not delete EventTag.'
+					return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not delete EventTag '+et+'.' }))
 			else:
 				print 'tag id '+str(tag.id)+' is in '+str(data['tag_type'][tag.tag_type.id])
 				print 'Do nothing...'
@@ -740,14 +734,15 @@ def save_event(request):
 						print 'create eventtag(event=event,tag='+str(tag)+')'
 						try:
 							et=EventTag(event=event,tag=tag)
-							try:
-								et.save()
-							except:
-								print 'Could not save EventTag.'
-								return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not save EventTag '+et+'.' }))
 						except:
 							print 'Could not create EventTag.'
 							return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not create EventTag.' }))
+						try:
+							et.clean_fields()
+							et.save()
+						except:
+							print 'Could not save EventTag.'
+							return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not save EventTag '+et+'.' }))
 					else:
 						print 'tag '+str(tag)+' is already in '+str(event.tags.all())
 						print 'Nothing to do...'

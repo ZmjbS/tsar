@@ -15,6 +15,6 @@ urlpatterns = patterns('events.views',
 	#	DetailView.as_view(
 	#		model=Event,template_name='events/create_event.html')
 	#	),
-	url(r'^nyskraning/$', 'display_or_save_event_form', name='events'),
+	url(r'^nyskraning/$', 'display_event_form', name='events'),
 	url(r'^nyskraning/vista$', 'save_event', name='events'),
 )
