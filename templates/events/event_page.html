@@ -57,7 +57,7 @@ $(document).ready(function(){
 	$('.chosen-container.chosen-container-multi, .chosen-drop').css('width','100%');
 
 	// Hide the tag types that don't apply to this event type:
-	//updateEnabledSelect({{ event.event_type.id }});
+	updateEnabledSelect({{ event.event_type.id }});
 	// Set a listener to the event type select to refresh the tag type select:
 	$('#event_type').change(function() {
 			updateEnabledSelect($(this).val());
@@ -263,8 +263,8 @@ function updateEnabledSelect(id) {
 		{% else %}
 		{# Here, status is "unclear" #}
 			{% for member in role.unclearmembers %}
-				<li id="role_{{ role.eventrole.role.id }}_member_{{ member.user.id }}_entry">
-					<a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a>
+				<li id="role_{{ role.eventrole.role.id }}_member_{{ member.id }}_entry">
+					<a href="/felagi/{{ member.username }}">{{ member.name }}</a>
 				{# TODO: condition this on having the rights, if we're going to limit them. #}
 				{{ member.id }}
 					<span class="event_responder {{ status }} edit-interface icon-remove-sign pull-right" style="display: none" data-member_id="{{ member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="absent" data-status="{{ status }}"></span>
@@ -289,17 +289,17 @@ function updateEnabledSelect(id) {
 	{% if role.eventrole.is_open %}
 					<li>Allir</li>
 	{% endif %}
-	{% for position in role.eventrole.invited_positions.all %}
+	{% for position in role.invited_positions %}
 					<li>{{ position.title }}</li>
 	{% endfor %}
 				</ul>
 				<ul>
-	{% for group in role.eventrole.invited_groups.all %}
+	{% for group in role.invited_groups %}
 					<li><a href="/hopur/{{ group.slug }}">{{ group.title }}</a></li>
 	{% endfor %}
 				</ul>
 				<ul>
-	{% for member in role.eventrole.invited_members.all %}
+	{% for member in role.invited_members %}
 					<li><a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a></li>
 	{% endfor %}
 				</ul>
@@ -322,29 +322,29 @@ function updateEnabledSelect(id) {
 		</div><!-- /#event-invite-button -->
 	<div id="invite-role-list" style="clear:both">
 
-{% for event_role in event.eventrole_set.all %}
+{% for role in role_data %}
 			<div class="role_entry">
-				<div class="role_entry-title" style="float:left">{{ event_role.role.title }}</div>
-				<input type="hidden" name="role[{{ event_role.role.id }}][id]" value="{{ event_role.role.id }}" />
-				<div style="float:right"><i id="{{ event_role.role.id }}" class="delete-role-entry icon-remove-sign pull-right" style="cursor: pointer"></i></div>
-				<div style="float:right; margin-right: .5em; display:none;">mest:   <input name="role[{{ event_role.role.id }}][max]" class="col-sm-6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>
-				<div style="float:right; margin-right: .5em; display:none;">minnst: <input name="role[{{ event_role.role.id }}][min]" class="col-sm-6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>
+				<div class="role_entry-title" style="float:left">{{ role.eventrole.title }}</div>
+				<input type="hidden" name="role[{{ role.eventrole.id }}][id]" value="{{ role.eventrole.id }}" />
+				<div style="float:right"><i id="{{ role.eventrole.id }}" class="delete-role-entry icon-remove-sign pull-right" style="cursor: pointer"></i></div>
+				<div style="float:right; margin-right: .5em; display:none;">mest:   <input name="role[{{ role.eventrole.id }}][max]" class="col-sm-6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>
+				<div style="float:right; margin-right: .5em; display:none;">minnst: <input name="role[{{ role.eventrole.id }}][min]" class="col-sm-6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>
 				<div>
-					<select name="role[{{ event_role.role.id }}][participants][]" multiple data-placeholder="Veldu þáttakendur" class="select-participants">
+					<select name="role[{{ role.eventrole.id }}][participants][]" multiple data-placeholder="Veldu þáttakendur" class="select-participants">
 						<optgroup label="Stöður">
-							<option value="a" {% if event_role.is_open %}selected="selected"{% endif %}>Allir</option>
+							<option value="a" {% if role.eventrole.is_open %}selected="selected"{% endif %}>Allir</option>
 	{% for position in positions %}
-							<option value="p{{ position.id }}"{% if position in invited_positions %} selected="selected"{% endif %}>{{ position.title }}</option>
+							<option value="p{{ position.id }}"{% if position in role.invited_positions %} selected="selected"{% endif %}>{{ position.title }}</option>
 	{% endfor %}
 						</optgroup>
 						<optgroup label="Hópar og flokkar">
 	{% for group in groups %}
-							<option value="g{{ group.id }}"{% if group in invited_groups %} selected="selected"{% endif %}>{{ group.title }}</option>
+							<option value="g{{ group.id }}"{% if group in role.invited_groups %} selected="selected"{% endif %}>{{ group.title }}</option>
 	{% endfor %}
 						</optgroup>
 						<optgroup label="Meðlimir">
 	{% for member in members %}
-							<option value="m{{ member.id }}"{% if member in invited_members %} selected="selected"{% endif %}>{{ member }}</option>
+							<option value="m{{ member.id }}"{% if member in role.invited_members %} selected="selected"{% endif %}>{{ member.name }}</option>
 	{% endfor %}
 						</optgroup>
 					</select>

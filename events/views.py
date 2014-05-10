@@ -211,7 +211,7 @@ def display_event(request, pk):
 	total_absent    = set()
 	total_unclear   = set()
 
-	for eventrole in EventRole.objects.filter(event=event):
+	for eventrole in EventRole.objects.select_related('memberresponse_set','invited_positions','invited_groups','invited_members').filter(event=event):#'memberresponse_set','invited_positions','invited_groups','invited_members').filter(event=event):
 	#	print 'On EventRole {}:'.format(eventrole)
 		attending = []
 		absent = []
@@ -220,7 +220,8 @@ def display_event(request, pk):
 		absent_responses = []
 
 		# First populate those attending or absent from existing responses.
-		for memberresponse in eventrole.memberresponse_set.all():
+		#for memberresponse in eventrole.memberresponse_set.all().prefetch_related('event_role'):
+		for memberresponse in MemberResponse.objects.filter(event_role=eventrole).select_related('event_role','member__user__id'):
 #			print '> memberresponse: {}'.format(memberresponse)
 			if memberresponse.response == 'Y':
 				attending.append(memberresponse.member)
@@ -234,35 +235,35 @@ def display_event(request, pk):
 		# Run through those who are invited but whose status is still unclear.
 		if eventrole.is_open:
 		# If it's an open event, check all members.
-			for member in Member.objects.all():
+			for member in Member.objects.select_related(depth=0).all():
 				if member not in attending and member not in absent:
-					unclear.append(member)
+					unclear.append({ 'id': member.user.id, 'username': member.user.username, 'name': member.__unicode__, })
 		else:
 		# If it isn't an open event, check invited members:
 #			print '>> Members invited through positions'
 			for member in Member.objects.filter(position__eventrole=eventrole):#filter(group__groupinvitation__event_role__event=event):
 #				print '>>   {}'.format(member.user.username)
 				if member not in unclear and member not in attending and member not in absent:
-					unclear.append(member)
+					unclear.append({ 'id': member.user.id, 'username': member.user.username, 'name': member.__unicode__, })
 #					print '++   {}'.format(member)
 #			print '>> Members invited through groups'
-			for member in Member.objects.filter(group__groupinvitation__event_role=eventrole):#filter(group__groupinvitation__event_role__event=event):
+			for member in Member.objects.select_related(depth=1).filter(group__groupinvitation__event_role=eventrole):#filter(group__groupinvitation__event_role__event=event):
 #				print '>>   {}'.format(member.user.username)
 				if member not in unclear and member not in attending and member not in absent:
-					unclear.append(member)
+					unclear.append({ 'id': member.user.id, 'username': member.user.username, 'name': member.__unicode__, })
 #					print '++   {}'.format(member)
 #			print '>> Members invited directly'
-			for member in Member.objects.filter(memberinvitation__event_role=eventrole):#filter(memberinvitation__event_role__event=event):
+			for member in Member.objects.select_related(depth=1).filter(memberinvitation__event_role=eventrole):#filter(memberinvitation__event_role__event=event):
 #				print '>>   {}'.format(member)
 				if member not in unclear and member not in attending and member not in absent:
-					unclear.append(member)
+					unclear.append({ 'id': member.user.id, 'username': member.user.username, 'name': member.__unicode__, })
 #					print '++   {}'.format(member)
 
 		# Add these to the total:
 		total_attending.update(attending)
 #		print 'Total attending: {}'.format(total_attending)
 		total_absent.update(absent)
-		total_unclear.update(unclear)
+		#total_unclear.update(unclear)
 
 		# Check to see whether the current member has responded or is invited to a particular role.
 		cm_status = 'not invited'
@@ -275,11 +276,13 @@ def display_event(request, pk):
 
 		# Compile lists of invited positions, groups and members so that the template can mark those as selected.
 		# TODO: can this be integrated to the code above?
-		invited_positions = eventrole.invited_positions.all
-		invited_groups = eventrole.invited_groups.all
-		invited_members = eventrole.invited_members.all
+		invited_positions = eventrole.invited_positions.select_related(depth=0).all()
+		invited_groups = eventrole.invited_groups.all()
+		invited_members = eventrole.invited_members.all()
+
 
 		role_data.append({
+			'id': eventrole.role.id,
 			'eventrole': eventrole,
 			'unclearmembers': unclear,
 			'absentmembers': absent,
@@ -327,13 +330,13 @@ def display_event(request, pk):
 	# Generate position, group and member lists for the selection.
 	positions = []
 	for position in Position.objects.select_related(depth=0).all():
-		positions.append({ 'title': position.title, 'id': position.id, })
+		positions.append(position)
 	groups = []
 	for group in Group.objects.select_related(depth=0).all():
-		groups.append({ 'title': group.title, 'id': group.id, })
+		groups.append(group)
 	members = []
 	for member in Member.objects.select_related(depth=0).all():
-		members.append({ 'name': member.__unicode__(), 'id': member.id, })
+		members.append(member)
 
 	print 'returning data to view'
 
