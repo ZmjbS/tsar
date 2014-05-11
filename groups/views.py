@@ -5,9 +5,8 @@ from members.models import Member
 from groups.models import Group, Membership
 from events.models import Event, EventRole, MemberResponse, EventType
 
-import datetime
-
-now=datetime.datetime.now()
+from django.utils.timezone import now
+now=now()
 
 def index(request):
 	all_groups_list = Group.objects.all().order_by('title')
@@ -23,18 +22,16 @@ def group_page(request, slug):
 	g = get_object_or_404(Group, slug=slug)
 	#import pprint
 	#pprint.pprint(g.members.all())
-	managers = [ membership.member for membership in Membership.objects.filter(group=g).filter(is_manager=True) ]
-	print managers
-	om = Member.objects.exclude(membership__group__slug=slug)
-	##timebegin=datetime.datetime.now()
-	##Event.objects.prefetch_related('eventrole')
+	managers = [ membership.member for membership in Membership.objects.select_related(depth=0).filter(group=g).filter(is_manager=True) ]
+	gm = [ { 'name': membership.member.__unicode__(), 'id': membership.member.id, 'username': membership.member.user.username, 'phone': membership.member.phone, 'email': membership.member.email, } for membership in Membership.objects.select_related('member','member__user').filter(group=g) ]
+	om = [ { 'name': membership.member.__unicode__(), 'id': membership.member.id, 'username': membership.member.user.username, 'phone': membership.member.phone, 'email': membership.member.email, } for membership in Membership.objects.select_related('member','member__user').exclude(group=g) ]
 	recent_events_list=Event.objects.filter(eventrole__groupinvitation__group__slug=slug).filter(date_time_begin__lte=now).distinct()
 	coming_events_list=Event.objects.filter(eventrole__groupinvitation__group__slug=slug).filter(date_time_begin__gte=now).distinct()
-	##print datetime.datetime.now()-timebegin
 	return render_to_response('groups/group_page.html', {
 		'group': g,
 		'managers': managers,
-		'members': om,
+		'group_members': gm,
+		'other_members': om,
 		'recent_events_list': recent_events_list,
 		'coming_events_list': coming_events_list,
 		'user': request.user,

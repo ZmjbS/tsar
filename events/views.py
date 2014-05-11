@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 
 from django.utils import timezone
+
 from datetime import datetime
 from dateutil import parser
 
@@ -81,7 +82,7 @@ def list_events(request):
 		return calendar_events_list(request.GET['member_id'], request.GET['start'], request.GET['end'])
 
 	# Otherwise it's just a normal request for the events page.
-	now = datetime.now()
+	now = timezone.now()
 	recent_events_list = Event.objects.filter(date_time_begin__lte=now).order_by('-date_time_begin')[:20]
 	coming_events_list = Event.objects.filter(date_time_begin__gte=now).order_by('date_time_begin')[:20]
 	#import pprint
@@ -145,7 +146,7 @@ def event_response(request):
 		mr = MemberResponse.objects.get(event_role=event_role, member=member)
 		print '>> MemberResponse {} found'.format(mr)
 		mr.response=act
-		mr.time_responded=datetime.now()
+		mr.time_responded=timezone.now()
 	# Otherwise create a new one:
 	except:
 		mr = MemberResponse(event_role=event_role, member=member, response=act)
