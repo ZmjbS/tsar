@@ -24,13 +24,8 @@ def group_page(request, slug):
 	#pprint.pprint(g.members.all())
 	managers = [ membership.member for membership in Membership.objects.select_related(depth=0).filter(group=g).filter(is_manager=True) ]
 
-	gm = []
-	om = []
-	for member in Member.objects.select_related('user'):
-		if g in member.group_set.all():
-			gm.append(member)
-		else:
-			om.append(member)
+	gm = [ membership.member for membership in Membership.objects.select_related('member','member__user').filter(group=g) ]
+	om = [ membership.member for membership in Membership.objects.select_related('member','member__user').exclude(group=g) ]
 
 	recent_events_list=Event.objects.filter(eventrole__groupinvitation__group__slug=slug).filter(date_time_begin__lte=now).distinct()
 	coming_events_list=Event.objects.filter(eventrole__groupinvitation__group__slug=slug).filter(date_time_begin__gte=now).distinct()
