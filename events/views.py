@@ -41,23 +41,18 @@ def calendar_events_list(member_id, start, end):
 #		print eventtype
 
 		# Finall indicate the member's response status to each event.
+#		print event
 		try:
 			if MemberResponse.objects.get(event_role__event=event, member=member, response='Y'):
 				status='attending'
 		except:
-#			print 'no yes'
 			try:
-#				print MemberResponse.objects.get(event_role__event=event, member=member, response='N')
-				status = 'absent'
+				if MemberResponse.objects.get(event_role__event=event, member=member, response='N'):
+					status = 'absent'
 			except:
-#				print 'no no'
-#				print event
-#				print member
-#				print event.invited_roles(member)
 				if event.invited_roles(member) != []:
 					status = 'unclear'
 				else:
-#					print 'Not invited'
 					status = 'notinvited'
 #		print status
 
