@@ -9,37 +9,46 @@
 	<object pk="1" model="events.eventtype">
 		<field type="CharField" name="title">Æfing</field>
 		<field type="TextField" name="description"></field>
+		<field type="CharField" name="color">#ffac7f</field>
 	</object>
 	<object pk="2" model="events.eventtype">
 		<field type="CharField" name="title">Vinnukvöld</field>
 		<field type="TextField" name="description"></field>
+		<field type="CharField" name="color">#ffe57f</field>
 	</object>
 	<object pk="3" model="events.eventtype">
 		<field type="CharField" name="title">Skemmtun</field>
 		<field type="TextField" name="description"></field>
+		<field type="CharField" name="color">#eaff7f</field>
 	</object>
 	<object pk="4" model="events.eventtype">
 		<field type="CharField" name="title">Fundur</field>
 		<field type="TextField" name="description"></field>
+		<field type="CharField" name="color">#aaff7f</field>
 	</object>
 	<object pk="5" model="events.eventtype">
 		<field type="CharField" name="title">Fjáröflun</field>
 		<field type="TextField" name="description"></field>
+		<field type="CharField" name="color">#7faaff</field>
 	</object>
 	<object pk="6" model="events.eventtype">
 		<field type="CharField" name="title">Ferð</field>
 		<field type="TextField" name="description"></field>
+		<field type="CharField" name="color">#7fffaa</field>
 	</object>
 	<object pk="7" model="events.eventtype">
 		<field type="CharField" name="title">Námskeið</field>
 		<field type="TextField" name="description"></field>
+		<field type="CharField" name="color">#d47fff</field>
 	</object>
 	<object pk="8" model="events.eventtype">
 		<field type="CharField" name="title">Sérverkefni</field>
 		<field type="TextField" name="description">Sérverkefni eru hjálparsveitartengd verkefni líkt og Hálendisgæslan.</field>
+		<field type="CharField" name="color">#7fffff</field>
 	</object>
 	<object pk="9" model="events.eventtype">
 		<field type="CharField" name="title">Útkall</field>
 		<field type="TextField" name="description"></field>
+		<field type="CharField" name="color">#ff7f7f</field>
 	</object>
 </django-objects>
