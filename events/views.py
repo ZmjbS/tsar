@@ -360,7 +360,7 @@ def display_event_form(request):
 	event_types = EventType.objects.all()
 	event_roles = Role.objects.all()
 	positions = Position.objects.all()
-	members = Member.objects.all()
+	members = Member.objects.select_related().all()
 	groups = Group.objects.all()
 	form = EventCreation(request.POST)
 	tagtypes = TagType.objects.all()
