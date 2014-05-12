@@ -24,8 +24,12 @@ def group_page(request, slug):
 	#pprint.pprint(g.members.all())
 	managers = [ membership.member for membership in Membership.objects.select_related(depth=0).filter(group=g).filter(is_manager=True) ]
 
+	# Construct lists of group members and other members. Note that other
+	# members can have more than one membership so we have to remove redundant
+	# members from the list.
 	gm = [ membership.member for membership in Membership.objects.select_related('member','member__user').filter(group=g) ]
 	om = [ membership.member for membership in Membership.objects.select_related('member','member__user').exclude(group=g) ]
+	om = list(set(om))
 
 	recent_events_list=Event.objects.filter(eventrole__groupinvitation__group__slug=slug).filter(date_time_begin__lte=now).distinct()
 	coming_events_list=Event.objects.filter(eventrole__groupinvitation__group__slug=slug).filter(date_time_begin__gte=now).distinct()
