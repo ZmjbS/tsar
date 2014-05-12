@@ -301,11 +301,11 @@ non_members[{{ member.id }}]='{{ member.name }}';
 {% for member in group_members %}
 			<tr class="membership_entry" data-member="{{ member.name }}" data-member_id="{{ member.id }}">
 				<td><input class="edit-interface" type="checkbox"></td>
-				<td class="member_name"><a href="/felagi/{{ member.username }}">{{ member.name }}</a>
+				<td class="member_name"><a href="/felagi/{{ member.user.username }}">{{ member.name }}</a>
 		{% if member in managers %}<span class="icon-briefcase" style="margin-left:1em; color: gray;"></span>{% endif %}
 					<input type="hidden" name="members[]" value="{ 'member_id': {{ member.id }}, 'status': 'member' }" /></td>
 				<td class="member_phone">{{ member.phone }}</td>
-				<td class="member_email">{{ member.email }}</td>
+				<td class="member_email">{{ member.user.email }}</td>
 				<td><input class="edit-interface-checkbox" type="checkbox" disabled /></td><!-- A -->
 				<td><input class="edit-interface-checkbox" type="checkbox" disabled /></td><!-- B -->
 				<td><input class="edit-interface-checkbox" type="checkbox" disabled /></td><!-- C -->
