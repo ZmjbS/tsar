@@ -34,6 +34,9 @@ class Member(models.Model):
 	def __unicode__(self):
 		return self.user.first_name +' '+ self.user.last_name
 
+	def name(self):
+		return self.user.first_name +' '+ self.user.last_name
+
 #	TODO: Currently we're just using the auth model email address for the
 #	primary, but we might want to add a way to order (not just mark one) the
 #	email addresses.
