@@ -82,6 +82,8 @@ class Event(models.Model):
 		invitedroles = []
 		#print self.eventrole_set.all()
 		for eventrole in self.eventrole_set.all():
+			if eventrole.is_open:
+				invitedroles.append(eventrole)
 			for position in eventrole.invited_positions.all():
 				if member in position.member_set.all() and eventrole not in invitedroles:
 					invitedroles.append(eventrole)
@@ -160,7 +162,6 @@ class EventRole(models.Model):
 	def response(self, member):
 		# Returns the member's response to the event, unless there is none in
 		# which case the response is the string 'U'.
-		# TODO: Unused?
 
 		try:
 			mr = MemberResponse.objects.get(event_role=self,member=member)
