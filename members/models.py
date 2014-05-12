@@ -40,12 +40,25 @@ class Member(models.Model):
 	def __unicode__(self):
 		return self.user.first_name +' '+ self.user.last_name
 
-	#TODO: Is this a good idea (if it works, that is?)
-	def email(self):
-		return Email.objects.filter(member=self, is_primary=True)
+#	TODO: Currently we're just using the auth model email address for the
+#	primary, but we might want to add a way to order (not just mark one) the
+#	email addresses.
+#
+#	def email(self):
+#		# Return the first primary email address
+#		e = Email.objects.filter(member=self, is_primary=True)
+#		try:
+#			return e[0]
+#		except:
+#			return ""
 
 	def phone(self):
-		return Phone.objects.filter(member=self, is_primary=True)
+		# Return the first primary phone number
+		p = Phone.objects.filter(member=self, is_primary=True)
+		try:
+			return p[0]
+		except:
+			return ""
 
 class Phone(models.Model):
 	member = models.ForeignKey(Member)
