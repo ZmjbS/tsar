@@ -266,7 +266,6 @@ function updateEnabledSelect(id) {
 				<li id="role_{{ role.eventrole.role.id }}_member_{{ member.id }}_entry">
 					<a href="/felagi/{{ member.username }}">{{ member.name }}</a>
 				{# TODO: condition this on having the rights, if we're going to limit them. #}
-				{{ member.id }}
 					<span class="event_responder {{ status }} edit-interface icon-remove-sign pull-right" style="display: none" data-member_id="{{ member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="absent" data-status="{{ status }}"></span>
 					<span class="event_responder {{ status }} edit-interface icon-plus-sign pull-right" style="display: none" data-member_id="{{ member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="attend" data-status="{{ status }}"></span>
 				</li>
