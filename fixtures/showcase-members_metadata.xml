@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<django-objects version="1.0">
+	<object pk="1" model="members.position"><field type="CharField" name="title">Björgunarmaður á útkallsskrá</field></object>
+	<object pk="2" model="members.position"><field type="CharField" name="title">Björgunarmaður utan útkallsskrár</field></object>
+	<object pk="3" model="members.position"><field type="CharField" name="title">Nýliði 1</field></object>
+	<object pk="4" model="members.position"><field type="CharField" name="title">Nýliði 2</field></object>
+	<object pk="5" model="members.position"><field type="CharField" name="title">Björgunarmaður í gestaaðild</field></object>
+</django-objects>
