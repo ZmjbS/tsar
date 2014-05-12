@@ -324,7 +324,7 @@ function updateEnabledSelect(id) {
 
 {% for role in role_data %}
 			<div class="role_entry">
-				<div class="role_entry-title" style="float:left">{{ role.eventrole.title }}</div>
+				<div class="role_entry-title" style="float:left">{{ role.title }}</div>
 				<input type="hidden" name="role[{{ role.eventrole.id }}][id]" value="{{ role.eventrole.id }}" />
 				<div style="float:right"><i id="{{ role.eventrole.id }}" class="delete-role-entry icon-remove-sign pull-right" style="cursor: pointer"></i></div>
 				<div style="float:right; margin-right: .5em; display:none;">mest:   <input name="role[{{ role.eventrole.id }}][max]" class="col-sm-6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>
