@@ -68,6 +68,8 @@ var defaults = {
 	buttonText: {
 		prev: "<span class='fc-text-arrow'>&lsaquo;</span>",
 		next: "<span class='fc-text-arrow'>&rsaquo;</span>",
+		prevMonth: "<span class='fc-text-arrow'>&laquo;m</span>",
+		nextMonth: "<span class='fc-text-arrow'>&raquo;m</span>",
 		prevYear: "<span class='fc-text-arrow'>&laquo;</span>",
 		nextYear: "<span class='fc-text-arrow'>&raquo;</span>",
 		today: 'today',
@@ -102,6 +104,8 @@ var rtlDefaults = {
 	buttonText: {
 		prev: "<span class='fc-text-arrow'>&rsaquo;</span>",
 		next: "<span class='fc-text-arrow'>&lsaquo;</span>",
+		prevMonth: "<span class='fc-text-arrow'>&raquo;m</span>",
+		nextMonth: "<span class='fc-text-arrow'>&laquo;m</span>",
 		prevYear: "<span class='fc-text-arrow'>&raquo;</span>",
 		nextYear: "<span class='fc-text-arrow'>&laquo;</span>"
 	},
@@ -202,6 +206,8 @@ function Calendar(element, options, eventSources) {
 	t.unselect = unselect;
 	t.prev = prev;
 	t.next = next;
+	t.prevMonth = prevMonth;
+	t.nextMonth = nextMonth;
 	t.prevYear = prevYear;
 	t.nextYear = nextYear;
 	t.today = today;
@@ -590,6 +596,17 @@ function Calendar(element, options, eventSources) {
 		renderView(1);
 	}
 	
+	
+	function prevMonth() {
+		addMonths(date, -1);
+		renderView();
+	}
+	
+	
+	function nextMonth() {
+		addMonths(date, 1);
+		renderView();
+	}
 	
 	function prevYear() {
 		addYears(date, -1);
@@ -2085,36 +2102,29 @@ function FiveWeeksView(element, calendar) {
 			//addMonths(date, delta);
 			addDays(date, delta*7);
 		}
-		var start = cloneDate(date);
-		var end = addMonths(cloneDate(start), 1);
-		//var visStart = cloneDate(start);
-		//var visStart = addDays(cloneDate(start), (date.getDay() - opt('firstDay') - 7 ));
-		var visStart = addDays(cloneDate(start), -7 );
-		//var visEnd = cloneDate(end);
-		//var visEnd =   addDays(cloneDate(end),   (date.getDay() - opt('firstDay') - 7 ));
-		var visEnd =   addDays(cloneDate(start),   7*3 );
+		var start = addDays(cloneDate(date), -7);
+		var end = addDays(cloneDate(date), 3*7);
+		var visStart = cloneDate(start);
+		var visEnd = cloneDate(end);
 		var firstDay = opt('firstDay');
+
 		var nwe = opt('weekends') ? 0 : 1;
 		if (nwe) {
 			skipWeekend(visStart);
 			skipWeekend(visEnd, -1, true);
 		}
-		addDays(visStart, -((visStart.getDay() - Math.max(firstDay, nwe) + 7) % 7));
-		addDays(visEnd, (7 - visEnd.getDay() + Math.max(firstDay, nwe)) % 7);
-		var rowCnt = Math.round((visEnd - visStart) / (DAY_MS * 7));
-		if (opt('weekMode') == 'fixed') {
-			addDays(visEnd, (6 - rowCnt) * 7);
-			rowCnt = 6;
-		}
+		addDays(visStart, - (visStart.getDay() - Math.max(firstDay, nwe)) % 7);
+		visEnd = addDays(cloneDate(visStart), 5*7);
+
+		rowCnt = 5;
 		t.title = formatDate(start, opt('titleFormat'));
-		t.start = start;
-		t.end = end;
+		t.start = visStart;
+		t.end = visEnd;
 		t.visStart = visStart;
 		t.visEnd = visEnd;
 		renderBasic(rowCnt, nwe ? 5 : 7, true);
 	}
-	
-	
+
 }
 
 ;;
