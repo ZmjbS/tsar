@@ -51,8 +51,8 @@ div#profile-picture {
  * My Page events list
  *****************************************/
 /* Events */
-.events_list > li:hover { background-color: #eef; }
-.events_list > li:hover ul li:hover { background-color: #dde; }
+.events_list li:hover { background-color: #eef; }
+.events_list li ul li:hover { background-color: #dde; }
 .events_list li:hover ul { background-color: white; }
 
 /* Roles */
@@ -77,7 +77,7 @@ div#profile-picture {
 .notinvited-icon { color: #ddd; }
 
 /* The box around the icons */
-.response-icons { position: absolute; right: 20px; background-color: rgba(255,255,255,0.75); }
+.response-icons { position: absolute; right: 30px; }
 /* The individual responce icons */
 .event_responder { cursor: pointer; color: #ccc; margin: 0; margin-top: 2px; }
 .event_responder.icon-plus-sign:hover { color: rgb(70, 136, 71); }

@@ -26,14 +26,16 @@ $(document).ready(function(){
 			onclick="
 				if ($('#event_{{ ed.event.id }}_roles_list').is(':visible')) {
 					$('#event_{{ ed.event.id }}_roles_list').hide();
-					$('#event_{{ ed.event.id }}_response_icons').show();
+					// Using .show() and .hide() on the response icon blocks causes some rendering problems so we'll change the visibility instead.
+					$('#event_{{ ed.event.id }}_response_icons').css('visibility', 'visible');
 					$(this).css('padding-bottom', '0');
-					$(this).css('background-color', '#fff');
+					//$(this).css('background-color', '#fff');
 				} else {
 					$('#event_{{ ed.event.id }}_roles_list').show();
-					$('#event_{{ ed.event.id }}_response_icons').hide();
+					// Using .show() and .hide() on the response icon blocks causes some rendering problems so we'll change the visibility instead.
+					$('#event_{{ ed.event.id }}_response_icons').css('visibility', 'hidden');
 					$(this).css('padding-bottom', '.4em');
-					$(this).css('background-color', '#eef');
+					//$(this).css('background-color', '#eef');
 				};
 				$(this).children('span.status-icon').toggleClass('icon-circle icon-circle-blank');"{% endif %}>
 				<span id="event_{{ ed.event.id }}_status_icon" 
@@ -57,16 +59,17 @@ $(document).ready(function(){
 				<span id="event_{{ ed.event.id }}_response_icons" class="response-icons"
 	{% if ed.invitedroles_dictionaries_list|length == 1 %}
 					data-eventrole="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}">
+
 		{% if ed.positive_response %}
-		<span id="absent-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="absent" class="event_responder icon-remove-sign"></span>
-		<span id="unclea-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="unclear" class="event_responder icon-question-sign"></span>
+					<span id="absent-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="absent" class="event_responder icon-remove-sign"></span>
+					<span id="unclea-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="unclear" class="event_responder icon-question-sign"></span>
 		{% else %}
 			{% if ed.unanswered_response %}
-			<span id="absent-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="absent" class="event_responder icon-remove-sign"></span>
-			<span id="attend-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="attend" class="event_responder icon-plus-sign"></span>
+					<span id="absent-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="absent" class="event_responder icon-remove-sign"></span>
+					<span id="attend-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="attend" class="event_responder icon-plus-sign"></span>
 			{% else %}
-			<span id="unclea-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="unclear" class="event_responder icon-question-sign"></span>
-			<span id="attend-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="attend" class="event_responder icon-plus-sign"></span>
+					<span id="unclea-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="unclear" class="event_responder icon-question-sign"></span>
+					<span id="attend-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="attend" class="event_responder icon-plus-sign"></span>
 			{% endif %}
 		{% endif %}
 	{% else %}
@@ -80,32 +83,32 @@ $(document).ready(function(){
 	{% for ird in ed.invitedroles_dictionaries_list %}
 						<li id="eventrole_{{ird.eventrole.id }}" class="eventrole-list-item">
 							<span id="eventrole_{{ ird.eventrole.id }}_status_icon"
-					{% if ird.response == 'Y' %}
+		{% if ird.response == 'Y' %}
 								data-status="attending" class="icon-circle status-icon" style="color: rgb(70, 136, 71); cursor: default; margin: 0;"
-					{% else %}
-						{% if ird.response == 'N' %}
+		{% else %}
+			{% if ird.response == 'N' %}
 								data-status="absent" class="icon-circle status-icon" style="color: rgb(185, 74, 72); cursor: default; margin: 0;"
-						{% else %}
+			{% else %}
 								data-status="unclear" class="icon-circle status-icon" style="color: rgb(248, 148, 6); cursor: default; margin: 0;"
-						{% endif %}
-					{% endif %}
+			{% endif %}
+		{% endif %}
 							></span>
 
-					{{ ird.eventrole.role }}
+			{{ ird.eventrole.role }}
 
 							<span id="eventrole_{{ ird.eventrole.id }}_response_icons" data-eventrole="{{ ird.eventrole.id }}" class="response-icons">
-					{% if ird.response == 'Y' %}
+		{% if ird.response == 'Y' %}
 					<span id="eventrole-absent-{{ ird.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="absent"  class="event_responder icon-remove-sign"></span>
 					<span id="eventrole-unclea-{{ ird.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="unclear" class="event_responder icon-question-sign"></span>
-					{% else %}
-						{% if ird.response == 'N' %}
+		{% else %}
+			{% if ird.response == 'N' %}
 					<span id="eventrole-unclea-{{ ird.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="unclear" class="event_responder icon-question-sign"></span>
 					<span id="eventrole-attend-{{ ird.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="attend"  class="event_responder icon-plus-sign"></span>
-						{% else %}
+			{% else %}
 					<span id="eventrole-absent-{{ ird.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="absent"  class="event_responder icon-remove-sign"></span>
 					<span id="eventrole-attend-{{ ird.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="attend"  class="event_responder icon-plus-sign"></span>
-						{% endif %}
-					{% endif %}
+			{% endif %}
+		{% endif %}
 							</span>
 						</li>
 	{% endfor %}
