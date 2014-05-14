@@ -103,6 +103,12 @@ class Event(models.Model):
 				respondedroles.append(eventrole)
 		return respondedroles
 
+	#def event_roles (self):
+	#	eventroles = []
+	#	for eventrole self.eventrole_set.all().
+	#		eventroles.append(eventrole)
+	#	return eventroles
+
 	# TODO: Need to implement locations. Character fields or just store this all in a GPX file?
 	# TODO: Add equipment to log equipment use. Better to add this as a relation rather than a tag?
 
@@ -233,6 +239,11 @@ class MemberAttendance(models.Model):
 	attendance = models.CharField(max_length=1, choices=EVENT_ATTENDANCE)
 	time_checkin = models.DateTimeField(blank=True, null=True)
 	time_checkout = models.DateTimeField(blank=True, null=True)
+
+	def get_attending(self, idnumber):
+		print idnumber
+		#attend = self.objects.exists(member_id = ids)
+		return idnumber
 
 	def __unicode__(self):
 		return u'%s %s %s %s %s' % (self.event_role, self.member, self.attendance, self.time_checkin, self.time_checkout)
