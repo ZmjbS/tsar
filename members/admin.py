@@ -1,4 +1,4 @@
-from members.models import *
+from members.models import Phone, Email,Member,Position
 from django.contrib import admin
 
 class PhoneInline(admin.StackedInline):
@@ -13,3 +13,4 @@ class MemberAdmin(admin.ModelAdmin):
 	inlines = [PhoneInline, EmailInline]
 
 admin.site.register(Member, MemberAdmin)
+admin.site.register(Position)

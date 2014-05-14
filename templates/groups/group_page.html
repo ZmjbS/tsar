@@ -6,101 +6,22 @@
 	<script type="text/javascript" src="/static/js/chosen.jquery.min.js"></script>
 	<link type="text/css" rel="stylesheet" href="/static/css/chosen.css" />
 <!-- Added for proper sorting: -->
-	<script type="text/javascript" src="/static/js/sugar-1.3.9-custom.min.js"></script>
+<!--	<script type="text/javascript" src="/static/js/sugar-1.3.9-custom.min.js"></script> -->
+<!-- jQuery tinysort -->
+	<script type="text/javascript" src="/static/js/jquery.tinysort.min.js"></script>
+	<script type="text/javascript" src="/static/js/jquery.tinysort.charorder.min.js"></script>
 <!-- jQuery tablesorter -->
-	<script type="text/javascript" src="/static/js/jquery.tablesorter.min.js"></script>
-	<script type="text/javascript" src="/static/js/jquery.tablesorter.parser-input-select.js"></script>
+<!--	<script type="text/javascript" src="/static/js/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.tablesorter.parser-input-select.js"></script>-->
+<!-- jQuery cookie -->
 	<script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
+
 	<script type="text/javascript" src="/static/js/tsar.groups.js"></script>
 <style>
-//	.edit-interface { display: none; }
-	#all_members_list_chzn { width: 80% !important; }
 	.unsaved_entry { background-color: #edb; }
 </style>
 <script type="text/javascript">
 $(document).ready(function(){
-
-///////// BEGIN SNIPPET ////////////////////////
-// see: https://github.com/Mottie/tablesorter/wiki/Language
-// TODO: Why on earth am I not just able to reference sortBy from the script (sugar-1.3.9-custom) above???
-
-	/* sortBy functions & helpers extracted and slightly modified from
-  * Sugar Library v1.3.7
-  * Freely distributable and licensed under the MIT-style license.
-  * Copyright (c) 2012 Andrew Plummer
-  * http://sugarjs.com/arrays#sorting
-  */
-  var array = {
-    AlphanumericSortIgnoreCase  : true,
-    AlphanumericSortEquivalents : {}
-  },
-
-  order = 'AÁÀÂÃĄBCĆČÇDĎÐEÉÈĚÊËĘFGĞHıIÍÌİÎÏJKLŁMNŃŇÑOÓÒÔPQRŘSŚŠŞTŤUÚÙŮÛÜVWXYÝZŹŻŽÞÆŒØÕÅÄÖ',
-  // equiv = 'AÁÀÂÃ,CÇ,EÉÈÊË,IÍÌİÎÏ,OÓÒÔ,Sß,UÚÙÛÜ',
-  // modified order to match Icelandic sorting - see https://github.com/Mottie/tablesorter/issues/212
-  //order = 'AÁBCDÐEÉĘFGHIÍJKLMNOÓPQRSTUÚVWXYÝZÞÆÖ',
-  equiv = '',
-
-  sortBy = function(a,b){
-    return typeof a === "string" && typeof b === "string" ? collateStrings(a,b) : a < b ? -1 : a > b ? 1 : 0;
-  },
-
-  // Alphanumeric collation helpers
-  collateStrings = function(a, b) {
-    var aValue, bValue, aChar, bChar, aEquiv, bEquiv, index = 0, tiebreaker = 0;
-    a = getCollationReadyString(a);
-    b = getCollationReadyString(b);
-    do {
-      aChar  = getCollationCharacter(a, index);
-      bChar  = getCollationCharacter(b, index);
-      aValue = getCollationValue(aChar);
-      bValue = getCollationValue(bChar);
-      if (aValue === -1 || bValue === -1) {
-        aValue = a.charCodeAt(index) || null;
-        bValue = b.charCodeAt(index) || null;
-      }
-      aEquiv = aChar !== a.charAt(index);
-      bEquiv = bChar !== b.charAt(index);
-      if (aEquiv !== bEquiv && tiebreaker === 0) {
-        tiebreaker = aEquiv - bEquiv;
-      }
-      index += 1;
-    } while (aValue != null && bValue != null && aValue === bValue);
-    if (aValue === bValue) return tiebreaker;
-    return aValue < bValue ? -1 : 1;
-  },
-
-  getCollationReadyString = function(str) {
-    if (array.AlphanumericSortIgnoreCase) {
-      str = str.toLowerCase();
-    }
-    return str.replace(array.AlphanumericSortIgnore, '');
-  },
-
-  getCollationCharacter = function(str, index) {
-    var chr = str.charAt(index), eq = array.AlphanumericSortEquivalents || {};
-    return eq[chr] || chr;
-  },
-
-  getCollationValue = function(chr){
-    var order = array.AlphanumericSortOrder;
-    return chr ? order.indexOf(chr) : null;
-  },
-
-  equivalents = {};
-
-  array.AlphanumericSortOrder = $.map(order.split(''), function(str) {
-    return str + str.toLowerCase();
-  }).join('');
-
-  $.each(equiv.split(','), function(i,set) {
-    var equivalent = set.charAt(0);
-    $.each(set.slice(1).split(''), function(i,chr) {
-      equivalents[chr] = equivalent;
-      equivalents[chr.toLowerCase()] = equivalent.toLowerCase();
-    });
-  });
-/////////// END SNIPPET ////////////////////////
 
 	// Once the document is ready, hide the edit-interface elements. TODO: only include this when the elements are included (i.e. when the user is a group manager).
 	$('.edit-interface').hide();
@@ -110,19 +31,23 @@ $(document).ready(function(){
 	 * We have a drop-down list of non-members to add members to the group.
 	 */
 	// We use the jQuery Chosen for the member selection, style it and add tablesorter to make it sortable:
+	$('#non_members_list>option').tsort({charOrder:'a[á]dðe[é]i[í]o[ó]u[ú]y[ý]zþæö'});
 	$('#non_members_list').chosen();
-	$('#non_members_list_chzn').css('float', 'right').css('width','auto');
-	$('#non_members_list_chzn *').css('width','auto');
-	$("#group_members_list").tablesorter({
-		sortList: [[0,0], [1,0]],
-		textSorter : sortBy,
-		headers: {
-	      5: { sorter: 'checkbox' },
-	      6: { sorter: 'checkbox' },
-	      7: { sorter: 'checkbox' },
-	      8: { sorter: 'checkbox' },
-		},
-	}); 
+	$('#non_members_list_chosen').css('float', 'right').css('width','auto');
+	$('#non_members_list_chosen *').css('width','auto');
+
+
+	$("#group_members_list>tbody>tr").tsort('td.member_name',{charOrder:'a[á]dðe[é]i[í]o[ó]u[ú]y[ý]zþæö'});
+	//$("#group_members_list").tablesorter({
+		//sortList: [[0,0], [1,0]],
+		//textSorter : sortBy,
+		//headers: {
+	      //5: { sorter: 'checkbox' },
+	      //6: { sorter: 'checkbox' },
+	      //7: { sorter: 'checkbox' },
+	      //8: { sorter: 'checkbox' },
+		//},
+	//}); 
 
 	/*
 	 * When a member is chosen from the list of non-members, we have to add them to the group members list.
@@ -139,11 +64,11 @@ $(document).ready(function(){
 			// If they are not yet a member then add an entry and give it an "unsave_entry" class.
 			member=non_members[$(this).val()];
 			username=member;
-			phone="555 1234";
-			email="dæmi@dæmi.is";
+			phone=$(this).children('option[value='+member_id+']').data('phone');
+			email=$(this).children('option[value='+member_id+']').data('email');
 			member_entry = '<tr class="membership_entry unsaved_entry" data-member="'+member+'" data-member_id="'+member_id+'">'
 								+ '<td><input class="edit-interface" type="checkbox" /></td>'
-								+ '<td class="member_name"><a href="/felagi/'+username+'">'+member+'</a><input type="hidden" name="member['+member_id+']" value="add-member" /></td>'
+								+ '<td class="member_name"><a href="/felagi/'+username+'">'+member+'</a><input type="hidden" name="members[]" value="'+"{ 'member_id': "+member_id+", 'status': 'add-member' }"+'" /></td>'
 								+ '<td class="member_phone">'+phone+'</td>'
 								+ '<td class="member_email">'+email+'</td>'
 								+ '<td><input class="edit-interface-checkbox" type="checkbox" checked="checked" /></td><!-- A -->'
@@ -152,12 +77,12 @@ $(document).ready(function(){
 								+ '<td><span class="icon-remove-sign edit-interface remove_member_entry"></span></td><!-- C --></tr>';
 			$('#group_members_list tbody').prepend(member_entry);
 		};
+		$("#group_members_list>tbody>tr").tsort('td.member_name',{charOrder:'a[á]dðe[é]i[í]o[ó]u[ú]y[ý]zþæö'});
 		$('#non_members_list option:selected').remove();
-      $('#non_members_list').trigger('liszt:updated');
+      $('#non_members_list').trigger('chosen:updated');
 	});
 
 	// Place the CSRF token in a js variable so that the form handler can send it to the view. 
-   //csrf = "{{ csrf_token|escapejs }}"; 
    var csrftoken = $.cookie('csrftoken'); 
    console.log('CSRF (on page):'+csrftoken); 
 
@@ -168,13 +93,13 @@ $(document).ready(function(){
  */
 // These are the group members
 members = {};
-{% for member in group.members.all %}
-members[{{ member.id }}]='{{ member }}';
+{% for member in group_members %}
+members[{{ member.id }}]='{{ member.name }}';
 {% endfor %}
 // Non-group members
 non_members = {};
-{% for member in members %}
-non_members[{{ member.id }}]='{{ member }}';
+{% for member in other_members %}
+non_members[{{ member.id }}]='{{ member.name }}';
 {% endfor %}
 
 //	// Capture click events on edit icons and toggle to the edit form.
@@ -208,7 +133,7 @@ non_members[{{ member.id }}]='{{ member }}';
 		if (members[member_id]) {
 			$(this).parents('.membership_entry').addClass('removed_entry');
       	$(this).parents('.membership_entry').fadeOut(300).slideUp({ duration: 500, queue: false });
-			$(this).parents('.membership_entry').children('.member_name').children('input').val('remove-member');
+			$(this).parents('.membership_entry').children('.member_name').children('input').val("{ 'member_id': "+member_id+", 'status': 'remove-member' }");
 			//console.log($(this).parents('.membership_entry').children('.member_name').children('input').val());
 		// If the member isn't in the group, just remove the entry.
 		} else {
@@ -229,7 +154,7 @@ non_members[{{ member.id }}]='{{ member }}';
 			member_id=$(this).data('member_id');
 			console.log('Removing member '+member_id);
 			// Reset the value to 'member'
-			$(this).children('.member_name').children('input').val('member');
+			$(this).children('.member_name').children('input').val("{ 'member_id': "+member_id+", 'status': 'member' }");
 			console.log($(this).children('.member_name').children('a').val());
 			console.log($(this).children('.member_name').children('input').val());
 		});
@@ -277,10 +202,10 @@ non_members[{{ member.id }}]='{{ member }}';
     		<input type="reset" value="Hætta við" class="btn btn-default" onclick="reset_members_list();toggle_edit_interface();" />
     		<input type="submit" value="Vista" class="btn btn-primary" onclick="toggle_edit_interface();" />
 		</span>
-		<select id="non_members_list" style="margin-left: .4em;" name="new_members[]" data-placeholder="Nafn">
+		<select id="non_members_list" style="margin-left: .4em;" data-placeholder="Nafn">
 			<option></option>
-			{% for member in members %}
-			<option value="{{ member.id }}">{{ member }}</option>
+			{% for member in other_members %}
+			<option value="{{ member.id }}" data-phone="{{ member.phone }}" data-email="{{ member.user.email }}">{{ member.name }}</option>
 			{% endfor %}
 		</select>
 	</div>
@@ -301,14 +226,14 @@ non_members[{{ member.id }}]='{{ member }}';
 			</tr>
 		</thead>
 		<tbody>
-{% for member in group.members.all %}
-			<tr class="membership_entry" data-member="{{ member }}" data-member_id="{{ member.id }}">
+{% for member in group_members %}
+			<tr class="membership_entry" data-member="{{ member.name }}" data-member_id="{{ member.id }}">
 				<td><input class="edit-interface" type="checkbox"></td>
-				<td class="member_name"><a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a>
+				<td class="member_name"><a href="/felagi/{{ member.user.username }}">{{ member.name }}</a>
 		{% if member in managers %}<span class="icon-briefcase" style="margin-left:1em; color: gray;"></span>{% endif %}
-					<input type="hidden" name="member[{{ member.id }}]" value="member" /></td>
-				<td class="member_phone">{% for phone in member.phone_set.all %}{% if phone.is_primary %}{{ phone.number }}{% endif %}{% endfor %}</td>
-				<td class="member_email">{% for email in member.email_set.all %}{% if email.is_primary %}{{ email.address }}{% endif %}{% endfor %}</td>
+					<input type="hidden" name="members[]" value="{ 'member_id': {{ member.id }}, 'status': 'member' }" /></td>
+				<td class="member_phone">{{ member.phone }}</td>
+				<td class="member_email">{{ member.user.email }}</td>
 				<td><input class="edit-interface-checkbox" type="checkbox" disabled /></td><!-- A -->
 				<td><input class="edit-interface-checkbox" type="checkbox" disabled /></td><!-- B -->
 				<td><input class="edit-interface-checkbox" type="checkbox" disabled /></td><!-- C -->

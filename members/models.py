@@ -1,37 +1,61 @@
+# -*- coding: utf-8 -*-
 from django.db import models
 from django.contrib.auth.models import *
 from django.contrib.localflavor.is_.forms import ISIdNumberField, ISPhoneNumberField
 
+class Position(models.Model):
+	# Members can have various positions such as on-call, in training, etc.
+
+	title = models.CharField(max_length=32)
+
+	def __unicode__(self):
+		return self.title
+
 class Member(models.Model):
+	# This is an object to augment the Django auth system user.
+	#
+	# The Member has a one-to-one relation to the User but furthermore has:
+	# * a member_id which we want for the Icelandic “kennitala”
+	# * a position which describes the member status (on-call, in training, etc.)
+	# * an address
+	# * a text field for general information
+	# Furthermore, the Member object has a one-to-many relationship to:
+	# * phone numbers (members.phone)
+	# * email addresses (members.phone)
+	# and a many-to-many relationship to
+	# * Group (groups.group)
+
 	user = models.OneToOneField(User)
 	member_id = models.IntegerField()
-	#id = models.ISIdNumberField()
-	POSITION_CHOICES = (
-		(u'OC', u'On call'),
-		(u'IT', u'In training'),
-		(u'NC', u'Off call'),
-		(u'QT', u'Quit'),
-	#TODO: Do we maybe want to make this editable by giving it a class of its own?
-	)
-	position = models.CharField(max_length=2, choices=POSITION_CHOICES)
-	# TODO: Probably drop this?
-	#BLOOD_TYPE_CHOICES = (
-	#	(u'AP', u'A RhD pos'),
-	#	(u'AN', u'A RhD neg'),
-	#	(u'BP', u'B RhD pos'),
-	#	(u'BN', u'B RhD neg'),
-	#	(u'CP', u'AB RhD pos'),
-	#	(u'CN', u'AB RhD neg'),
-	#	(u'OP', u'O RhD pos'),
-	#	(u'ON', u'O RhD neg'),
-	#)
-	#blood_type = models.CharField(max_length=2, choices=BLOOD_TYPE_CHOICES, blank=True)
-	#ForeignKey-ed in: Phone, Email
+	position = models.ForeignKey(Position, default=Position.objects.filter(id=1))
 	address = models.TextField(blank=True)
 	info = models.TextField(blank=True)
 	
 	def __unicode__(self):
 		return self.user.first_name +' '+ self.user.last_name
+
+	def name(self):
+		return self.user.first_name +' '+ self.user.last_name
+
+#	TODO: Currently we're just using the auth model email address for the
+#	primary, but we might want to add a way to order (not just mark one) the
+#	email addresses.
+#
+#	def email(self):
+#		# Return the first primary email address
+#		e = Email.objects.filter(member=self, is_primary=True)
+#		try:
+#			return e[0]
+#		except:
+#			return ""
+
+	def phone(self):
+		# Return the first primary phone number
+		p = Phone.objects.filter(member=self, is_primary=True)
+		try:
+			return p[0]
+		except:
+			return ""
 
 class Phone(models.Model):
 	member = models.ForeignKey(Member)

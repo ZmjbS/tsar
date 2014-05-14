@@ -16,96 +16,70 @@
 
 #id_title, #event_type, #id_date_time_begin, #id_date_time_end {width: 100% !important; }
 
+div[id*='tag_type_id'] { width: 100% !important; }
+//[class*='event_type_id'] { display: none; }
+
 </style>
 <script type="text/javascript" src="/static/js/tsar.events.js"></script>
+<!-- jQuery tinysort -->
+	<script type="text/javascript" src="/static/js/jquery.tinysort.min.js"></script>
+	<script type="text/javascript" src="/static/js/jquery.tinysort.charorder.min.js"></script>
 <script type="text/javascript" src="/static/js/chosen.jquery.min.js"></script>
 <link type="text/css" rel="stylesheet" href="/static/css/chosen.css" />
 <script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
 <script type="text/javascript">
 
-function change_event_response(button) {
-	member_id    = $(button).data('member_id');
-	eventrole_id = $(button).data('eventrole_id');
-	action       = $(button).data('action');
-
-	console.log('member_id:    '+member_id);
-	console.log('eventrole_id: '+eventrole_id);
-	console.log('action:       '+action);
-
-	console.log('posting');
-	var posting = $.post("/vidburdur/svaranytt", {'member_id': member_id, 'eventrole_id': eventrole_id, 'action': action, });
-	console.log('posted');
-
-	posting.done(function(data, node) {
-		console.log('posting done:');
-
-		// Retrieve the data object from the view:
-		obj = JSON && JSON.parse(data) || $.parseJSON(data);
-
-		// Remove the entry from the old list
-		$('#role_'+obj.role_id+'_member_'+obj.user_id+'_entry').remove();
-
-		// Add an entry to the new list
-		if (action == 'attend') {
-			$('#role_'+obj.role_id+'_attending_members').prepend('<li id="role_'+obj.role_id+'_member_'+obj.user_id+'_entry"><a href="/felagi/'+obj.username+'">'+obj.user_name+'</a><span class="change-response attending edit-interface icon-remove-sign pull-right" data-member_id="'+obj.user_id+'" data-eventrole_id="'+obj.eventrole_id+'" data-action="absent" data-status="attending"></span></li>')
-			if ($('#attending_roles').siblings('.form-edit-icon').data('toggle_state') == 'hidden') {
-				$('#role_'+obj.role_id+'_member_'+obj.user_id+'_entry').children('.change-response.edit-interface').css('display','none');
-			}
-// TODO: Update the attendance icons if the response belongs to the current member
-//			$('.role_'+obj.role_id+'_status_icon').removeClass('icon-ban-circle icon-circle-blank invited');
-//			$('.role_'+obj.role_id+'_status_icon').addClass('icon-ok-circle');
-		} else {
-			$('#role_'+obj.role_id+'_absent_members').prepend('<li id="role_'+obj.role_id+'_member_'+obj.user_id+'_entry"><a href="/felagi/'+obj.username+'">'+obj.user_name+'</a><span class="change-response absent edit-interface icon-plus-sign pull-right" data-member_id="'+obj.user_id+'" data-eventrole_id="'+obj.eventrole_id+'" data-action="attend" data-status="absent"></span></li></li>')
-			if ($('#absent_roles').siblings('.form-edit-icon').data('toggle_state') == 'hidden') {
-				$('#role_'+obj.role_id+'_member_'+obj.user_id+'_entry').children('.change-response.edit-interface').css('display','none');
-			}
-// TODO: Update the attendance icons if the response belongs to the current member
-//			$('.role_'+obj.role_id+'_status_icon').removeClass('icon-ok-circle icon-circle-blank invited');
-//			$('.role_'+obj.role_id+'_status_icon').addClass('icon-ban-circle');
-		}
-		
-		// Fix the total number of attendees.
-		status=$(button).data('status');
-		console.log(status);
-		$('#total_'+status).text(parseInt($('#total_'+status).text()-1));
-
-		switch (action) {
-			case 'attend':
-				number=parseInt($('#total_attending').text());
-				number++
-				$('#total_attending').text(number);
-				break;
-			case 'absent':
-				number=parseInt($('#total_absent').text());
-				number++
-				$('#total_absent').text(number);
-				break;
-		}
-		
-
-	});
-
-};
+console.log('reading document!!');
 
 $(document).ready(function(){
+		console.log('document read!!');
+
+	/*
+		Place the CSRF token in a js variable so that the form handler
+		can send it to the view.
+	*/
+	//var csrftoken = $.cookie('csrftoken');
+	/* DEBUG
+	console.log('CSRF (on page):'+csrftoken);
+	*/
+		/* Sort the member, group and position lists. */
+	$('.sorted>*').tsort({charOrder:'a[á]dðe[é]i[í]o[ó]u[ú]y[ý]zþæö'});
+
+	/*
+		Styling
+	*/
+
 	$('#id_title').css('font-size','3em');
 	$('#id_date_time_begin, #id_date_time_end').css('font-size','.9em');
 	$('#id_title, #id_date_time_begin, #id_date_time_end').css('height','auto');
 	$('#id_title, #event_type, #id_date_time_begin, #id_date_time_end, #id_description').addClass('form-control');
 
-   $('body').delegate('.respond-icon', 'click', function() { respond_to_event(this, 'Event page') } );
+	$('#event_description-textarea').autosize({append: "\n"});
 
-	$('body').delegate('.change-response', 'click', function() { change_event_response(this) } );
+	$('.select-participants').chosen();
+	$('.tag-type').chosen();
+	$('.chosen').chosen();
+	$('.chosen-container.chosen-container-multi, .chosen-drop').css('width','100%');
 
-// Place the CSRF token in a js variable so that the form handler can send it to the view.
-	//CSRF = "{{ csrf_token|escapejs }}";
-	var csrftoken = $.cookie('csrftoken');
-	console.log('CSRF (on page):'+csrftoken);
+	// Hide the tag types that don't apply to this event type:
+	updateEnabledSelect({{ event.event_type.id }});
+	// Set a listener to the event type select to refresh the tag type select:
+	$('#event_type').change(function() {
+			updateEnabledSelect($(this).val());
+		});
+	/*
+		Delegate listeners
+	*/
+
+	// Members change their responses through the .event_responder buttons.
+   $('body').delegate('.event_responder', 'click', function() { respond_to_event(this, 'Event page') } );
 
 	// Capture click events on edit icons and toggle to the edit form.
 	$('.toggle-form').click(function() {
-		//console.log('event caught');
-		//console.log($(this).data('form_id-prefix')+'-data');
+		/* DEBUG
+		console.log('event caught');
+		console.log($(this).data('form_id-prefix')+'-data');
+		*/
 		prefix = $(this).data('form_id-prefix');
 		$('#'+prefix+'-data').toggle();
 		$('#'+prefix+'-form').toggle();
@@ -113,8 +87,6 @@ $(document).ready(function(){
 		// TODO: Not needed on all, but this is a useful hack to force the initial resizing...
 		$('#event_description-textarea').trigger('autosize.resize');
 	});
-
-	$('#event_description-textarea').autosize({append: "\n"});
 
 	$('.role-dropdown-item').live('click',(function(){
 		role_id = $(this).attr('id');
@@ -131,6 +103,12 @@ $(document).ready(function(){
 //		+					'</div>'
 		+		'<div>'
 		+			'<select name="role['+role_id+'][participants][]" multiple data-placeholder="Veldu þáttakendur" class="select-participants">'
+		+				'<optgroup label="Stöður">'
+		+					'<option value="a">Allir</option>'
+		+					'{% for position in positions %}'
+		+					'<option value="p{{ position.id }}">{{ position.title }}</option>'
+		+					'{% endfor %}'
+		+				'</optgroup>'
 		+				'<optgroup label="Hópar og flokkar">'
 		+					'{% for group in groups %}'
 		+					'<option value="g{{ group.id }}">{{ group.title }}</option>'
@@ -138,7 +116,7 @@ $(document).ready(function(){
 		+				'</optgroup>'
 		+				'<optgroup label="Meðlimir">'
 		+					'{% for member in members %}'
-		+					'<option value="m{{ member.id }}">{{ member }}</option>'
+		+					'<option value="m{{ member.id }}">{{ member.name }}</option>'
 		+					'{% endfor %}'
 		+				'</optgroup>'
 		+			'</select>'
@@ -151,10 +129,24 @@ $(document).ready(function(){
 		$('.select-participants').chosen();
 	}));
 
-	$('.select-participants').chosen();
-	$('.chosen').chosen();
-	$('.chzn-container.chzn-container-multi, .chzn-drop').css('width','100%');
 });
+
+function resetSelect(selector) {
+	$(selector+' option').prop('selected', false);
+	$(selector+' option[data-saved=true]').prop('selected', true);
+	$(selector).trigger('chosen:updated');
+	// update the tag selects (done here since this function is (still?) only called from the reset buttons that affect the tag selects:
+	updateEnabledSelect($('#event_type').val());
+
+}
+
+function updateEnabledSelect(id) {
+	//console.log('id: '+id);
+	$("[class|='event_type_id']"+  ".event_type_id-"+id    ).show();
+	$("[class|='event_type_id']:not(.event_type_id-"+id+")").hide();
+	$("[class|='event_type_id']"+  ".event_type_id-"+id+"  .tag-type").prop('disabled', false).trigger('chosen:updated');
+	$("[class|='event_type_id']:not(.event_type_id-"+id+") .tag-type").prop('disabled','disabled').trigger('chosen:updated');
+}
 </script>
 
 {% endblock %}
@@ -164,7 +156,14 @@ $(document).ready(function(){
 {% block content %}
 {# TODO: Should we add some permissions to access the edit form, or do we trust people not to mess things up too much? #}
 <form>
+	{% csrf_token %}
 	<input type="hidden" name="event_id" id="event_id" value=" {{ event.id }}" />
+
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="alert" style="padding-top: 4px; padding-bottom: 4px; display:none" id="results"></div>
+		</div>
+	</div>
 
 	<div id="event_header">
 
@@ -181,7 +180,7 @@ $(document).ready(function(){
 				<div class="col-xs-4 col-sm-2">
 					<select id="event_type" name="event_type">
 		{% for type in event_types %}
-						<option value="{{ type.pk }}"{% if type.pk == event.event_type.id %} selected="selected"{% endif %}>{{ type.title }}</option>
+						<option value="{{ type.pk }}"{% if type.pk == event.event_type.id %} selected="selected" data-saved="true"{% endif %}>{{ type.title }}</option>
 		{% endfor %}
 					</select>
 				</div>
@@ -192,7 +191,7 @@ $(document).ready(function(){
 				<!-- Possibly allow duplication, but multiple events is probably overdoing it ...
 				<a class="btn col-sm-1" id="add_dates_btn" onclick="$('#add_days').slideToggle();$('#add_days_icon').toggleClass('icon-minus');"><i id="add_days_icon" class="icon-plus"></i></a>
 				-->
-				<div class="col-xs-6 col-sm-2"><input type="reset" value="Hætta við" class="btn btn-default toggle-form form-control" data-form_id-prefix="event_header" onclick="$('#results').slideUp();" /></div>
+				<div class="col-xs-6 col-sm-2"><input type="reset" value="Hætta við" class="btn btn-default toggle-form form-control" data-form_id-prefix="event_header" onclick="resetSelect('#event_type');$('#results').slideUp();" /></div>
 				<div class="col-xs-6 col-sm-2"><input type="submit" value="Vista" class="btn btn-primary form-control" data-form_id-prefix="event_header" /></div>
 			</div><!-- /.row-->
 		</div><!-- /#event_header-form-->
@@ -200,12 +199,6 @@ $(document).ready(function(){
 	</div><!-- /#event_header -->
 
 	<div id="response"></div>
-
-	<div class="row">
-		<div class="col-sm-12">
-			<div class="alert" style="padding-top: 4px; padding-bottom: 4px; display:none" id="results"></div>
-		</div>
-	</div>
 
 	<div class="row">
 		<div class="col-xs-12 col-sm-5 col-md-4">
@@ -249,39 +242,39 @@ $(document).ready(function(){
 
 		{# If the current member is invited, show the response icons/buttons #}
 		{% if not role.cm_status == 'not invited' %}
-				<span style="float: right;" data-eventrole="{{ role.eventrole.id }}" class="response-icons">
-					<span id="nd-{{ role.eventrole.id }}" data-action="attend" data-status="{{ role.cm_status }}" class="respond-icon icon-plus-sign"></span>
-					<span id="nt-{{ role.eventrole.id }}" data-action="absent" data-status="{{ role.cm_status }}" class="respond-icon icon-remove-sign"></span>
+				<span style="float: right;" data-eventrole_id="{{ role.eventrole.id }}" class="response-icons">
+					<span id="nd-{{ role.eventrole.id }}" data-member_id="{{ mr.member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="attend" data-status="{{ role.cm_status }}" class="event_responder icon-plus-sign"></span>
+					<span id="nt-{{ role.eventrole.id }}" data-member_id="{{ mr.member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="absent" data-status="{{ role.cm_status }}" class="event_responder icon-remove-sign"></span>
 				</span>
 		{% endif %}
 			</div>
 
 		{# Display the members #}
-			<ul id="role_{{ role.eventrole.role.id }}_{{ status }}_members">
+			<ul id="role_{{ role.eventrole.role.id }}_{{ status }}_members" class="sorted">
 		{% if status == "attending" %}
-			{% for member in role.attendingmembers %}
-				<li id="role_{{ role.eventrole.role.id }}_member_{{ member.user.id }}_entry">
-					<a href="/felagi/{{ member.user.username }}" style="display: inline-block;">{{ member.user.first_name }} {{ member.user.last_name }}</a>
+			{% for mr in role.attending_responses %}
+				<li id="role_{{ role.eventrole.role.id }}_member_{{ mr.member.user.id }}_entry">
+					<a href="/felagi/{{ mr.member.user.username }}" title="{{ mr.time_responded }}">{{ mr.member.user.first_name }} {{ mr.member.user.last_name }}</a>
 				{# TODO: condition this on having the rights, if we're going to limit them. #}
-					<span class="change-response {{ status }} edit-interface icon-remove-sign pull-right" style="display: none" data-member_id="{{ member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="absent" data-status="{{ status }}"></span>
+					<span class="event_responder {{ status }} edit-interface icon-remove-sign pull-right" style="display: none" data-member_id="{{ mr.member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="absent" data-status="{{ status }}"></span>
 				</li>
 			{% endfor %}
 		{% elif status == "absent" %}
-			{% for member in role.absentmembers %}
-				<li id="role_{{ role.eventrole.role.id }}_member_{{ member.user.id }}_entry">
-					<a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a>
+			{% for mr in role.absent_responses %}
+				<li id="role_{{ role.eventrole.role.id }}_member_{{ mr.member.user.id }}_entry">
+					<a href="/felagi/{{ mr.member.user.username }}" title="{{ mr.time_responded }}">{{ mr.member.user.first_name }} {{ mr.member.user.last_name }}</a>
 				{# TODO: condition this on having the rights, if we're going to limit them. #}
-					<span class="change-response {{ status }} edit-interface icon-plus-sign pull-right" style="display: none" data-member_id="{{ member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="attend" data-status="{{ status }}"></span>
+					<span class="event_responder {{ status }} edit-interface icon-plus-sign pull-right" style="display: none" data-member_id="{{ mr.member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="attend" data-status="{{ status }}"></span>
 				</li>
 			{% endfor %}
 		{% else %}
 		{# Here, status is "unclear" #}
 			{% for member in role.unclearmembers %}
-				<li id="role_{{ role.eventrole.role.id }}_member_{{ member.user.id }}_entry">
-					<a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a>
+				<li id="role_{{ role.eventrole.role.id }}_member_{{ member.id }}_entry">
+					<a href="/felagi/{{ member.username }}">{{ member.name }}</a>
 				{# TODO: condition this on having the rights, if we're going to limit them. #}
-					<span class="change-response {{ status }} edit-interface icon-remove-sign pull-right" style="display: none" data-member_id="{{ member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="absent" data-status="{{ status }}"></span>
-					<span class="change-response {{ status }} edit-interface icon-plus-sign pull-right" style="display: none" data-member_id="{{ member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="attend" data-status="{{ status }}"></span>
+					<span class="event_responder {{ status }} edit-interface icon-remove-sign pull-right" style="display: none" data-member_id="{{ member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="absent" data-status="{{ status }}"></span>
+					<span class="event_responder {{ status }} edit-interface icon-plus-sign pull-right" style="display: none" data-member_id="{{ member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="attend" data-status="{{ status }}"></span>
 				</li>
 			{% endfor %}
 		{% endif %}
@@ -291,21 +284,28 @@ $(document).ready(function(){
 	</ul>
 </div>
 {% endfor %}
-
 <!-- Invitations -->
 <div class="tab-pane" id="invitation">
 	<div id="event_invitations-data">
 		<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_invitations"></i><br />
 		<ul style="list-style: none; margin-left:0; padding-left: 0;">
-{% for event_role in event.eventrole_set.all %}
-			<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;"><span class="role_entry-title">{{ event_role.role.title }}</span> <span class="role_entry-minmax">{{ event_role.minimum }}〜{% if event_role.maximum == 0 %}∞{% else %}{{ event_role.maximum }}{% endif %}</span></div>
-				<ul>
-	{% for group in event_role.invited_groups.all %}
+{% for role in role_data %}
+			<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;"><span class="role_entry-title">{{ role.eventrole.role.title }}</span> <span class="role_entry-minmax">{{ role.eventrole.minimum }}〜{% if role.eventrole.maximum == 0 %}∞{% else %}{{ role.eventrole.maximum }}{% endif %}</span></div>
+				<ul class="sorted">
+	{% if role.eventrole.is_open %}
+					<li>Allir</li>
+	{% endif %}
+	{% for position in role.invited_positions %}
+					<li>{{ position.title }}</li>
+	{% endfor %}
+				</ul>
+				<ul class="sorted">
+	{% for group in role.invited_groups %}
 					<li><a href="/hopur/{{ group.slug }}">{{ group.title }}</a></li>
 	{% endfor %}
 				</ul>
-				<ul>
-	{% for member in event_role.invited_members.all %}
+				<ul class="sorted">
+	{% for member in role.invited_members %}
 					<li><a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a></li>
 	{% endfor %}
 				</ul>
@@ -320,37 +320,43 @@ $(document).ready(function(){
 			<div class="col-xs-12 col-sm-6 btn-group pull-right" style="padding: 0 0 0 5px;" id="event-invite-button">
 				<button class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown">Bæta við hlutverki <span class="caret"></span> </button>
 				<ul id="role-dropdown" class="dropdown-menu">
-   {% for role in event_roles %}
+ {% for role in event_roles %}
 					<li class="role-dropdown-item" id="{{ role.id}}"><a>{{ role.title }}</a></li>
-   {% endfor %}
+ {% endfor %}
 				</ul>
 			</div>
 		</div><!-- /#event-invite-button -->
 	<div id="invite-role-list" style="clear:both">
 
-	{% for event_role in event.eventrole_set.all %}
+{% for role in role_data %}
 			<div class="role_entry">
-				<div class="role_entry-title" style="float:left">{{ event_role.role.title }}</div>
-				<input type="hidden" name="role[{{ event_role.role.id }}][id]" value="{{ event_role.role.id }}" />
-				<div style="float:right"><i id="{{ event_role.role.id }}" class="delete-role-entry icon-remove-sign pull-right" style="cursor: pointer"></i></div>
-				<div style="float:right; margin-right: .5em; display:none;">mest:   <input name="role[{{ event_role.role.id }}][max]" class="col-sm-6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>
-				<div style="float:right; margin-right: .5em; display:none;">minnst: <input name="role[{{ event_role.role.id }}][min]" class="col-sm-6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>
+				<div class="role_entry-title" style="float:left">{{ role.title }}</div>
+				<input type="hidden" name="role[{{ role.eventrole.id }}][id]" value="{{ role.eventrole.id }}" />
+				<div style="float:right"><i id="{{ role.eventrole.id }}" class="delete-role-entry icon-remove-sign pull-right" style="cursor: pointer"></i></div>
+				<div style="float:right; margin-right: .5em; display:none;">mest:   <input name="role[{{ role.eventrole.id }}][max]" class="col-sm-6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>
+				<div style="float:right; margin-right: .5em; display:none;">minnst: <input name="role[{{ role.eventrole.id }}][min]" class="col-sm-6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>
 				<div>
-					<select name="role[{{ event_role.role.id }}][participants][]" multiple data-placeholder="Veldu þáttakendur" class="select-participants">
-						<optgroup label="Hópar og flokkar">
-		{% for group in groups %}
-							<option value="g{{ group.id }}"{% if group in event_role.invited_groups.all %} selected="selected"{% endif %}>{{ group.title }}</option>
-		{% endfor %}
+					<select name="role[{{ role.eventrole.id }}][participants][]" multiple data-placeholder="Veldu þáttakendur" class="select-participants">
+						<optgroup label="Stöður" class="sorted">
+							<option value="a" {% if role.eventrole.is_open %}selected="selected"{% endif %}>Allir</option>
+	{% for position in positions %}
+							<option value="p{{ position.id }}"{% if position in role.invited_positions %} selected="selected"{% endif %}>{{ position.title }}</option>
+	{% endfor %}
 						</optgroup>
-						<optgroup label="Meðlimir">
-		{% for member in members %}
-							<option value="m{{ member.id }}"{% if member in event_role.invited_members.all %} selected="selected"{% endif %}>{{ member }}</option>
-		{% endfor %}
+						<optgroup label="Hópar og flokkar" class="sorted">
+	{% for group in groups %}
+							<option value="g{{ group.id }}"{% if group in role.invited_groups %} selected="selected"{% endif %}>{{ group.title }}</option>
+	{% endfor %}
+						</optgroup>
+						<optgroup label="Meðlimir" class="sorted">
+	{% for member in members %}
+							<option value="m{{ member.id }}"{% if member in role.invited_members %} selected="selected"{% endif %}>{{ member.name }}</option>
+	{% endfor %}
 						</optgroup>
 					</select>
 				</div>
        		</div><!--/#role-entry-->
-	{% endfor %}
+{% endfor %}
 
        	</div><!--invite-role-list-->
       
@@ -372,12 +378,13 @@ $(document).ready(function(){
 				<div style="margin:0 .5em .5em .5em;">{{ event.description|textile }}</div>
 			</div><!-- /#event_description-data -->
 
-			<div id="event_description-form" style="display: none">
-				<textarea class="col-sm-12" id="event_description-textarea" name="description">{{ event.description }}</textarea>
-				<div style="text-align: right">
-					<input type="reset" value="Hætta við" class="col-xs-6 col-sm-2 btn btn-default toggle-form" data-form_id-prefix="event_description" onclick="$('#results').slideUp();" />
-					<input type="submit" value="Vista" class="col-xs-6 col-sm-2 btn btn-primary" data-form_id-prefix="event_description" />
+			<div id="event_description-form" style="display: none;">
+				<div style="float:right;">
+					<input type="reset" value="Hætta við" class="btn-xs-6 btn-sm-2 btn btn-default toggle-form" data-form_id-prefix="event_description" onclick="$('#results').slideUp();" />
+					<input type="submit" value="Vista" class="btn-xs-6 btn-sm-2 btn btn-primary" data-form_id-prefix="event_description" />
 				</div>
+				<h3>Lýsing</h3>
+				<textarea class="col-sm-12" id="event_description-textarea" name="description">{{ event.description }}</textarea>
 			</div><!-- /#event_description-form -->
 		</section>
 
@@ -389,24 +396,45 @@ $(document).ready(function(){
 						<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_tag"></i>
 						<h3>Merki</h3>
 						<dl class="dl-horizontal" style="margin-top: 0">
-							<dt>Umsjón:<dt><dd>Bækistöðvarhópur</dd>
-							<dt>Verkefni:</dt><dd>Fyrsta hjálp</dd>
-							<dt>Aðstæður:</dt><dd>Innanhúss, innanbæjar</dd>
-							<dt>Tækjanotkun:</dt><dd>Reykur 1, Reykur 4</dd>
+		  {% for tagtype in tagtypes %}
+							<div class="{% for eventtype in tagtype.event_type.all %}event_type_id-{{ eventtype.id }} {% endfor %}tagtype-container">
+								<dt tyle="width: auto; padding-right: .5em;">{{ tagtype.title }} </dt>
+								<dd tyle="margin-left: 3em;">{% for tag in event.tags.all %}{% if tag in tagtype.tag_set.all %}<span style="display: inline-block; border-radius: 3px 3px 3px 3px;
+									background-image: -moz-linear-gradient(center top , rgb(244, 244, 244) 20%, rgb(240, 240, 240) 50%, rgb(232, 232, 232) 52%, rgb(238, 238, 238) 100%);
+									border: 1px solid rgb(170, 170, 170);
+									padding: 1px 5px 1px 5px;
+									margin: 3px 0px 3px 5px;
+									">{{ tag.title }}</span> {% endif %}{% endfor %}</dd>
+					 		</div>
+		  {% endfor %}
 						</dl>
 					</div><!-- /#event_tag-data -->
 
-					<div id="event_tag-form" style="display: none">
+					<div id="event_tag-form" style="display: none;">
 						<h3>Merki</h3>
-						<div style="text-align: right">
+						<table style="width: 100%">
+								  {# Create a form for each TagType and mark it with the EventTypes it goes with. Then when the EventType is changed, we have to change the visibility of TagTypes that don't belong to both the new and old EventType #}
+								  {% for tagtype in tagtypes %}
+								  <tr class="{% for eventtype in tagtype.event_type.all %}event_type_id-{{ eventtype.id }} {% endfor %}tagtype-container">
+									  <td>{{ tagtype.title }} (types: </td>
+											 <td>
+														<select id="tag_type_id-{{ tagtype.id }}" name="tag_type[{{ tagtype.id }}][]" class="tag-type" multiple data-placeholder="Merktu umsjónaraðila">
+																  {% for tag in tagtype.tag_set.all %}
+																  <option {% if tag in event.tags.all %}selected=selected data-saved="true" {% endif %} value="{{ tag.id }}">{{ tag.title }}</option>
+																  {% endfor %}
+											 </select>
+								  </tr>
+								  {% endfor %}
+						</table>
+						<div style="ext-align: right; verflow: visible;">
 							{# TODO: The cancel button should reset the form and toggle back to displaying the data #}
-							<input type="button" value="Hætta við" class="col-sm-4 btn btn-default toggle-form toggle-form" data-form_id-prefix="event_tag" />
+							<input type="button" value="Hætta við" class="btn-sm-4 btn btn-default toggle-form" data-form_id-prefix="event_tag" onclick="resetSelect('.tag-type');$('#results').slideUp();" />
 							{# TODO: The submit button should post the data and only on success toggle back to displaying the data #}
-							<input type="button" value="Vista" class="col-sm-4 btn btn-primary toggle-form" data-form_id-prefix="event_tag" />
+							<input type="submit" value="Vista" class="btn-sm-4 btn btn-primary" data-form_id-prefix="event_tag" />
 						</div>
 					</div><!-- /#event_description-form -->
 
-					<div id="event_location-data">
+					<div id="event_location-data" style="clear:both;">
 						<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_location"></i>
 						<h3>Staðsetning</h3>
 						<table style="margin-top: 0;">
@@ -414,13 +442,26 @@ $(document).ready(function(){
 							<tr><td>N 64°34,392'	V 21°39,291'</td><td>Upphafsstaður æfingar.</td></tr>
 						</table>
 					</div><!-- /#event_location-data -->
-					<div id="event_location-form" style="display: none">
+					<div id="event_location-form" style="clear: both; display: none;">
 						<h3>Staðsetning</h3>
-						<div style="text-align: right">
+						<div>
+								<span class="col-xs-3">Lengd</span>
+								<span class="col-xs-3">Breidd</span>
+								<span class="col-xs-6">Lýsing</span>
+								<input type="text" class="col-xs-3" value="N 65°01,039'" />
+								<input type="text" class="col-xs-3" value="V 21°33,029'" />
+								<input type="text" class="col-xs-6" value="Söfnunarsvæði slasaðra." />
+								<br />
+								<input type="text" class="col-xs-3" value="N 64°34,392'" />
+								<input type="text" class="col-xs-3" value="V 21°39,291'" />
+								<input type="text" class="col-xs-6" value="Upphafsstaður æfingar." />
+								<br />
+					 </div>
+						<div style="ext-align: right">
 							{# TODO: The cancel button should reset the form and toggle back to displaying the data #}
-							<input type="button" value="Hætta við" class="col-sm-4 btn btn-default toggle-form toggle-form" data-form_id-prefix="event_location" />
+							<input type="reset" value="Hætta við" class="col-sm-4 btn btn-default toggle-form toggle-form" data-form_id-prefix="event_location" />
 							{# TODO: The submit button should post the data and only on success toggle back to displaying the data #}
-							<input type="button" value="Vista" class="col-sm-4 btn btn-primary toggle-form" data-form_id-prefix="event_location" />
+							<input type="submit" value="Vista" class="col-sm-4 btn btn-primary toggle-form" data-form_id-prefix="event_location" />
 						</div>
 					</div><!-- /#event_location-form -->
 				</div><!-- /.col-sm-6 -->
@@ -430,8 +471,8 @@ $(document).ready(function(){
 				</div><!-- /#event_location-map -->
 
 			</div>
-			</form>
 		</section>
 	</div>
 </div><!-- /.row -->
+</form>
 {% endblock %}

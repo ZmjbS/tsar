@@ -5,9 +5,8 @@ from members.models import Member
 from groups.models import Group, Membership
 from events.models import Event, EventRole, MemberResponse, EventType
 
-import datetime
-
-now=datetime.datetime.now()
+from django.utils.timezone import now
+now=now()
 
 def index(request):
 	all_groups_list = Group.objects.all().order_by('title')
@@ -23,15 +22,22 @@ def group_page(request, slug):
 	g = get_object_or_404(Group, slug=slug)
 	#import pprint
 	#pprint.pprint(g.members.all())
-	managers = [ membership.member for membership in Membership.objects.filter(group=g).filter(is_manager=True) ]
-	print managers
-	om = Member.objects.exclude(membership__group__slug=slug)
+	managers = [ membership.member for membership in Membership.objects.select_related(depth=0).filter(group=g).filter(is_manager=True) ]
+
+	# Construct lists of group members and other members. Note that other
+	# members can have more than one membership so we have to remove redundant
+	# members from the list.
+	gm = [ membership.member for membership in Membership.objects.select_related('member','member__user').filter(group=g) ]
+	om = Member.objects.select_related('user').exclude(membership__group=g)
+
 	recent_events_list=Event.objects.filter(eventrole__groupinvitation__group__slug=slug).filter(date_time_begin__lte=now).distinct()
 	coming_events_list=Event.objects.filter(eventrole__groupinvitation__group__slug=slug).filter(date_time_begin__gte=now).distinct()
+
 	return render_to_response('groups/group_page.html', {
 		'group': g,
 		'managers': managers,
-		'members': om,
+		'group_members': gm,
+		'other_members': om,
 		'recent_events_list': recent_events_list,
 		'coming_events_list': coming_events_list,
 		'user': request.user,
@@ -42,23 +48,31 @@ def save_group(request):
 	if not request.is_ajax():
 		return False
 	else:
-		print request.POST
+		# print request.POST
 		data = json.loads(request.POST['data'])
-		print data['member']
+		#print data['members']
+		#members = ast.literal_eval(data['members'][1])
+		#print type(members)
+		#print members['member_id']
 		# Check whether the group exists:
 		try:
 			group = get_object_or_404(Group, id=data['group_id'])
+			print group
 		except:
 			return HttpResponse('no such group')
 
 		# Iterate over the membership array
-		for (member_id,group_status) in enumerate(data['member'][1:]):
-			print '>> Member {}: {}'.format(member_id+1,group_status)
+		for datum in data['members']:
+			import ast
+			members = ast.literal_eval(datum)
+			member_id = members['member_id']
+			group_status = members['status']
+			print '>> Member {}: {}'.format(member_id,group_status)
 			if group_status != None or group_status != 'member':
 				# Check whether the member exists:
 				try:
-					print 'Finding member {}'.format(member_id+1)
-					member = get_object_or_404(Member, id=member_id+1)
+					print 'Finding member {}'.format(member_id)
+					member = get_object_or_404(Member, id=member_id)
 					print 'member {} found'.format(member)
 				except:
 					print 'member not found'
@@ -91,6 +105,11 @@ def save_group(request):
 						membership.delete()
 					except:
 						return HttpResponse('unable to delete membership')
+				elif group_status == 'member':
+					print 'already a member...'
+				else:
+					print 'unknown group_status:'
+					print group_status
 		# All is done. Return a successful response to the template. :-)
 		return HttpResponse(json.dumps({ 'type': 'success' }))
 

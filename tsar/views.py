@@ -59,7 +59,7 @@ def my_page(request):
 	all_events_list = Event.objects.filter(date_time_begin__gte=now).order_by('date_time_begin')[:event_list_length]
 
 	# Retrieve a list of upcoming events for the currently logged in user and place them in a dictionary
-	my_events_list = Event.objects.filter(date_time_begin__gte=now).filter(Q(eventrole__invited_groups__members=request.user.member)|Q(eventrole__invited_members=request.user.member)).distinct().order_by('date_time_begin')[:event_list_length]
+	my_events_list = Event.objects.filter(date_time_begin__gte=now).filter(Q(eventrole__invited_positions=request.user.member.position)|Q(eventrole__invited_groups__members=request.user.member)|Q(eventrole__invited_members=request.user.member)).distinct().order_by('date_time_begin')[:event_list_length]
 
 	#tmpset = set(all_events_dictionaries_list)# my_events_dictionaries_list)
 	union_events_list = list(set(list(all_events_list) + list(my_events_list)))
@@ -69,19 +69,19 @@ def my_page(request):
 	# Import news from defined news sites:
 	import feedparser
 	# Landsbjörg
-#	sl_entries = feedparser.parse('http://landsbjorg.is/Rss.aspx?CatID=466').entries[0:5]
-#	for entry in sl_entries:
-#		entry['published'] = date.fromtimestamp(mktime(entry.published_parsed))
-#	# HSSR
-#	hssr_entries = feedparser.parse('http://hssr.is/?feed=rss2').entries[0:5]
-#	for entry in hssr_entries:
-#		entry['published'] = date.fromtimestamp(mktime(entry.published_parsed))
+	sl_entries = feedparser.parse('http://landsbjorg.is/Rss.aspx?CatID=466').entries[0:5]
+	for entry in sl_entries:
+		entry['published'] = date.fromtimestamp(mktime(entry.published_parsed))
+	# HSSR
+	hssr_entries = feedparser.parse('http://hssr.is/?feed=rss2').entries[0:5]
+	for entry in hssr_entries:
+		entry['published'] = date.fromtimestamp(mktime(entry.published_parsed))
 	#return render_to_response('my_page.html', { 'events_list': all_events_list, 'invited': invited, 'hssr_entries': hssr_entries, 'sl_entries': sl_entries, 'user': request.user, })
 	return render_to_response('my_page.html', {
 		'events_dictionaries_list': union_events_dictionaries_list,
 		#'my_events_dictionaries_list': my_events_dictionaries_list,
-#		'hssr_entries': hssr_entries,
-#		'sl_entries': sl_entries,
+		'hssr_entries': hssr_entries,
+		'sl_entries': sl_entries,
 		'user': request.user,
 		'event_list_length': event_list_length,
 	})

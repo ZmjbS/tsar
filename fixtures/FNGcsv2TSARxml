@@ -1,0 +1,54 @@
+#!/bin/awk
+# usage:
+# cat FakeNameGeneratorFile.csv | awk -f FNGcsv2TSARxml > outfile.xml
+
+BEGIN { FS=","; print "<?xml version=\"1.0\" encoding=\"utf-8\"?><django-objects version=\"1.0\">"; pnpk=1; }
+NR==1{next}
+{
+	if (a[$8]++ != 0) next
+	print "<object pk=\""NR"\" model=\"auth.user\">"
+	print "	<field type=\"CharField\" name=\"username\">"$8"</field>"
+	print "	<field type=\"CharField\" name=\"first_name\">"$3" "$4"</field>"
+	print "	<field type=\"CharField\" name=\"last_name\">"$5"</field>"
+	print "	<field type=\"CharField\" name=\"email\">"$7"</field>"
+	print "	<field type=\"CharField\" name=\"password\">pbkdf2_sha256$10000$wUKXvYaVdoBp$J0mmujS+QqxPz+/2hsB52eZMB7FoDj7Zk9Ij9ga20PA=</field>"
+	print "	<field type=\"BooleanField\" name=\"is_staff\">False</field>"
+	print "	<field type=\"BooleanField\" name=\"is_active\">True</field>"
+	print "	<field type=\"BooleanField\" name=\"is_superuser\">False</field>"
+	print "	<field type=\"DateTimeField\" name=\"last_login\">2014-01-17T12:13:57.449870+00:00</field>"
+	print "	<field type=\"DateTimeField\" name=\"date_joined\">2013-08-10T10:55:56+00:00</field>"
+	print "	<field to=\"auth.group\" name=\"groups\" rel=\"ManyToManyRel\"></field>"
+	print "	<field to=\"auth.permission\" name=\"user_permissions\" rel=\"ManyToManyRel\"></field>"
+	print "</object>"
+	gsub("/","",$10)
+	print "<object pk=\""NR"\" model=\"members.member\">"
+	print "	<field to=\"autho.user\" name=\"user\" rel=\"OneToOneRel\">"NR"</field>"
+	print "	<field type=\"IntegerField\" name=\"member_id\">"$10"09</field>"
+	print "	<field to=\"members.position\" name=\"position\" rel=\"ManyToOneRel\">1</field>"
+	print "	<field type=\"TextField\" name=\"address\">"$6"</field>"
+	print "	<field type=\"TextField\" name=\"info\"></field>"
+	print "</object>"
+	for (pn=1;pn<=(int(rand()*2.1)+1);pn++)
+	{
+		#<object pk="1" model="members.phone">
+			#<field to="members.member" name="member" rel="ManyToOneRel">59</field>
+			#<field type="IntegerField" name="number">1234567</field>
+			#<field type="BooleanField" name="is_primary">False</field>
+		#</object>
+		#<object pk="2" model="members.phone">
+			#<field to="members.member" name="member" rel="ManyToOneRel">59</field>
+			#<field type="IntegerField" name="number">8901234</field>
+			#<field type="BooleanField" name="is_primary">True</field>
+		#</object><object pk="3" model="members.phone"><field to="members.member" name="member" rel="ManyToOneRel">59</field><field type="IntegerField" name="number">5678912</field><field type="BooleanField" name="is_primary">False</field></object></django-objects>
+		print "<object pk=\""pnpk"\" model=\"members.phone\">"
+		print "	<field to=\"members.member\" name=\"member\" rel=\"ManyToOneRel\">"NR"</field>"
+		print "	<field type=\"IntegerField\" name=\"number\">"int(rand()*2999999+5000000)"</field>"
+		if (pn == 1)
+			print "	<field type=\"BooleanField\" name=\"is_primary\">True</field>"
+		else
+			print "	<field type=\"BooleanField\" name=\"is_primary\">False</field>"
+		print "</object>"
+		pnpk++
+	}
+}
+END { print "</django-objects>" }

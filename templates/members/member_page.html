@@ -27,10 +27,11 @@ $(document).ready(function(){
 				<dt>Kennitala:</dt>
 				<dd>{{ member.member_id }}</dd>
 				<dt>Símanúmer:</dt>
-				<dd>555-1234</dd>
-				<dd>789-1234</dd>
+				{% for phone in member.phone_set.all %}
+				<dd>{{ phone.number }}</dd>
+				{% endfor %}
 				<dt>Tölvupóstfang</dt>
-				<dd>dæmi@dæmi.is</dd>
+				<dd>{{ member.user.email }}</dd>
 				<dt>Heimilisfang:</dt><dd>{{ member.address }}</dd>
 				<dt>Staða:</dt>
 				<dd>{{ member.position }}</dd>
@@ -65,7 +66,7 @@ $(document).ready(function(){
 		</section>
 
 		<section id="member-qualifications">
-			<h2>Hæfnir
+			<h2>Hæfni
 				<input type="button" class="btn btn-default pull-right btn-sm" value="Sýsla" style="vertical-align: bottom;" onclick="$('#member-qualifications-edit').toggle('600');$(this).toggleClass('btn-primary btn-default');($(this).val()=='Lokið')?$(this).val('Sýsla'):$(this).val('Lokið');" />
 			</h2>
 			<ul>

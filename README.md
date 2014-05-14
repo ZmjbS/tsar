@@ -24,7 +24,22 @@ pip install -r requirements.txt
 You're now ready to generate the database (you want to use this opportunity to create an admin user) and load some initial data from the available fixtures:
 ```bash
 python manage.py syncdb
-python manage.py loaddata fixtures/showcase-groups-events.json;
+```
+Log in, create a member for yourself and any other member that you want to be able to log into the development system. Then dump their data into a json fixture so that you can load that over the dummy members.
+```bash
+python manage.py dumpdata auth.user members.member > fixtures/actual-members.json
+```
+Now we can load the fixtures:
+```bash
+python manage.py loaddata fixtures/showcase-events_metadata.xml
+python manage.py loaddata showcase_events.xml
+
+python manage.py loaddata fixtures/showcase-members_metadata.xml
+python manage.py loaddata fixtures/showcase-3k-user_member.xml
+python manage.py loaddata fixtures/actual-members.json
+
+python manage.py loaddata fixtures/showcase-groups.group.xml
+python manage.py loaddata fixtures/showcase-groups.membership.json
 ```
 
 Now you're ready to fire up the development server and play around. Run:

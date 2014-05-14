@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<django-objects version="1.0">
+<object pk="1" model="groups.group">
+	<field type="CharField" name="title">Bækistöðvarhópur</field>
+	<field type="TextField" name="description">Bækistöðvarhópur mannar og rekur stjórnstöð HSSR í útköllum. Stjórnstöðin sér um að taka saman SMS svörun félaga, setja saman hópa og bæta þeim inn í verkefnagrunn Landsbjargar.</field>
+	<field type="SlugField" name="slug">baekistodvarhopur</field>
+	<field type="CharField" name="group_type">UH</field>
+</object>
+<object pk="2" model="groups.group">
+	<field type="CharField" name="title">Tölvuhópur</field>
+	<field type="TextField" name="description">Upplýsingatæknihópur annast viðhald tölvukerfa HSSR. Þar á meðal eru útstöðvarnar í setustofunni, tölvurnar í bílunum og bækistöðinni.</field>
+	<field type="SlugField" name="slug">tolvuhopur</field>
+	<field type="CharField" name="group_type">AH</field>
+</object>
+<object pk="3" model="groups.group">
+	<field type="TextField" name="description">Hópurinn sér um rekstur og mönnun bíla HSSR í almennu starfi og útköllum.\r\n\r\nVinnukvöld hópsins eru á mánudögum og mæta menn oft í kringum sjö-leitið.</field>
+	<field type="SlugField" name="slug">bilahopur</field>
+	<field type="CharField" name="group_type">UH</field>
+	<field type="CharField" name="title">Bílahópur</field>
+</object>
+<object pk="4" model="groups.group">
+	<field type="TextField" name="description">Búðahópur sér um uppsetningu og rekstur búða í útköllum.</field>
+	<field type="SlugField" name="slug">budahopur</field>
+	<field type="CharField" name="group_type">UH</field>
+	<field type="CharField" name="title">Búðahópur</field>
+</object>
+<object pk="5" model="groups.group">
+	<field type="TextField" name="description">Félagar á besta aldri. Harðduglegt ferðafólk. Margir enn á útkallsskrá.</field>
+	<field type="SlugField" name="slug">eftirbatar</field>
+	<field type="CharField" name="group_type">FL</field>
+	<field type="CharField" name="title">Eftirbátar</field>
+</object>
+<object pk="6" model="groups.group">
+	<field type="TextField" name="description">Léttsveitin er allra yndi...</field>
+	<field type="SlugField" name="slug">lettsveit</field>
+	<field type="CharField" name="group_type">UH</field>
+	<field type="CharField" name="title">Léttsveit</field>
+</object>
+<object pk="7" model="groups.group">
+	<field type="TextField" name="description">Fjallahópur sérhæfir sig í fjallastússi.</field>
+	<field type="SlugField" name="slug">fjallahopur</field>
+	<field type="CharField" name="group_type">UH</field>
+	<field type="CharField" name="title">Fjallahópur</field>
+</object>
+<object pk="8" model="groups.group">
+	<field type="TextField" name="description">Leitarhundar leita með hundum</field>
+	<field type="SlugField" name="slug">leitarhundar</field>
+	<field type="CharField" name="group_type">UH</field>
+	<field type="CharField" name="title">Leitarhundar</field>
+</object>
+<object pk="9" model="groups.group">
+	<field type="TextField" name="description">Leitarhópur leitar að fólki.</field>
+	<field type="SlugField" name="slug">leitarhopur</field>
+	<field type="CharField" name="group_type">UH</field>
+	<field type="CharField" name="title">Leitarhópur</field>
+</object>
+<object pk="10" model="groups.group">
+	<field type="TextField" name="description">Sjúkrahópur æfir fyrstu hjálp. Æfingar og vinnukvöld eru 2. og 4. fimmtudag í mánuði.</field>
+	<field type="SlugField" name="slug">sjukrahopur</field>
+	<field type="CharField" name="group_type">UH</field>
+	<field type="CharField" name="title">Sjúkrahópur</field>
+</object>
+<object pk="11" model="groups.group">
+	<field type="TextField" name="description">Sleðahópurinn heldur við og mannar vélsleða til notkunar í aðgerðum.</field>
+	<field type="SlugField" name="slug">sledahopur</field>
+	<field type="CharField" name="group_type">UH</field>
+	<field type="CharField" name="title">Sleðahópur</field>
+</object>
+<object pk="12" model="groups.group">
+	<field type="TextField" name="description">Snjóbílshópurinn sér um viðhald og rekstur Bola og keyrir hann í útköllum.</field>
+	<field type="CharField" name="slug">snjobilshopur</field>
+	<field type="CharField" name="group_type">UH</field>
+	<field type="CharField" name="title">Snjóbílshópur</field>
+</object>
+<object pk="13" model="groups.group">
+	<field type="TextField" name="description">Stjórn HSSR er stjórn HSSR.</field>
+	<field type="SlugField" name="slug">stjorn</field>
+	<field type="CharField" name="group_type">AH</field>
+	<field type="CharField" name="title">Stjórn</field>
+</object>
+<object pk="14" model="groups.group">
+	<field type="TextField" name="description">Undanfarar sinna sérhæfðum fjallabjörgunarútköllum.</field>
+	<field type="SlugField" name="slug">undanfarar</field>
+	<field type="CharField" name="group_type">UH</field>
+	<field type="CharField" name="title">Undanfarar</field>
+</object>
+<object pk="15" model="groups.group">
+	<field type="TextField" name="description">Vélhjólagengið er landsins síðasta vörn gegn erlendum bifhjólaglæpagengjum.</field>
+	<field type="SlugField" name="slug">velhjolahopur</field>
+	<field type="CharField" name="group_type">UH</field>
+	<field type="CharField" name="title">Vélhjólahópur</field>
+</object>
+<object pk="16" model="groups.group">
+	<field type="TextField" name="description">Þriðja bylgjan er hópur reyndra félaga sem starfa ekki dags daglega með öðrum hópum en eru til taks ef til viðameiri aðgerða kemur.</field>
+	<field type="SlugField" name="slug">thridja-bylgjan</field>
+	<field type="CharField" name="group_type">UH</field>
+	<field type="CharField" name="title">Þriðja bylgjan</field>
+</object>
+<object pk="18" model="groups.group">
+	<field type="TextField" name="description">Hópur vaskra stúlkna og sveina stundar reglulega þá íþrótt að sparka knetti sín á milli.</field>
+	<field type="SlugField" name="slug">fotboltahopur</field>
+	<field type="CharField" name="group_type">FL</field>
+	<field type="CharField" name="title">Fótboltahópur</field>
+</object>
+<object pk="19" model="groups.group">
+	<field type="TextField" name="description">Flugeldanefndin sér um kaup og sölu flugelda á vegum HSSR.</field>
+	<field type="SlugField" name="slug">flugeldanefnd</field>
+	<field type="CharField" name="group_type">AH</field>
+	<field type="CharField" name="title">Flugeldanefnd</field>
+</object>
+<object pk="20" model="groups.group">
+	<field type="TextField" name="description">Húsnæðisnefnd sér um húsnæði sveitarinnar að Malarhöfða 6.</field>
+	<field type="SlugField" name="slug">husnaedisnefnd</field>
+	<field type="CharField" name="group_type">AH</field>
+	<field type="CharField" name="title">Húsnæðisnefnd</field>
+</object>
+<object pk="21" model="groups.group">
+	<field type="TextField" name="description">Hengilsnefnd sér um Hengilsverkefnið sem HSSR hefur unnið með Orkuveitu Reykjavíkur undanfarin ár.</field>
+	<field type="SlugField" name="slug">hengilsnefnd</field>
+	<field type="CharField" name="group_type">AH</field>
+	<field type="CharField" name="title">Hengilsnefnd</field>
+</object>
+<object pk="22" model="groups.group">
+	<field type="TextField" name="description">Áður en einstaklingur fær að skrifa undir eiðstaf HSSR og ganga inn í sveitina verður hann að ljúka þjálfun sem veitir honum grunnfærni til að starfa sem björgunarmaður í nafni sveitarinnar.</field>
+	<field type="SlugField" name="slug">nylidar</field>
+	<field type="CharField" name="group_type">AH</field>
+	<field type="CharField" name="title">Nýliðar</field>
+</object>
+<object pk="23" model="groups.group">
+	<field type="TextField" name="description">Vinnuhópurinn er starfshópur sem sinnir fjáröflunum.</field>
+	<field type="SlugField" name="slug">vinnuhopur</field>
+	<field type="CharField" name="group_type">AH</field>
+	<field type="CharField" name="title">Vinnuhópur</field>
+</object>
+</django-objects>

@@ -25,6 +25,7 @@
 	.select-participants, [id*='role-groups-id_'] { width: 100%; }
 	/*#tag-event_task, #tag-organiser, #tag-location, #tag-equipment { width: 44em; }*/
 	/*#tag-event_task, #tag-organiser, #tag-location, #tag-equipment { width: 100%; }*/
+	div[id*='tag_type_id'] { width: 100% !important; }
 	#tag_organiser_chzn, #tag_event_task_chzn, #tag_location_chzn, #tag_equipment_chzn { width: 100% !important; }
 	/*#tag-organiser { width: 8em; } */
 	//#id_minimum, #id_maximum { width: 2em; }
@@ -107,6 +108,7 @@ $(document).ready(function(){
 // Chosen UI
 	$('#role-groups-id_template').chosen();
 
+	$('.tag-type').chosen();
 	$('#tag-organiser').chosen();
 	$('#tag-event_task').chosen();
 	$('#tag-location').chosen();
@@ -139,6 +141,12 @@ $(document).ready(function(){
 //		+					'</div>'
 		+		'<div>'
 		+			'<select name="role['+role_id+'][participants][]" multiple data-placeholder="Veldu þáttakendur" class="select-participants">'
+		+				'<optgroup label="Stöður">'
+		+					'<option value="a">Allir</option>'
+		+					'{% for position in positions %}'
+		+					'<option value="p{{ position.id }}">{{ position.title }}</option>'
+		+					'{% endfor %}'
+		+				'</optgroup>'
 		+				'<optgroup label="Hópar og flokkar">'
 		+					'{% for group in groups %}'
 		+					'<option value="g{{ group.id }}">{{ group.title }}</option>'
@@ -248,8 +256,20 @@ $(document).ready(function(){
 			<h3 id="event-tag-header">Merki</h3>
 			<div id="merki-content" style="display:none">
 				<table style="width: 100%">
+						  {# Create a form for each TagType and mark it with the EventTypes it goes with. Then when the EventType is changed, we have to change the visibility of TagTypes that don't belong to both the new and old EventType #}
+						  {% for tagtype in tagtypes %}
+						  <tr>
+								<td>{{ tagtype.title }}</td>
+								<td>
+										  <select id="tag_type_id-{{ tagtype.id }}" class="tag-type" multiple data-placeholder="Merktu umsjónaraðila">
+								{% for tag in tagtype.tag_set.all %}
+										  <option>{{ tag.title }}</option>
+								{% endfor %}
+								</select>
+						  </tr>
+						  {% endfor %}
 					<tr>
-						<td>Umsjón:</td>
+						<td style="width: 6em;">Umsjón:</td>
 						<td>
 							<select id="tag-organiser" multiple data-placeholder="Merktu umsjónaraðila">
 								<option>Landsbjörg</option>
@@ -261,56 +281,6 @@ $(document).ready(function(){
 									<option>{{ group.title }}</option>
 						{% endfor %}
 								</optgroup>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td style="width: 6em;">Verkefni:</td>
-						<td>
-							<select id="tag-event_task" multiple data-placeholder="Merktu verkefni æfingarinnar">
-								<option>Björgun</option>
-								<option>Böruburður</option>
-								<option>Búðavinna</option>
-								<option>Fjallabjörgun</option>
-								<option>Flugvélarútköll (flugvél í vanda)</option>
-								<option>Fyrstu hjálp beitt</option>  
-								<option>Hópslys</option>
-								<option>Leit (almenn)</option>
-								<option>Leit (sérhæfð)</option>
-								<option>Línuvinna</option>
-								<option>Óveðursaðstoð</option>
-								<option>Sjúkraflutningur</option>
-								<option>Snjóflóð</option>
-								<option>Veitt aðstoð í ófærð</option>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td>Aðstæður:</td>
-						<td>
-							<select id="tag-location" multiple data-placeholder="Merktu aðstæðurnar">
-								<option>Fjalllendi</option>
-								<option>Fjara</option>
-								<option>Flatlendi</option>
-								<option>Innanbæjar</option>
-								<option>Jökull</option>
-								<option>Óbyggðir</option>
-								<option>Straumvatn</option>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td>Tækjanotkun:</td>
-						<td>
-							<select id="tag-equipment" multiple data-placeholder="Merktu tækin sem voru notuð">
-								<option>Reykur 1</option>
-								<option>Reykur 2</option>
-								<option>Reykur 3</option>
-								<option>Reykur 4</option>
-								<option>Reykur Boli</option>
-								<option>Reykur 6</option>
-								<option>Reykur 7</option>
-								<option>Vélsleðar</option>
 							</select>
 						</td>
 					</tr>

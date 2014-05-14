@@ -16,13 +16,15 @@ $(document).ready(function(){
 	$('form').submit(function() {
 		console.log('serialising');
 		json = JSON.stringify($(this).serializeJSON());
+		console.log('JSON: '+json);
 		csrf = $.cookie('csrftoken');
 		console.log('CSRF: '+csrf);
-		console.log('JSON: '+json);
 		var posting = $.post("/hopur/vista", {'csrfmiddlewaretoken': csrf, 'data': json});
 		posting.done(function(data) {
 			console.log('posting done!');
+			console.log(data);
 			response = JSON && JSON.parse(data) || $.parseJSON(data);
+			console.log(response);
 			switch (response['type']) {
 				case 'success':
 					console.log('SUCCESS!!!');

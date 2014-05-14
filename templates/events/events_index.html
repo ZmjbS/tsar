@@ -12,19 +12,23 @@ $(document).ready(function() {
 
     $('#calendar').fullCalendar({
         // put your options and callbacks here
-	//	events: '/vidburdur/',
 		events: {
         url: '/vidburdur/',
-        //type: 'GET',
-        //data: {
-        //    custom_param1: 'something',
-        //    custom_param2: 'somethingelse'
-        //},
+        //type: 'POST',
+        data: {
+					member_id: '{{ user.id }}'
+        },
         error: function() {
             alert('there was an error while fetching events!');
         },
-        //color: 'yellow',   // a non-ajax option
-        //textColor: 'black' // a non-ajax option
+    },
+	 eventRender: function(event, element) {
+		if (event.status != 'notinvited') {
+			$(element).children('.fc-event-inner').prepend('<span class="icon-circle status-icon '+event.status+'-icon"></span>');
+		} else {
+			$(element).children('.fc-event-inner').prepend('<span class="icon-circle-blank status-icon '+event.status+'-icon"></span>');
+		}
+	 	console.log(event.status);
     },
 		firstDay: 1,
 		contentHeight: 400,
@@ -40,7 +44,17 @@ $(document).ready(function() {
 			month: 'dddd',    // Mon
 			week: 'ddd M/d', // Mon 9/7
 			day: 'dddd M/d'  // Monday 9/7
-		}
+		},
+		buttonText: {
+			prev: "<span class='fc-text-arrow'>&lsaquo;</span>",  // <<
+			next: "<span class='fc-text-arrow'>&rsaquo;</span>",  // >>
+			prevMonth: "<span class='fc-text-arrow'>&laquo;</span>",  // <<
+			nextMonth: "<span class='fc-text-arrow'>&raquo;</span>",  // >>
+			today:    'í dag',
+		},
+		header: {
+			right:  'today prev,next prevMonth,nextMonth',
+		},
 
     })
 
@@ -49,7 +63,8 @@ $(document).ready(function() {
 <style>
 #cal { margin-top: 20px; }
 #calendar { background-color: rgba(255,255,255,0.75); }
-.fc-event-title { white-space:nowrap; }
+.fc-event-inner { white-space:nowrap; }
+.fc-event-title { padding-left: .2em; }
 .fc-week-number { border: none; }
 .fc-week-number div { color: rgb(170, 51, 51); }
 .fc-sat, .fc-sun { background-color: #eff; }
