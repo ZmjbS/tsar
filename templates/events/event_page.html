@@ -21,6 +21,9 @@ div[id*='tag_type_id'] { width: 100% !important; }
 
 </style>
 <script type="text/javascript" src="/static/js/tsar.events.js"></script>
+<!-- jQuery tinysort -->
+	<script type="text/javascript" src="/static/js/jquery.tinysort.min.js"></script>
+	<script type="text/javascript" src="/static/js/jquery.tinysort.charorder.min.js"></script>
 <script type="text/javascript" src="/static/js/chosen.jquery.min.js"></script>
 <link type="text/css" rel="stylesheet" href="/static/css/chosen.css" />
 <script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
@@ -35,10 +38,12 @@ $(document).ready(function(){
 		Place the CSRF token in a js variable so that the form handler
 		can send it to the view.
 	*/
-	var csrftoken = $.cookie('csrftoken');
+	//var csrftoken = $.cookie('csrftoken');
 	/* DEBUG
 	console.log('CSRF (on page):'+csrftoken);
 	*/
+		/* Sort the member, group and position lists. */
+	$('.sorted>*').tsort({charOrder:'a[á]dðe[é]i[í]o[ó]u[ú]y[ý]zþæö'});
 
 	/*
 		Styling
@@ -123,6 +128,7 @@ $(document).ready(function(){
 		//$('#invite-role-list').append(node).children(':last').stop(true, true).hide().slideDown(500).fadeIn({ duration: 400, queue: false });
 		$('.select-participants').chosen();
 	}));
+
 });
 
 function resetSelect(selector) {
@@ -150,6 +156,7 @@ function updateEnabledSelect(id) {
 {% block content %}
 {# TODO: Should we add some permissions to access the edit form, or do we trust people not to mess things up too much? #}
 <form>
+	{% csrf_token %}
 	<input type="hidden" name="event_id" id="event_id" value=" {{ event.id }}" />
 
 	<div class="row">
@@ -243,11 +250,11 @@ function updateEnabledSelect(id) {
 			</div>
 
 		{# Display the members #}
-			<ul id="role_{{ role.eventrole.role.id }}_{{ status }}_members">
+			<ul id="role_{{ role.eventrole.role.id }}_{{ status }}_members" class="sorted">
 		{% if status == "attending" %}
 			{% for mr in role.attending_responses %}
 				<li id="role_{{ role.eventrole.role.id }}_member_{{ mr.member.user.id }}_entry">
-					<a href="/felagi/{{ mr.member.user.username }}" style="display: inline-block;">{{ mr.member.user.first_name }} {{ mr.member.user.last_name }}</a> ( {{ mr.time_responded }} )
+					<a href="/felagi/{{ mr.member.user.username }}" title="{{ mr.time_responded }}">{{ mr.member.user.first_name }} {{ mr.member.user.last_name }}</a>
 				{# TODO: condition this on having the rights, if we're going to limit them. #}
 					<span class="event_responder {{ status }} edit-interface icon-remove-sign pull-right" style="display: none" data-member_id="{{ mr.member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="absent" data-status="{{ status }}"></span>
 				</li>
@@ -255,7 +262,7 @@ function updateEnabledSelect(id) {
 		{% elif status == "absent" %}
 			{% for mr in role.absent_responses %}
 				<li id="role_{{ role.eventrole.role.id }}_member_{{ mr.member.user.id }}_entry">
-					<a href="/felagi/{{ mr.member.user.username }}" style="display: inline-block;">{{ mr.member.user.first_name }} {{ mr.member.user.last_name }}</a> ( {{ mr.time_responded }} )
+					<a href="/felagi/{{ mr.member.user.username }}" title="{{ mr.time_responded }}">{{ mr.member.user.first_name }} {{ mr.member.user.last_name }}</a>
 				{# TODO: condition this on having the rights, if we're going to limit them. #}
 					<span class="event_responder {{ status }} edit-interface icon-plus-sign pull-right" style="display: none" data-member_id="{{ mr.member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="attend" data-status="{{ status }}"></span>
 				</li>
@@ -284,7 +291,7 @@ function updateEnabledSelect(id) {
 		<ul style="list-style: none; margin-left:0; padding-left: 0;">
 {% for role in role_data %}
 			<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;"><span class="role_entry-title">{{ role.eventrole.role.title }}</span> <span class="role_entry-minmax">{{ role.eventrole.minimum }}〜{% if role.eventrole.maximum == 0 %}∞{% else %}{{ role.eventrole.maximum }}{% endif %}</span></div>
-				<ul>
+				<ul class="sorted">
 	{% if role.eventrole.is_open %}
 					<li>Allir</li>
 	{% endif %}
@@ -292,12 +299,12 @@ function updateEnabledSelect(id) {
 					<li>{{ position.title }}</li>
 	{% endfor %}
 				</ul>
-				<ul>
+				<ul class="sorted">
 	{% for group in role.invited_groups %}
 					<li><a href="/hopur/{{ group.slug }}">{{ group.title }}</a></li>
 	{% endfor %}
 				</ul>
-				<ul>
+				<ul class="sorted">
 	{% for member in role.invited_members %}
 					<li><a href="/felagi/{{ member.user.username }}">{{ member.user.first_name }} {{ member.user.last_name }}</a></li>
 	{% endfor %}
@@ -330,18 +337,18 @@ function updateEnabledSelect(id) {
 				<div style="float:right; margin-right: .5em; display:none;">minnst: <input name="role[{{ role.eventrole.id }}][min]" class="col-sm-6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>
 				<div>
 					<select name="role[{{ role.eventrole.id }}][participants][]" multiple data-placeholder="Veldu þáttakendur" class="select-participants">
-						<optgroup label="Stöður">
+						<optgroup label="Stöður" class="sorted">
 							<option value="a" {% if role.eventrole.is_open %}selected="selected"{% endif %}>Allir</option>
 	{% for position in positions %}
 							<option value="p{{ position.id }}"{% if position in role.invited_positions %} selected="selected"{% endif %}>{{ position.title }}</option>
 	{% endfor %}
 						</optgroup>
-						<optgroup label="Hópar og flokkar">
+						<optgroup label="Hópar og flokkar" class="sorted">
 	{% for group in groups %}
 							<option value="g{{ group.id }}"{% if group in role.invited_groups %} selected="selected"{% endif %}>{{ group.title }}</option>
 	{% endfor %}
 						</optgroup>
-						<optgroup label="Meðlimir">
+						<optgroup label="Meðlimir" class="sorted">
 	{% for member in members %}
 							<option value="m{{ member.id }}"{% if member in role.invited_members %} selected="selected"{% endif %}>{{ member.name }}</option>
 	{% endfor %}
