@@ -51,4 +51,59 @@
 		<field type="TextField" name="description"></field>
 		<field type="CharField" name="color">#ff7f7f</field>
 	</object>
+	<object pk="1" model="events.tagtype">
+		<field type="CharField" name="title">verkefni</field>
+		<field to="events.eventtype" name="event_type" rel="ManyToManyRel">
+			<object pk="1"></object>
+			<object pk="7"></object>
+			<object pk="9"></object>
+		</field>
+	</object>
+	<object pk="2" model="events.tagtype">
+		<field type="CharField" name="title">aðstæður</field>
+		<field to="events.eventtype" name="event_type" rel="ManyToManyRel">
+			<object pk="1"></object>
+			<object pk="6"></object>
+			<object pk="7"></object>
+			<object pk="9"></object>
+		</field>
+	</object>
+	<object pk="3" model="events.tagtype">
+		<field type="CharField" name="title">tækjanotkun</field>
+		<field to="events.eventtype" name="event_type" rel="ManyToManyRel">
+			<object pk="1"></object>
+			<object pk="2"></object>
+			<object pk="3"></object>
+			<object pk="4"></object>
+			<object pk="5"></object>
+			<object pk="6"></object>
+			<object pk="7"></object>
+			<object pk="8"></object>
+			<object pk="9"></object>
+		</field>
+	</object>
+	<object pk="1" model="events.tag"><field type="CharField" name="title">fyrsta hjálp</field><field to="events.tagtype" name="tag_type" rel="ManyToOneRel">1</field></object>
+	<object pk="2" model="events.tag"><field type="CharField" name="title">fjallabjörgun</field><field to="events.tagtype" name="tag_type" rel="ManyToOneRel">1</field></object>
+	<object pk="3" model="events.tag"><field type="CharField" name="title">leit í byggð</field><field to="events.tagtype" name="tag_type" rel="ManyToOneRel">1</field></object>
+	<object pk="4" model="events.tag"><field type="CharField" name="title">leit í dreifbýli</field><field to="events.tagtype" name="tag_type" rel="ManyToOneRel">1</field></object>
+	<object pk="5" model="events.tag"><field type="CharField" name="title">leit í fjalllendi</field><field to="events.tagtype" name="tag_type" rel="ManyToOneRel">1</field></object>
+	<object pk="6" model="events.tag"><field type="CharField" name="title">leit við strönd eða árbakka</field><field to="events.tagtype" name="tag_type" rel="ManyToOneRel">1</field></object>
+	<object pk="7" model="events.tag"><field type="CharField" name="title">fjallabjörgun: línuvinna</field><field to="events.tagtype" name="tag_type" rel="ManyToOneRel">1</field></object>
+	<object pk="8" model="events.tag"><field type="CharField" name="title">þéttbýli</field><field to="events.tagtype" name="tag_type" rel="ManyToOneRel">2</field></object>
+	<object pk="9" model="events.tag"><field type="CharField" name="title">dreifbýli</field><field to="events.tagtype" name="tag_type" rel="ManyToOneRel">2</field></object>
+	<object pk="10" model="events.tag"><field type="CharField" name="title">skóglendi</field><field to="events.tagtype" name="tag_type" rel="ManyToOneRel">2</field></object>
+	<object pk="11" model="events.tag"><field type="CharField" name="title">úfið hraun</field><field to="events.tagtype" name="tag_type" rel="ManyToOneRel">2</field></object>
+	<object pk="13" model="events.tag"><field type="CharField" name="title">fjallendi</field><field to="events.tagtype" name="tag_type" rel="ManyToOneRel">2</field></object>
+	<object pk="14" model="events.tag"><field type="CharField" name="title">straumvatn</field><field to="events.tagtype" name="tag_type" rel="ManyToOneRel">2</field></object>
+	<object pk="15" model="events.tag"><field type="CharField" name="title">Reykur 1</field><field to="events.tagtype" name="tag_type" rel="ManyToOneRel">3</field></object>
+	<object pk="16" model="events.tag"><field type="CharField" name="title">Reykur 2</field><field to="events.tagtype" name="tag_type" rel="ManyToOneRel">3</field></object>
+	<object pk="17" model="events.tag"><field type="CharField" name="title">Reykur 3</field><field to="events.tagtype" name="tag_type" rel="ManyToOneRel">3</field></object>
+	<object pk="18" model="events.tag"><field type="CharField" name="title">Reykur 4</field><field to="events.tagtype" name="tag_type" rel="ManyToOneRel">3</field></object>
+	<object pk="19" model="events.tag"><field type="CharField" name="title">Reykur 7</field><field to="events.tagtype" name="tag_type" rel="ManyToOneRel">3</field></object>
+	<object pk="20" model="events.tag"><field type="CharField" name="title">Reykur 5</field><field to="events.tagtype" name="tag_type" rel="ManyToOneRel">3</field></object>
+	<object pk="21" model="events.tag"><field type="CharField" name="title">Reykur Boli</field><field to="events.tagtype" name="tag_type" rel="ManyToOneRel">3</field></object>
+	<object pk="22" model="events.tag"><field type="CharField" name="title">sleðar</field><field to="events.tagtype" name="tag_type" rel="ManyToOneRel">3</field></object>
+	<object pk="23" model="events.tag"><field type="CharField" name="title">vélhjól</field><field to="events.tagtype" name="tag_type" rel="ManyToOneRel">3</field></object>
+	<object pk="24" model="events.tag"><field type="CharField" name="title">reiðhjól</field><field to="events.tagtype" name="tag_type" rel="ManyToOneRel">3</field></object>
+	<object pk="25" model="events.tag"><field type="CharField" name="title">einkabílar</field><field to="events.tagtype" name="tag_type" rel="ManyToOneRel">3</field></object>
 </django-objects>
