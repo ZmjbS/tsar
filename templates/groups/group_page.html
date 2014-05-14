@@ -31,13 +31,13 @@ $(document).ready(function(){
 	 * We have a drop-down list of non-members to add members to the group.
 	 */
 	// We use the jQuery Chosen for the member selection, style it and add tablesorter to make it sortable:
-	$('#non_members_list>option').tsort();
+	$('#non_members_list>option').tsort({charOrder:'a[á]dðe[é]i[í]o[ó]u[ú]y[ý]zþæö'});
 	$('#non_members_list').chosen();
 	$('#non_members_list_chosen').css('float', 'right').css('width','auto');
 	$('#non_members_list_chosen *').css('width','auto');
 
 
-	$("#group_members_list>tbody>tr").tsort('td.member_name');
+	$("#group_members_list>tbody>tr").tsort('td.member_name',{charOrder:'a[á]dðe[é]i[í]o[ó]u[ú]y[ý]zþæö'});
 	//$("#group_members_list").tablesorter({
 		//sortList: [[0,0], [1,0]],
 		//textSorter : sortBy,
@@ -77,7 +77,7 @@ $(document).ready(function(){
 								+ '<td><span class="icon-remove-sign edit-interface remove_member_entry"></span></td><!-- C --></tr>';
 			$('#group_members_list tbody').prepend(member_entry);
 		};
-		$("#group_members_list>tbody>tr").tsort('td.member_name');
+		$("#group_members_list>tbody>tr").tsort('td.member_name',{charOrder:'a[á]dðe[é]i[í]o[ó]u[ú]y[ý]zþæö'});
 		$('#non_members_list option:selected').remove();
       $('#non_members_list').trigger('chosen:updated');
 	});
