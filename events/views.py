@@ -18,8 +18,8 @@ from django.core.serializers.json import DjangoJSONEncoder
 #import json
 
 from django.views.decorators.csrf import csrf_exempt
+from django.core.context_processors import csrf
 
-@csrf_exempt
 def calendar_events_list(member_id, start, end):
 	# Get all events between the two dates.
 
@@ -92,6 +92,8 @@ def list_events(request):
 
 @csrf_exempt
 def event_response(request):
+	c = {}
+	c.update(csrf(request))
 	# Receives data with information about which MemberResposne must be modified
 	# or created. For this we need:
 	#	. the member_id
