@@ -9,11 +9,31 @@ from django.views.decorators.csrf import csrf_exempt
 
 def hello(request):
 	events_list = Event.objects.all().order_by('-date_time_begin')[:8]
+	role_list = EventRole.objects.filter(event_id__in = [event.id for event in events_list])
+	member_response = MemberResponse.objects.filter(event_role_id__in = [role.id for role in role_list])
+	member_attendance = MemberAttendance.objects.filter(event_role_id__in = [role.id for role in role_list])
 
-	role_list = EventRole.objects.all()
-	member_response = MemberResponse.objects.all()
-	member_attendance = MemberAttendance.objects.all()
+	listinn = []
+	for event in events_list:
+		print event
+		eventrole_list = []
+		for eventrole in role_list:
+			if eventrole.event_id == event.id:
+				#print 'Yes'
+				member_response_list = []
+				member_attendance_list = []
+				for response in member_response:
+	#				print response.event_role_id
+					if eventrole.id == response.event_role_id:
+						print 'Yup'
+	#			member_response_list.append({
+	#				'member_id': 
+	#				})
+
 	return render_to_response('checkin/checkin_index.html', { 'events_list': events_list, 'role_list': role_list, 'member_response': member_response, 'member_attendance': member_attendance})
+
+
+
 
 @csrf_exempt
 def event_checkin(request):
