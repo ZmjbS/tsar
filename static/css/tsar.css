@@ -105,6 +105,9 @@ div#profile-picture {
     padding-bottom: 99999px;
 }
 
-.row{
-    overflow: hidden; 
-}
+/*
+ * Not sure why this was needed/wanted, but it hid the role drop-down on the
+ * event_page when editing invitations.
+ *
+.row{ overflow: hidden; }
+*/
