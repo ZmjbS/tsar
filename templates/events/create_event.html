@@ -23,11 +23,8 @@
 <style>
 	section { overflow: auto; }
 	.select-participants, [id*='role-groups-id_'] { width: 100%; }
-	/*#tag-event_task, #tag-organiser, #tag-location, #tag-equipment { width: 44em; }*/
-	/*#tag-event_task, #tag-organiser, #tag-location, #tag-equipment { width: 100%; }*/
 	div[id*='tag_type_id'] { width: 100% !important; }
 	#tag_organiser_chzn, #tag_event_task_chzn, #tag_location_chzn, #tag_equipment_chzn { width: 100% !important; }
-	/*#tag-organiser { width: 8em; } */
 	//#id_minimum, #id_maximum { width: 2em; }
 	th, td { height: 1em; }
 	#role_groups_id_template_chzn, .chzn-drop, #role_groups_id_template_chzn ul li input { width: 100% !important; }
@@ -106,13 +103,7 @@ $(document).ready(function(){
 	});
 
 // Chosen UI
-	$('#role-groups-id_template').chosen();
-
 	$('.tag-type').chosen();
-	$('#tag-organiser').chosen();
-	$('#tag-event_task').chosen();
-	$('#tag-location').chosen();
-	$('#tag-equipment').chosen();
 
 	$('#id_description').addClass('col-xs-12');
 
@@ -268,22 +259,6 @@ $(document).ready(function(){
 								</select>
 						  </tr>
 						  {% endfor %}
-					<tr>
-						<td style="width: 6em;">Umsjón:</td>
-						<td>
-							<select id="tag-organiser" multiple data-placeholder="Merktu umsjónaraðila">
-								<option>Landsbjörg</option>
-								<option>Önnur sveit</option>
-								<option>HSSR</option>
-								<option>Einstaklingar</option>
-								<optgroup label="Hópur">
-						{% for group in groups %}
-									<option>{{ group.title }}</option>
-						{% endfor %}
-								</optgroup>
-							</select>
-						</td>
-					</tr>
 				</table>
 			</div>
 		</section>
