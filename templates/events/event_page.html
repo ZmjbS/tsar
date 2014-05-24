@@ -390,7 +390,7 @@ function updateEnabledSelect(id) {
 
 		<section>
 			<div class="row">
-				<div class="col-md-6">
+				<div class="col-md-12">
 
 					<div id="event_tag-data">
 						<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_tag"></i>
@@ -412,20 +412,22 @@ function updateEnabledSelect(id) {
 
 					<div id="event_tag-form" style="display: none;">
 						<h3>Merki</h3>
-						<table style="width: 100%">
+						<!--table style="width: 100%"-->
+						<dl class="dl-horizontal" style="margin-top: 0">
 								  {# Create a form for each TagType and mark it with the EventTypes it goes with. Then when the EventType is changed, we have to change the visibility of TagTypes that don't belong to both the new and old EventType #}
 								  {% for tagtype in tagtypes %}
-								  <tr class="{% for eventtype in tagtype.event_type.all %}event_type_id-{{ eventtype.id }} {% endfor %}tagtype-container">
-									  <td>{{ tagtype.title }} (types: </td>
-											 <td>
-														<select id="tag_type_id-{{ tagtype.id }}" name="tag_type[{{ tagtype.id }}][]" class="tag-type" multiple data-placeholder="Merktu umsjónaraðila">
+							<div class="{% for eventtype in tagtype.event_type.all %}event_type_id-{{ eventtype.id }} {% endfor %}tagtype-container">
+								<dt>{{ tagtype.title }} </dt>
+								<dd>
+								<select id="tag_type_id-{{ tagtype.id }}" name="tag_type[{{ tagtype.id }}][]" class="tag-type" multiple data-placeholder="Merktu {{ tagtype.title }}">
 																  {% for tag in tagtype.tag_set.all %}
-																  <option {% if tag in event.tags.all %}selected=selected data-saved="true" {% endif %} value="{{ tag.id }}">{{ tag.title }}</option>
+									  <option {% if tag in event.tags.all %}selected=selected data-saved="true" {% endif %} value="{{ tag.id }}">{{ tag.title }}</option>
 																  {% endfor %}
-											 </select>
-								  </tr>
+									 </select>
+								 </dd>
+							</div>
 								  {% endfor %}
-						</table>
+						</dl>
 						<div style="ext-align: right; verflow: visible;">
 							{# TODO: The cancel button should reset the form and toggle back to displaying the data #}
 							<input type="button" value="Hætta við" class="btn-sm-4 btn btn-default toggle-form" data-form_id-prefix="event_tag" onclick="resetSelect('.tag-type');$('#results').slideUp();" />
@@ -434,6 +436,7 @@ function updateEnabledSelect(id) {
 						</div>
 					</div><!-- /#event_description-form -->
 
+					<!--
 					<div id="event_location-data" style="clear:both;">
 						<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_location"></i>
 						<h3>Staðsetning</h3>
@@ -441,7 +444,10 @@ function updateEnabledSelect(id) {
 							<tr><td>N 65°01,039'	V 21°33,029'</td><td>Söfnunarsvæði slasaðra.</td></tr>
 							<tr><td>N 64°34,392'	V 21°39,291'</td><td>Upphafsstaður æfingar.</td></tr>
 						</table>
-					</div><!-- /#event_location-data -->
+					</div>
+					-->
+					<!-- /#event_location-data -->
+					<!--
 					<div id="event_location-form" style="clear: both; display: none;">
 						<h3>Staðsetning</h3>
 						<div>
@@ -463,12 +469,20 @@ function updateEnabledSelect(id) {
 							{# TODO: The submit button should post the data and only on success toggle back to displaying the data #}
 							<input type="submit" value="Vista" class="col-sm-4 btn btn-primary toggle-form" data-form_id-prefix="event_location" />
 						</div>
-					</div><!-- /#event_location-form -->
-				</div><!-- /.col-sm-6 -->
+					</div>
+					-->
+					<!-- /#event_location-form -->
+					<!--
+				</div>
+					-->
+					<!-- /.col-sm-6 -->
 
+					<!--
 				<div id="event_location-map" class="col-md-6">
 					<img src="/static/img/hengill-husmuli.png" alt="kort" style="width:100%;"/>
-				</div><!-- /#event_location-map -->
+				</div>
+					-->
+					<!-- /#event_location-map -->
 
 			</div>
 		</section>
