@@ -47,6 +47,11 @@ div#profile-picture {
 .edit-icon { color: gray; margin-left: .3em; }
 .edit-icon:hover { color: black; text-decoration: none; }
 
+/* Navigation bar */
+.selected { 
+	font-weight: bold; 
+}
+
 /*****************************************
  * My Page events list
  *****************************************/

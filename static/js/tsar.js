@@ -47,3 +47,12 @@ function checkin(button, pagetype) {
 	});
 	return false;
 };
+
+$(document).ready(function(){
+//$('.nav a[href*="' + location.pathname + '"][class!="noselect"]').addClass('selected');
+	$('.nav li a[href="' + location.pathname + '"][class!="noselect"]').addClass('selected');
+	$('.nav li a[href="' + location.pathname + '"][class!="noselect"]').parent().addClass('active');
+	//console.log(location.pathname.split("/")[2]);
+	//console.log(location.pathname.split("/")[1]);
+	//console.log(location.pathname);
+});
