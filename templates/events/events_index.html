@@ -90,10 +90,10 @@ $(document).ready(function() {
 	<div class="tab-pane row" id="lists">
 
 		<div class="col-xs-12 col-sm-6">
-			<section id="recent-events">
-				<h2>Nýlegir viðburðir</h2>
+			<section id="upcoming-events">
+				<h2>Næstu viðburðir</h2>
 				<ul>
-{% for event in recent_events_list.all %}
+{% for event in coming_events_list.all %}
 					<li><a href="/vidburdur/{{ event.id }}">{{ event.title }}</a> <date>{{ event.date_time_begin.date }}</li>
 {% endfor %}
 				</ul>
@@ -101,10 +101,10 @@ $(document).ready(function() {
 		</div>
 
 		<div class="col-xs-12 col-sm-6">
-			<section id="upcoming-events">
-				<h2>Næstu viðburðir</h2>
+			<section id="recent-events">
+				<h2>Nýliðnir viðburðir</h2>
 				<ul>
-{% for event in coming_events_list.all %}
+{% for event in recent_events_list.all %}
 					<li><a href="/vidburdur/{{ event.id }}">{{ event.title }}</a> <date>{{ event.date_time_begin.date }}</li>
 {% endfor %}
 				</ul>

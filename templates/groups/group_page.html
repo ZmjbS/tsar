@@ -259,7 +259,7 @@ non_members[{{ member.id }}]='{{ member.name }}';
 
 	<div class="col-sm-4">
 		<section id="recent-events">
-			<h2>Nýlegir viðburðir</h2>
+			<h2>Nýliðnir viðburðir</h2>
 			<ul>
 {% for event in recent_events_list %}
 				<li><a href="/vidburdur/{{ event.id }}">{{ event.title }}</a> <time datetime='{{ event.date_time_begin|date:"Y-m-d" }}'>{{ event.date_time_begin|naturaltime }}</time></li>
