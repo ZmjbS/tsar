@@ -7,8 +7,40 @@
 </style>
 <script type="text/javascript" src="/static/js/tsar.events.js"></script>
 <script>
+
+function getnews(sel, url, number=5) {
+	var newsdata = $.get("/news/", { url: url, num: number, }, function(data) {
+		obj = JSON && JSON.parse(data) || $.parseJSON(data);
+		console.log( "success"+data);
+		console.log(obj);
+		console.log( "success"+obj[0].title);
+		list = ""
+		for (count in obj) {
+			entry = obj[count]
+			console.log(entry.title)
+			list = list+'<li><a href="'+ entry.link +'">'+ entry.title +'</a> <time datetime="'+entry.published+'">'+ entry.published_parsed +'</time></li>';
+		}
+		$(sel).html('<ul>'+list+'</ul>');
+		})
+		.done(function() {
+			console.log( "second success" );
+		})
+		.fail(function() {
+			alert( "error" );
+		})
+		.always(function(data) {
+			obj = JSON && JSON.parse(data) || $.parseJSON(data);
+			console.log( "finished" );
+		});
+		console.log('posted')
+}
+
 $(document).ready(function(){
    $('.event_responder').click(function(event) { event.stopPropagation(); respond_to_event(this, 'My page'); } );
+
+	console.log('posting');
+	getnews('#hssr_news', 'http://hssr.is/?feed=rss2');
+	getnews('#sl_news', 'http://landsbjorg.is/Rss.aspx?CatID=466');
 });
 </script>
 {% endblock %}
@@ -141,19 +173,12 @@ $(document).ready(function(){
 		<section>
   			<h2>Fréttir</h2>
 			<a href="http://www.hssr.is">HSSR</a>
-			<ul>
-{% for entry in hssr_entries %}
-				<li><a href="{{ entry.link }}">{{ entry.title }}</a> <time datetime='{{entry.published|date:"Y-m-d"}}'>{{ entry.published }}</time></li>
-{% endfor %}
-			</ul>
+			<div id="hssr_news"><span style="color: gray; padding-left: 2em;">hleður...</span></div>
 
 			<a href="http://landsbjorg.is/">Landsbjörg</a>
+			<div id="sl_news"><span style="color: gray; padding-left: 2em;">hleður...</span></div>
 			<ul>
 <!-- Skoða: http://justquick.github.com/django-native-tags/contrib/feeds.html -->
-{% for entry in sl_entries %}
-				<li><a href="{{ entry.link }}">{{ entry.title }}</a> <time datetime='{{entry.published|date:"Y-m-d"}}'>{{ entry.published }}</time></li>
-{% endfor %}
-			</ul>
 <!-- Skoða: http://www.b-list.org/weblog/2007/dec/09/updates/ -->
 		</section>
 

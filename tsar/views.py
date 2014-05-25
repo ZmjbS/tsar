@@ -66,22 +66,32 @@ def my_page(request):
 	union_events_dictionaries_list = member_events_dictionaries_list(member, union_events_list)
 	union_events_dictionaries_list = sorted(union_events_dictionaries_list, key=lambda k: k['event'].date_time_begin)
 
-	# Import news from defined news sites:
-	import feedparser
-	# Landsbjörg
-	sl_entries = feedparser.parse('http://landsbjorg.is/Rss.aspx?CatID=466').entries[0:5]
-	for entry in sl_entries:
-		entry['published'] = date.fromtimestamp(mktime(entry.published_parsed))
-	# HSSR
-	hssr_entries = feedparser.parse('http://hssr.is/?feed=rss2').entries[0:5]
-	for entry in hssr_entries:
-		entry['published'] = date.fromtimestamp(mktime(entry.published_parsed))
-	#return render_to_response('my_page.html', { 'events_list': all_events_list, 'invited': invited, 'hssr_entries': hssr_entries, 'sl_entries': sl_entries, 'user': request.user, })
 	return render_to_response('my_page.html', {
 		'events_dictionaries_list': union_events_dictionaries_list,
 		#'my_events_dictionaries_list': my_events_dictionaries_list,
-		'hssr_entries': hssr_entries,
-		'sl_entries': sl_entries,
+#		'hssr_entries': hssr_entries,
+#		'sl_entries': sl_entries,
 		'user': request.user,
 		'event_list_length': event_list_length,
 	})
+
+def news(request):
+	print 'doing the news'
+	import feedparser
+	import locale
+	import simplejson as json
+
+	entries = feedparser.parse(request.GET['url']).entries[0:int(request.GET['num'])]
+	locale.setlocale(locale.LC_TIME, 'is_IS.UTF-8')
+	for entry in entries:
+		entry['published'] = date.fromtimestamp(mktime(entry.published_parsed)).isoformat()
+		entry['published_parsed'] = date.fromtimestamp(mktime(entry.published_parsed)).strftime('%d. %B %Y.')
+
+	dthandler = lambda obj: (
+		obj.isoformat()
+		if isinstance(obj, datetime.datetime)
+		or isinstance(obj, datetime.date)
+		else None)
+
+	response = json.dumps(entries, default=dthandler)
+	return HttpResponse(response, mimetype='application/javascript')

@@ -8,6 +8,8 @@ urlpatterns = patterns('',
 	# Examples:
 	# url(r'^$', 'tsar.views.home', name='home'),
 	url(r'^$', 'tsar.views.my_page', name='home'),
+	url(r'^news/$', 'tsar.views.news', name='news'),
+
 	url(r'^hopur/', include('groups.urls')),
 	url(r'^felagi/', include('members.urls')),
 	url(r'^vidburdur/', include('events.urls')),
