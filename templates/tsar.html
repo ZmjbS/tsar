@@ -20,6 +20,7 @@
 <!-- Override styles with TSAR specific styling and add TSAR scripts -->
 	<link type="text/css" rel="stylesheet" href="/static/css/tsar.css"  />
 	<script type="text/javascript" src="/static/js/tsar.js"></script>
+	<link rel="icon" type="image/png" href="/static/img/hssr-favicon-16px.png" />
 
 	<title>{% block title %}Innra svæði HSSR{% endblock %}</title>
 
@@ -32,35 +33,39 @@
 	<div class="navbar-header">
 		<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
 			<span class="sr-only">Toggle navigation</span>
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
+			<span class="fa fa-bars"></span>
 		</button>
 		<a class="navbar-brand" href="/">Síðan mín</a>
 	</div>
 	<!-- Collect the nav links, forms, and other content for toggling -->
 	<div class="collapse navbar-collapse navbar-ex1-collapse">
 		<ul class="nav navbar-nav">
+			<li><a href="/vidburdur/" style="adding-right:.2em">Viðburðir og útköll</a></li>
+			<!--<li><a href="/vidburdur/nyskraning/" style="adding-left:0.2em;"><b class="fa fa-edit" style="vertical-align: 10%"></b></a></li>-->
+			<li><a href="/vidburdur/nyskraning/" style="adding-left:0.2em;">Nýr viðburður</a></li>
 			<li><a href="/hopur/">Hópar og flokkar</a></li>
-			<li><a href="/vidburdur/" style="padding-right:.2em">Viðburðir og útköll</a></li>
-			<li><a href="/vidburdur/nyskraning/" style="padding-left:0.2em;"><b class="icon-edit" style="vertical-align: 10%"></b></a></li>
-			<li><a kref="/skjol/">Skjöl</a></li>
-			<li><a kref="/haefnir/">Hæfni</a></li>
+			<li><a href="http://skjol.hssr.is/">Skjöl</a></li>
+			<!--<li><a kref="/haefnir/">Hæfni</a></li>-->
+			<li><a href="/checkin/">mæting</a></li>
 		</ul>
 
 		<ul class="nav navbar-nav navbar-right">
-			<form class="navbar-form navbar-left" role="search">
-				<div class="form-group">
-					<input type="text" class="form-control" placeholder="Leita">
-				</div>
-<!--				<button type="submit" class="btn btn-default">Submit</button>-->
-			</form>
-
-			<li><a href="/felagi/{{ user }}/">{{ user }}</a></li>
-			<li><a href="/utskra/">útskrá</a></li>
-			<li><a href="/checkin/">mæting</a></li>
+			<!--
 			<li><a href="/admin/">(admin)</a></li>
+			-->
+			<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-cog"></i></a>
+          <ul class="dropdown-menu">
+				 <li><a href="/utskra/"><i class="fa fa-fw fa-sign-out"></i>&nbsp;Útskrá</a></li>
+				 <li><a href="/admin/"><i class="fa fa-fw fa-sign-in"></i>&nbsp;Sýsla</a></li>
+          </ul>
+        </li>
 		</ul>
+		<p class="navbar-text navbar-right">Skráð inn sem <a href="/felagi/{{ user }}/" class="navbar-link">{{ user }}</a></p>
+		<form class="navbar-form navbar-right" role="search">
+			<div class="form-group">
+				<input type="text" class="form-control" placeholder="Leita">
+			</div>
+		</form>
 	</div><!-- /.navbar-collapse -->
 </nav>
 
