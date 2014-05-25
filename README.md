@@ -35,7 +35,7 @@ python manage.py loaddata fixtures/showcase-events_metadata.xml
 python manage.py loaddata showcase_events.xml
 
 python manage.py loaddata fixtures/showcase-members_metadata.xml
-python manage.py loaddata fixtures/showcase-3k-user_member.xml
+python manage.py loaddata fixtures/showcase-3h-user_member.xml
 python manage.py loaddata fixtures/actual-members.json
 
 python manage.py loaddata fixtures/showcase-groups.group.xml
