@@ -2102,8 +2102,8 @@ function FiveWeeksView(element, calendar) {
 			//addMonths(date, delta);
 			addDays(date, delta*7);
 		}
-		var start = addDays(cloneDate(date), -7);
-		var end = addDays(cloneDate(date), 3*7);
+		var start = addDays(cloneDate(date), -7-1);
+		var end = addDays(cloneDate(date), 3*7-1);
 		var visStart = cloneDate(start);
 		var visEnd = cloneDate(end);
 		var firstDay = opt('firstDay');
