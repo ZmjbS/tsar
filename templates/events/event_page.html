@@ -95,7 +95,7 @@ $(document).ready(function(){
 	node=	'<div class="role_entry">'
 		+			'<div class="role_entry-title" style="float:left">'+role_title+'</div>'
 		+			'<input type="hidden" name="role['+role_id+'][id]" value="'+role_id+'" />'
-		+					'<div style="float:right"><i id="'+role_id+'" class="delete-role-entry icon-remove-sign pull-right" style="cursor: pointer"></i></div>'
+		+					'<div style="float:right"><i id="'+role_id+'" class="delete-role-entry fa fa-remove-sign pull-right" style="cursor: pointer"></i></div>'
 		+					'<div style="float:right; margin-right: .5em;display:none;">mest:   <input name="role['+role_id+'][max]" class="col-sm-6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>'
 		+					'<div style="float:right; margin-right: .5em;display:none;">minnst: <input name="role['+role_id+'][min]" class="col-sm-6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>'
 //		+					'<div>'
@@ -168,7 +168,7 @@ function updateEnabledSelect(id) {
 	<div id="event_header">
 
 		<div id="event_header-data">
-			<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_header"></i>
+			<i class="fa fa-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_header"></i>
 			<date class="pull-right" style="font-size: em; text-align: right;">{{ event.date_time_begin|date:"Y-m-d H:i" }}<br />〜{{ event.date_time_end|date:"Y-m-d H:i" }}</date>
 			<div class="pull-right" style="font-size: 1.8em; text-align: right; display:inline-block; vertical-align: text-bottom">{{ event.date_time_end|timeuntil:event.date_time_begin }}</div>
 			<h1>{{ event.title }} – <span style="font-size: smaller; color: gray;">{{ event.event_type.title|lower }}</span></h1>
@@ -189,7 +189,7 @@ function updateEnabledSelect(id) {
 					<input id="id_date_time_end" class="hasDatepicker" type="text" name="date_time_end" placeholder="Lok" value="{{ event.date_time_end|date:"Y-m-d H:i" }}"></input>
 				</div>
 				<!-- Possibly allow duplication, but multiple events is probably overdoing it ...
-				<a class="btn col-sm-1" id="add_dates_btn" onclick="$('#add_days').slideToggle();$('#add_days_icon').toggleClass('icon-minus');"><i id="add_days_icon" class="icon-plus"></i></a>
+				<a class="btn col-sm-1" id="add_dates_btn" onclick="$('#add_days').slideToggle();$('#add_days_icon').toggleClass('fa fa-minus');"><i id="add_days_icon" class="fa fa-plus"></i></a>
 				-->
 				<div class="col-xs-6 col-sm-2"><input type="reset" value="Hætta við" class="btn btn-default toggle-form form-control" data-form_id-prefix="event_header" onclick="resetSelect('#event_type');$('#results').slideUp();" /></div>
 				<div class="col-xs-6 col-sm-2"><input type="submit" value="Vista" class="btn btn-primary form-control" data-form_id-prefix="event_header" /></div>
@@ -217,7 +217,7 @@ function updateEnabledSelect(id) {
 {# Create a tab pane for each status: #}
 {% for status in status_list %} {# attending absent unclear #}
 <div  class="tab-pane {% if status == "attending" %}active{% endif %}" id="{{ status }}">
-	<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_{{ status }}s" data-toggle_state="hidden" onclick="if($(this).data('toggle_state')=='hidden'){$('.{{ status }}.edit-interface').show();$(this).data('toggle_state','shown');}else{$('.{{ status }}.edit-interface').hide();$(this).data('toggle_state','hidden');}"></i><br />
+	<i class="fa fa-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_{{ status }}s" data-toggle_state="hidden" onclick="if($(this).data('toggle_state')=='hidden'){$('.{{ status }}.edit-interface').show();$(this).data('toggle_state','shown');}else{$('.{{ status }}.edit-interface').hide();$(this).data('toggle_state','hidden');}"></i><br />
 	<ul id="{{ status }}_roles" style="list-style: none; margin-left: 0; padding-left: 0;">
 
 	{# List each role for this particular status #}
@@ -227,13 +227,13 @@ function updateEnabledSelect(id) {
 
 		{# Display an icon to indicate whether the member is not invited, attending, absent or hasn't responded yet. #}
 		{% if role.cm_status == "not invited" %}
-				<span class="role_{{ role.eventrole.role.id}}_status_icon icon-circle-blank not-invited"></span>
+				<span class="role_{{ role.eventrole.role.id}}_status_icon fa fa-circle-blank not-invited"></span>
 		{% elif role.cm_status == "attending" %}
-				<span class="role_{{ role.eventrole.role.id}}_status_icon icon-ok-circle"></span>
+				<span class="role_{{ role.eventrole.role.id}}_status_icon fa fa-ok-circle"></span>
 		{% elif role.cm_status == "absent" %}
-				<span class="role_{{ role.eventrole.role.id}}_status_icon icon-ban-circle"></span>
+				<span class="role_{{ role.eventrole.role.id}}_status_icon fa fa-ban-circle"></span>
 		{% else %}{# In this case, the status is: "unclear" #}
-				<span class="role_{{ role.eventrole.role.id}}_status_icon icon-circle-blank unclear"></span>
+				<span class="role_{{ role.eventrole.role.id}}_status_icon fa fa-circle-blank unclear"></span>
 		{% endif %}
 
 		{# Display the event role title and maximum and minimum number of people required #}
@@ -243,8 +243,8 @@ function updateEnabledSelect(id) {
 		{# If the current member is invited, show the response icons/buttons #}
 		{% if not role.cm_status == 'not invited' %}
 				<span style="float: right;" data-eventrole_id="{{ role.eventrole.id }}" class="response-icons">
-					<span id="nd-{{ role.eventrole.id }}" data-member_id="{{ mr.member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="attend" data-status="{{ role.cm_status }}" class="event_responder icon-plus-sign"></span>
-					<span id="nt-{{ role.eventrole.id }}" data-member_id="{{ mr.member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="absent" data-status="{{ role.cm_status }}" class="event_responder icon-remove-sign"></span>
+					<span id="nd-{{ role.eventrole.id }}" data-member_id="{{ mr.member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="attend" data-status="{{ role.cm_status }}" class="event_responder fa fa-plus-sign"></span>
+					<span id="nt-{{ role.eventrole.id }}" data-member_id="{{ mr.member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="absent" data-status="{{ role.cm_status }}" class="event_responder fa fa-remove-sign"></span>
 				</span>
 		{% endif %}
 			</div>
@@ -256,7 +256,7 @@ function updateEnabledSelect(id) {
 				<li id="role_{{ role.eventrole.role.id }}_member_{{ mr.member.user.id }}_entry">
 					<a href="/felagi/{{ mr.member.user.username }}" title="{{ mr.time_responded }}">{{ mr.member.user.first_name }} {{ mr.member.user.last_name }}</a>
 				{# TODO: condition this on having the rights, if we're going to limit them. #}
-					<span class="event_responder {{ status }} edit-interface icon-remove-sign pull-right" style="display: none" data-member_id="{{ mr.member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="absent" data-status="{{ status }}"></span>
+					<span class="event_responder {{ status }} edit-interface fa fa-remove-sign pull-right" style="display: none" data-member_id="{{ mr.member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="absent" data-status="{{ status }}"></span>
 				</li>
 			{% endfor %}
 		{% elif status == "absent" %}
@@ -264,7 +264,7 @@ function updateEnabledSelect(id) {
 				<li id="role_{{ role.eventrole.role.id }}_member_{{ mr.member.user.id }}_entry">
 					<a href="/felagi/{{ mr.member.user.username }}" title="{{ mr.time_responded }}">{{ mr.member.user.first_name }} {{ mr.member.user.last_name }}</a>
 				{# TODO: condition this on having the rights, if we're going to limit them. #}
-					<span class="event_responder {{ status }} edit-interface icon-plus-sign pull-right" style="display: none" data-member_id="{{ mr.member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="attend" data-status="{{ status }}"></span>
+					<span class="event_responder {{ status }} edit-interface fa fa-plus-sign pull-right" style="display: none" data-member_id="{{ mr.member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="attend" data-status="{{ status }}"></span>
 				</li>
 			{% endfor %}
 		{% else %}
@@ -273,8 +273,8 @@ function updateEnabledSelect(id) {
 				<li id="role_{{ role.eventrole.role.id }}_member_{{ member.id }}_entry">
 					<a href="/felagi/{{ member.username }}">{{ member.name }}</a>
 				{# TODO: condition this on having the rights, if we're going to limit them. #}
-					<span class="event_responder {{ status }} edit-interface icon-remove-sign pull-right" style="display: none" data-member_id="{{ member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="absent" data-status="{{ status }}"></span>
-					<span class="event_responder {{ status }} edit-interface icon-plus-sign pull-right" style="display: none" data-member_id="{{ member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="attend" data-status="{{ status }}"></span>
+					<span class="event_responder {{ status }} edit-interface fa fa-remove-sign pull-right" style="display: none" data-member_id="{{ member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="absent" data-status="{{ status }}"></span>
+					<span class="event_responder {{ status }} edit-interface fa fa-plus-sign pull-right" style="display: none" data-member_id="{{ member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="attend" data-status="{{ status }}"></span>
 				</li>
 			{% endfor %}
 		{% endif %}
@@ -287,7 +287,7 @@ function updateEnabledSelect(id) {
 <!-- Invitations -->
 <div class="tab-pane" id="invitation">
 	<div id="event_invitations-data">
-		<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_invitations"></i><br />
+		<i class="fa fa-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_invitations"></i><br />
 		<ul style="list-style: none; margin-left:0; padding-left: 0;">
 {% for role in role_data %}
 			<li style="margin: 0 1em;"><div style="border-bottom: 1px solid #eee;"><span class="role_entry-title">{{ role.eventrole.role.title }}</span> <span class="role_entry-minmax">{{ role.eventrole.minimum }}〜{% if role.eventrole.maximum == 0 %}∞{% else %}{{ role.eventrole.maximum }}{% endif %}</span></div>
@@ -332,7 +332,7 @@ function updateEnabledSelect(id) {
 			<div class="role_entry">
 				<div class="role_entry-title" style="float:left">{{ role.title }}</div>
 				<input type="hidden" name="role[{{ role.eventrole.id }}][id]" value="{{ role.eventrole.id }}" />
-				<div style="float:right"><i id="{{ role.eventrole.id }}" class="delete-role-entry icon-remove-sign pull-right" style="cursor: pointer"></i></div>
+				<div style="float:right"><i id="{{ role.eventrole.id }}" class="delete-role-entry fa fa-remove-sign pull-right" style="cursor: pointer"></i></div>
 				<div style="float:right; margin-right: .5em; display:none;">mest:   <input name="role[{{ role.eventrole.id }}][max]" class="col-sm-6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>
 				<div style="float:right; margin-right: .5em; display:none;">minnst: <input name="role[{{ role.eventrole.id }}][min]" class="col-sm-6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>
 				<div>
@@ -373,7 +373,7 @@ function updateEnabledSelect(id) {
 		<section id="event_description">
 
 			<div id="event_description-data">
-				<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_description"></i>
+				<i class="fa fa-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_description"></i>
 				<h3>Lýsing</h3>
 				<div style="margin:0 .5em .5em .5em;">{{ event.description|textile }}</div>
 			</div><!-- /#event_description-data -->
@@ -393,7 +393,7 @@ function updateEnabledSelect(id) {
 				<div class="col-md-12">
 
 					<div id="event_tag-data">
-						<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_tag"></i>
+						<i class="fa fa-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_tag"></i>
 						<h3>Merki</h3>
 						<dl class="dl-horizontal" style="margin-top: 0">
 		  {% for tagtype in tagtypes %}
@@ -438,7 +438,7 @@ function updateEnabledSelect(id) {
 
 					<!--
 					<div id="event_location-data" style="clear:both;">
-						<i class="icon-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_location"></i>
+						<i class="fa fa-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_location"></i>
 						<h3>Staðsetning</h3>
 						<table style="margin-top: 0;">
 							<tr><td>N 65°01,039'	V 21°33,029'</td><td>Söfnunarsvæði slasaðra.</td></tr>

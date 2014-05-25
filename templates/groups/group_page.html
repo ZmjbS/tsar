@@ -74,7 +74,7 @@ $(document).ready(function(){
 								+ '<td><input class="edit-interface-checkbox" type="checkbox" checked="checked" /></td><!-- A -->'
 								+ '<td><input class="edit-interface-checkbox" type="checkbox" /></td><!-- B -->'
 								+ '<td><input class="edit-interface-checkbox" type="checkbox" /></td><!-- C -->'
-								+ '<td><span class="icon-remove-sign edit-interface remove_member_entry"></span></td><!-- C --></tr>';
+								+ '<td><span class="fa fa-remove-sign edit-interface remove_member_entry"></span></td><!-- C --></tr>';
 			$('#group_members_list tbody').prepend(member_entry);
 		};
 		$("#group_members_list>tbody>tr").tsort('td.member_name',{charOrder:'a[á]dðe[é]i[í]o[ó]u[ú]y[ý]zþæö'});
@@ -194,7 +194,7 @@ non_members[{{ member.id }}]='{{ member.name }}';
 	{% if "x" == "x" %}
 <form style="margin-bottom: .5em;">
 	<input type="hidden" name="group_id" value="{{ group.id }}" />
-	<span class="icon-edit pull-right form-edit-icon edit-interface" style="display:inline" onclick="toggle_edit_interface()"></span>
+	<span class="fa fa-edit pull-right form-edit-icon edit-interface" style="display:inline" onclick="toggle_edit_interface()"></span>
 
 
 	<div class="input-append edit-interface pull-right">
@@ -230,14 +230,14 @@ non_members[{{ member.id }}]='{{ member.name }}';
 			<tr class="membership_entry" data-member="{{ member.name }}" data-member_id="{{ member.id }}">
 				<td><input class="edit-interface" type="checkbox"></td>
 				<td class="member_name"><a href="/felagi/{{ member.user.username }}">{{ member.name }}</a>
-		{% if member in managers %}<span class="icon-briefcase" style="margin-left:1em; color: gray;"></span>{% endif %}
+		{% if member in managers %}<span class="fa fa-briefcase" style="margin-left:1em; color: gray;"></span>{% endif %}
 					<input type="hidden" name="members[]" value="{ 'member_id': {{ member.id }}, 'status': 'member' }" /></td>
 				<td class="member_phone">{{ member.phone }}</td>
 				<td class="member_email">{{ member.user.email }}</td>
 				<td><input class="edit-interface-checkbox" type="checkbox" disabled /></td><!-- A -->
 				<td><input class="edit-interface-checkbox" type="checkbox" disabled /></td><!-- B -->
 				<td><input class="edit-interface-checkbox" type="checkbox" disabled /></td><!-- C -->
-				<td><span class="icon-remove-sign edit-interface remove_member_entry"></span> </td><!-- C -->
+				<td><span class="fa fa-remove-sign edit-interface remove_member_entry"></span> </td><!-- C -->
 			</tr>
 {% endfor %}
 		</tbody>

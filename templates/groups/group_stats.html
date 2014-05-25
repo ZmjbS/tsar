@@ -219,7 +219,7 @@ svg.append("g")
 	<tr>
 		<td>{{ member.member }}</td>
 	{% for event in events_list %}
-		<td>{% if member.member in event.attendees %}<span class="icon-check"></span>{% endif %}</td>
+		<td>{% if member.member in event.attendees %}<span class="fa fa-check"></span>{% endif %}</td>
 	{% endfor %}
 		<td>{{ member.attendences }}</td>
 	</tr>
