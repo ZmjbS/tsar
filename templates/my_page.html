@@ -93,15 +93,15 @@ $(document).ready(function(){
 					data-eventrole="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}">
 
 		{% if ed.positive_response %}
-					<span id="absent-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="absent" class="event_responder fa fa-times-circle"></span>
 					<span id="unclea-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="unclear" class="event_responder fa fa-question-circle"></span>
+					<span id="absent-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="absent" class="event_responder fa fa-times-circle"></span>
 		{% else %}
 			{% if ed.unanswered_response %}
+					<span id="attend-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="attend" class="event_responder fa fa-plus-circle"></span>
 					<span id="absent-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="absent" class="event_responder fa fa-times-circle"></span>
-					<span id="attend-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="attend" class="event_responder fa fa-plus-circle"></span>
 			{% else %}
-					<span id="unclea-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="unclear" class="event_responder fa fa-question-circle"></span>
 					<span id="attend-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="attend" class="event_responder fa fa-plus-circle"></span>
+					<span id="unclea-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="unclear" class="event_responder fa fa-question-circle"></span>
 			{% endif %}
 		{% endif %}
 	{% else %}
