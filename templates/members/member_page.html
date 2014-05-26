@@ -28,10 +28,10 @@ $(document).ready(function(){
 				<dd>{{ member.member_id }}</dd>
 				<dt>Símanúmer:</dt>
 				{% for phone in member.phone_set.all %}
-				<dd>{{ phone.number }}</dd>
+				<dd><a href="tel:{{ phone.number }}">{{ phone.number }}</a></dd>
 				{% endfor %}
 				<dt>Tölvupóstfang</dt>
-				<dd>{{ member.user.email }}</dd>
+				<dd><a href="mailto:{{ member.user.email }}">{{ member.user.email }}</a></dd>
 				<dt>Heimilisfang:</dt><dd>{{ member.address }}</dd>
 				<dt>Staða:</dt>
 				<dd>{{ member.position }}</dd>
