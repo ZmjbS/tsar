@@ -122,7 +122,11 @@ def event_response(request):
 	# Get the eventrole_id and action:
 	print 'get eventrole_id'
 	print request.POST
-	eventrole_id = request.POST['eventrole_id']
+	try:
+		eventrole_id = request.POST['eventrole_id']
+	except:
+		print 'no eventrole_id'
+		return HttpResponse(json.dumps({ 'type': 'error', 'message': 'The POST data is missing the eventrole_id.'}))
 	print 'eventrole_id: {}'.format(eventrole_id)
 	action = request.POST['action']
 	if action == 'attend':
