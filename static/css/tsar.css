@@ -128,6 +128,26 @@ div.tagtype-container { height: 2.2em; }
     padding-bottom: 99999px;
 }
 
+/* Event type colours */
+// Æfing
+.event_type-1 { background-color: orange; }
+//Vinnufundur
+.event_type-2 { background-color: blue; }
+// Skemmtun
+.event_type-3 { background-color: green; }
+// Fundur
+.event_type-4 { background-color: gray; }
+// Fjáröflun
+.event_type-5 { background-color: blue; }
+// Ferð
+.event_type-6 { background-color: green; }
+// Námskeið
+.event_type-7 { background-color: purple; }
+// Sérverkefni
+.event_type-8 { background-color: blue; }
+// Útkall
+.event_type-9 { background-color: red; }
+
 /*
  * Not sure why this was needed/wanted, but it hid the role drop-down on the
  * event_page when editing invitations.
