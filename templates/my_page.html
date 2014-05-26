@@ -26,7 +26,7 @@ function getnews(sel, url, number=5) {
 			console.log( "second success" );
 		})
 		.fail(function() {
-			alert( "error" );
+			console.log( "error" );
 		})
 		.always(function(data) {
 			obj = JSON && JSON.parse(data) || $.parseJSON(data);
