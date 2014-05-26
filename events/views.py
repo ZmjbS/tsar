@@ -62,7 +62,7 @@ def calendar_events_list(member_id, start, end):
 			'end': calendar.timegm(event.date_time_end.utctimetuple()),
 			'id': event.id,
 			'url': '/vidburdur/'+str(event.id),
- 			'backgroundColor': event.event_type.color,
+			'className': 'event_type-'+str(event.event_type.id),
 			# Let's also send some data to display the attendance status:
 			'status': status,
 		})
