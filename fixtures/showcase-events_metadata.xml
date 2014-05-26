@@ -12,7 +12,7 @@
 		<field type="CharField" name="color">#ffac7f</field>
 	</object>
 	<object pk="2" model="events.eventtype">
-		<field type="CharField" name="title">Vinnukvöld</field>
+		<field type="CharField" name="title">Vinnufundur</field>
 		<field type="TextField" name="description"></field>
 		<field type="CharField" name="color">#ffe57f</field>
 	</object>
