@@ -74,7 +74,7 @@ $(document).ready(function(){
 								+ '<td><input class="edit-interface-checkbox" type="checkbox" checked="checked" /></td><!-- A -->'
 								+ '<td><input class="edit-interface-checkbox" type="checkbox" /></td><!-- B -->'
 								+ '<td><input class="edit-interface-checkbox" type="checkbox" /></td><!-- C -->'
-								+ '<td><span class="fa fa-remove-sign edit-interface remove_member_entry"></span></td><!-- C --></tr>';
+								+ '<td><span class="fa fa-times-circle edit-interface remove_member_entry"></span></td><!-- C --></tr>';
 			$('#group_members_list tbody').prepend(member_entry);
 		};
 		$("#group_members_list>tbody>tr").tsort('td.member_name',{charOrder:'a[á]dðe[é]i[í]o[ó]u[ú]y[ý]zþæö'});
@@ -237,7 +237,7 @@ non_members[{{ member.id }}]='{{ member.name }}';
 				<td><input class="edit-interface-checkbox" type="checkbox" disabled /></td><!-- A -->
 				<td><input class="edit-interface-checkbox" type="checkbox" disabled /></td><!-- B -->
 				<td><input class="edit-interface-checkbox" type="checkbox" disabled /></td><!-- C -->
-				<td><span class="fa fa-remove-sign edit-interface remove_member_entry"></span> </td><!-- C -->
+				<td><span class="fa fa-times-circle edit-interface remove_member_entry"></span> </td><!-- C -->
 			</tr>
 {% endfor %}
 		</tbody>

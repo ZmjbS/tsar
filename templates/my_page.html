@@ -93,15 +93,15 @@ $(document).ready(function(){
 					data-eventrole="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}">
 
 		{% if ed.positive_response %}
-					<span id="absent-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="absent" class="event_responder fa fa-remove-sign"></span>
-					<span id="unclea-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="unclear" class="event_responder fa fa-question-sign"></span>
+					<span id="absent-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="absent" class="event_responder fa fa-times-circle"></span>
+					<span id="unclea-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="unclear" class="event_responder fa fa-question-circle"></span>
 		{% else %}
 			{% if ed.unanswered_response %}
-					<span id="absent-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="absent" class="event_responder fa fa-remove-sign"></span>
-					<span id="attend-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="attend" class="event_responder fa fa-plus-sign"></span>
+					<span id="absent-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="absent" class="event_responder fa fa-times-circle"></span>
+					<span id="attend-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="attend" class="event_responder fa fa-plus-circle"></span>
 			{% else %}
-					<span id="unclea-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="unclear" class="event_responder fa fa-question-sign"></span>
-					<span id="attend-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="attend" class="event_responder fa fa-plus-sign"></span>
+					<span id="unclea-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="unclear" class="event_responder fa fa-question-circle"></span>
+					<span id="attend-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="attend" class="event_responder fa fa-plus-circle"></span>
 			{% endif %}
 		{% endif %}
 	{% else %}
@@ -130,15 +130,15 @@ $(document).ready(function(){
 
 							<span id="eventrole_{{ ird.eventrole.id }}_response_icons" data-eventrole="{{ ird.eventrole.id }}" class="response-icons">
 		{% if ird.response == 'Y' %}
-					<span id="eventrole-absent-{{ ird.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="absent"  class="event_responder fa fa-remove-sign"></span>
-					<span id="eventrole-unclea-{{ ird.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="unclear" class="event_responder fa fa-question-sign"></span>
+					<span id="eventrole-unclea-{{ ird.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ird.eventrole.id }}" data-action="unclear" class="event_responder fa fa-question-circle"></span>
+					<span id="eventrole-absent-{{ ird.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ird.eventrole.id }}" data-action="absent"  class="event_responder fa fa-times-circle"></span>
 		{% else %}
 			{% if ird.response == 'N' %}
-					<span id="eventrole-unclea-{{ ird.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="unclear" class="event_responder fa fa-question-sign"></span>
-					<span id="eventrole-attend-{{ ird.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="attend"  class="event_responder fa fa-plus-sign"></span>
+					<span id="eventrole-attend-{{ ird.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ird.eventrole.id }}" data-action="attend"  class="event_responder fa fa-plus-circle"></span>
+					<span id="eventrole-unclea-{{ ird.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ird.eventrole.id }}" data-action="unclear" class="event_responder fa fa-question-circle"></span>
 			{% else %}
-					<span id="eventrole-absent-{{ ird.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="absent"  class="event_responder fa fa-remove-sign"></span>
-					<span id="eventrole-attend-{{ ird.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="attend"  class="event_responder fa fa-plus-sign"></span>
+					<span id="eventrole-attend-{{ ird.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ird.eventrole.id }}" data-action="attend"  class="event_responder fa fa-plus-circle"></span>
+					<span id="eventrole-absent-{{ ird.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ird.eventrole.id }}" data-action="absent"  class="event_responder fa fa-times-circle"></span>
 			{% endif %}
 		{% endif %}
 							</span>

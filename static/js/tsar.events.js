@@ -79,24 +79,24 @@ function respond_to_event(button, pagetype) {
 				$('#role_'+obj.role_id+'_member_'+obj.user_id+'_entry').remove();
 				// Add an entry to the new list
 				if (action == 'attend') {
-				   $('#role_'+obj.role_id+'_attending_members').prepend('<li id="role_'+obj.role_id+'_member_'+obj.user_id+'_entry"><a href="/felagi/'+obj.username+'" title="'+obj.time_responded+'">'+obj.user_name+'</a><span class="event_responder attending edit-interface icon-remove-sign pull-right" data-member_id="'+obj.user_id+'" data-eventrole_id="'+obj.eventrole_id+'" data-action="absent" data-status="attending"></span></li>')
+				   $('#role_'+obj.role_id+'_attending_members').prepend('<li id="role_'+obj.role_id+'_member_'+obj.user_id+'_entry"><a href="/felagi/'+obj.username+'" title="'+obj.time_responded+'">'+obj.user_name+'</a><span class="event_responder attending edit-interface fa fa-times-circle pull-right" data-member_id="'+obj.user_id+'" data-eventrole_id="'+obj.eventrole_id+'" data-action="absent" data-status="attending"></span></li>')
 					if ($('#attending_roles').siblings('.form-edit-icon').data('toggle_state') == 'hidden') {
 						$('#role_'+obj.role_id+'_member_'+obj.user_id+'_entry').children('.event_responder.edit-interface').css('display','none');
 					}
 					// If we're changing the currently logged in member response, then change the status icon.
 					if (obj.cm_responding) {
-						$('.role_'+obj.role_id+'_status_icon').removeClass('icon-ban-circle icon-circle-blank invited');
-						$('.role_'+obj.role_id+'_status_icon').addClass('icon-ok-circle');
+						$('.role_'+obj.role_id+'_status_icon').removeClass('fa-ban-circle fa-circle-blank invited');
+						$('.role_'+obj.role_id+'_status_icon').addClass('fa-ok-circle');
 					}
 				} else {
-				   $('#role_'+obj.role_id+'_absent_members').prepend('<li id="role_'+obj.role_id+'_member_'+obj.user_id+'_entry"><a href="/felagi/'+obj.username+'" title="'+obj.time_responded+'">'+obj.user_name+'</a><span class="event_responder absent edit-interface icon-plus-sign pull-right" data-member_id="'+obj.user_id+'" data-eventrole_id="'+obj.eventrole_id+'" data-action="attend" data-status="absent"></span></li></li>')
+				   $('#role_'+obj.role_id+'_absent_members').prepend('<li id="role_'+obj.role_id+'_member_'+obj.user_id+'_entry"><a href="/felagi/'+obj.username+'" title="'+obj.time_responded+'">'+obj.user_name+'</a><span class="event_responder absent edit-interface fa fa-plus-circle pull-right" data-member_id="'+obj.user_id+'" data-eventrole_id="'+obj.eventrole_id+'" data-action="attend" data-status="absent"></span></li></li>')
 					if ($('#absent_roles').siblings('.form-edit-icon').data('toggle_state') == 'hidden') {
 						$('#role_'+obj.role_id+'_member_'+obj.user_id+'_entry').children('.event_responder.edit-interface').css('display','none');
 					}
 					// If we're changing the currently logged in member response, then change the status icon.
 					if (obj.cm_responding) {
-						$('.role_'+obj.role_id+'_status_icon').removeClass('icon-ok-circle icon-circle-blank invited');
-						$('.role_'+obj.role_id+'_status_icon').addClass('icon-ban-circle');
+						$('.role_'+obj.role_id+'_status_icon').removeClass('fa-ok-circle fa-circle-blank invited');
+						$('.role_'+obj.role_id+'_status_icon').addClass('fa-ban-circle');
 					}
 				}
 
@@ -180,11 +180,11 @@ function respond_to_event(button, pagetype) {
 				$('#eventrole_'+obj.eventrole_id+'_response_icons').children().remove();
 				// Define the node to add
 				if (action == 'attend') {
-					node='<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="eventrole-absent-'+eventrole_id+'" data-action="absent"  class="event_responder icon-remove-sign"></span>'
-						+ '<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="eventrole-unclea-'+eventrole_id+'" data-action="unclear" class="event_responder icon-question-sign"></span>';
+					node='<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="eventrole-unclea-'+eventrole_id+'" data-eventrole_id="'+eventrole_id+'" data-action="unclear" class="fa fa-question-circle"></span>'
+						+ '<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="eventrole-absent-'+eventrole_id+'" data-eventrole_id="'+eventrole_id+'" data-action="absent"  class="event_responder fa fa-times-circle"></span>';
 				} else {
-					node='<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="eventrole-unclea-'+eventrole_id+'" data-action="unclear" class="event_responder icon-question-sign"></span>'
-						+ '<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="eventrole-attend-'+eventrole_id+'" data-action="attend"  class="event_responder icon-plus-sign"></span>';
+					node='<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="eventrole-attend-'+eventrole_id+'" data-eventrole_id="'+eventrole_id+'" data-action="attend"  class="event_responder fa fa-plus-circle"></span>'
+						+ '<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="eventrole-unclea-'+eventrole_id+'" data-eventrole_id="'+eventrole_id+'" data-action="unclear" class="fa fa-question-circle"></span>';
 				}
 				// Add the new buttons
 				$('#eventrole_'+obj.eventrole_id+'_response_icons').append(node);
@@ -197,11 +197,11 @@ function respond_to_event(button, pagetype) {
 					$('#eventrole_'+obj.eventrole_id+'_response_icons').parents('.event-list-item').children('.response-icons').children().remove();
 					// Define the node to add
 					if (action == 'attend') {
-						node='<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="absent-'+eventrole_id+'" data-action="absent"  class="event_responder icon-remove-sign"></span>'
-							+ '<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="unclea-'+eventrole_id+'" data-action="unclear" class="event_responder icon-question-sign"></span>';
+						node='<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="unclea-'+eventrole_id+'" data-eventrole_id="'+eventrole_id+'" data-action="unclear" class="fa fa-question-circle"></span>'
+							+ '<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="absent-'+eventrole_id+'" data-eventrole_id="'+eventrole_id+'" data-action="absent"  class="event_responder fa fa-times-circle"></span>';
 					} else {
-						node='<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="unclea-'+eventrole_id+'" data-action="unclear" class="event_responder icon-question-sign"></span>'
-							+ '<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="attend-'+eventrole_id+'" data-action="attend"  class="event_responder icon-plus-sign"></span>';
+						node='<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="attend-'+eventrole_id+'" data-eventrole_id="'+eventrole_id+'" data-action="attend"  class="event_responder fa fa-plus-circle"></span>'
+							+ '<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="unclea-'+eventrole_id+'" data-eventrole_id="'+eventrole_id+'" data-action="unclear" class="fa fa-question-circle"></span>';
 					}
 					// Add the new buttons
 					$('#eventrole_'+obj.eventrole_id+'_response_icons').parents('.event-list-item').children('.response-icons').append(node);

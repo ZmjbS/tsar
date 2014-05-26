@@ -85,13 +85,13 @@ div#profile-picture {
 .response-icons { position: absolute; right: 30px; }
 /* The individual responce icons */
 .event_responder { cursor: pointer; color: #ccc; margin: 0; margin-top: 2px; }
-.event_responder.icon-plus-sign:hover { color: rgb(70, 136, 71); }
-.event_responder.icon-remove-sign:hover { color: rgb(185, 74, 72); }
-.event_responder.icon-question-sign:hover { color: rgb(248, 148, 6); }
-.icon-ok-circle { color: rgb(70, 136, 71); }
-.icon-ban-circle { color: rgb(185, 74, 72); }
-.icon-circle-blank.not-invited { color: #ddd; }
-.icon-circle-blank.unclear { color: rgb(248, 148, 6); }
+.event_responder.fa-plus-circle:hover { color: rgb(70, 136, 71); }
+.event_responder.fa-times-circle:hover { color: rgb(185, 74, 72); }
+.event_responder.fa-question-circle:hover { color: rgb(248, 148, 6); }
+.fa-check-circle-o{ color: rgb(70, 136, 71); }
+.fa-ban-circle { color: rgb(185, 74, 72); }
+.fa-circle-o.not-invited { color: #ddd; }
+.fa-circle-o.unclear { color: rgb(248, 148, 6); }
 
 
 /*****************************************

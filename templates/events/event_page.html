@@ -95,7 +95,7 @@ $(document).ready(function(){
 	node=	'<div class="role_entry">'
 		+			'<div class="role_entry-title" style="float:left">'+role_title+'</div>'
 		+			'<input type="hidden" name="role['+role_id+'][id]" value="'+role_id+'" />'
-		+					'<div style="float:right"><i id="'+role_id+'" class="delete-role-entry fa fa-remove-sign pull-right" style="cursor: pointer"></i></div>'
+		+					'<div style="float:right"><i id="'+role_id+'" class="delete-role-entry fa fa-times-circle pull-right" style="cursor: pointer"></i></div>'
 		+					'<div style="float:right; margin-right: .5em;display:none;">mest:   <input name="role['+role_id+'][max]" class="col-sm-6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>'
 		+					'<div style="float:right; margin-right: .5em;display:none;">minnst: <input name="role['+role_id+'][min]" class="col-sm-6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>'
 //		+					'<div>'
@@ -243,8 +243,8 @@ function updateEnabledSelect(id) {
 		{# If the current member is invited, show the response icons/buttons #}
 		{% if not role.cm_status == 'not invited' %}
 				<span style="float: right;" data-eventrole_id="{{ role.eventrole.id }}" class="response-icons">
-					<span id="nd-{{ role.eventrole.id }}" data-member_id="{{ mr.member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="attend" data-status="{{ role.cm_status }}" class="event_responder fa fa-plus-sign"></span>
-					<span id="nt-{{ role.eventrole.id }}" data-member_id="{{ mr.member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="absent" data-status="{{ role.cm_status }}" class="event_responder fa fa-remove-sign"></span>
+					<span id="nd-{{ role.eventrole.id }}" data-member_id="{{ mr.member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="attend" data-status="{{ role.cm_status }}" class="event_responder fa fa-plus-circle"></span>
+					<span id="nt-{{ role.eventrole.id }}" data-member_id="{{ mr.member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="absent" data-status="{{ role.cm_status }}" class="event_responder fa fa-times-circle"></span>
 				</span>
 		{% endif %}
 			</div>
@@ -256,7 +256,7 @@ function updateEnabledSelect(id) {
 				<li id="role_{{ role.eventrole.role.id }}_member_{{ mr.member.user.id }}_entry">
 					<a href="/felagi/{{ mr.member.user.username }}" title="{{ mr.time_responded }}">{{ mr.member.user.first_name }} {{ mr.member.user.last_name }}</a>
 				{# TODO: condition this on having the rights, if we're going to limit them. #}
-					<span class="event_responder {{ status }} edit-interface fa fa-remove-sign pull-right" style="display: none" data-member_id="{{ mr.member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="absent" data-status="{{ status }}"></span>
+					<span class="event_responder {{ status }} edit-interface fa fa-times-circle pull-right" style="display: none" data-member_id="{{ mr.member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="absent" data-status="{{ status }}"></span>
 				</li>
 			{% endfor %}
 		{% elif status == "absent" %}
@@ -264,7 +264,7 @@ function updateEnabledSelect(id) {
 				<li id="role_{{ role.eventrole.role.id }}_member_{{ mr.member.user.id }}_entry">
 					<a href="/felagi/{{ mr.member.user.username }}" title="{{ mr.time_responded }}">{{ mr.member.user.first_name }} {{ mr.member.user.last_name }}</a>
 				{# TODO: condition this on having the rights, if we're going to limit them. #}
-					<span class="event_responder {{ status }} edit-interface fa fa-plus-sign pull-right" style="display: none" data-member_id="{{ mr.member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="attend" data-status="{{ status }}"></span>
+					<span class="event_responder {{ status }} edit-interface fa fa-plus-circle pull-right" style="display: none" data-member_id="{{ mr.member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="attend" data-status="{{ status }}"></span>
 				</li>
 			{% endfor %}
 		{% else %}
@@ -273,8 +273,8 @@ function updateEnabledSelect(id) {
 				<li id="role_{{ role.eventrole.role.id }}_member_{{ member.id }}_entry">
 					<a href="/felagi/{{ member.username }}">{{ member.name }}</a>
 				{# TODO: condition this on having the rights, if we're going to limit them. #}
-					<span class="event_responder {{ status }} edit-interface fa fa-remove-sign pull-right" style="display: none" data-member_id="{{ member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="absent" data-status="{{ status }}"></span>
-					<span class="event_responder {{ status }} edit-interface fa fa-plus-sign pull-right" style="display: none" data-member_id="{{ member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="attend" data-status="{{ status }}"></span>
+					<span class="event_responder {{ status }} edit-interface fa fa-times-circle pull-right" style="display: none" data-member_id="{{ member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="absent" data-status="{{ status }}"></span>
+					<span class="event_responder {{ status }} edit-interface fa fa-plus-circle pull-right" style="display: none" data-member_id="{{ member.id }}" data-eventrole_id="{{ role.eventrole.id }}" data-action="attend" data-status="{{ status }}"></span>
 				</li>
 			{% endfor %}
 		{% endif %}
@@ -332,7 +332,7 @@ function updateEnabledSelect(id) {
 			<div class="role_entry">
 				<div class="role_entry-title" style="float:left">{{ role.title }}</div>
 				<input type="hidden" name="role[{{ role.eventrole.id }}][id]" value="{{ role.eventrole.id }}" />
-				<div style="float:right"><i id="{{ role.eventrole.id }}" class="delete-role-entry fa fa-remove-sign pull-right" style="cursor: pointer"></i></div>
+				<div style="float:right"><i id="{{ role.eventrole.id }}" class="delete-role-entry fa fa-times-circle pull-right" style="cursor: pointer"></i></div>
 				<div style="float:right; margin-right: .5em; display:none;">mest:   <input name="role[{{ role.eventrole.id }}][max]" class="col-sm-6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>
 				<div style="float:right; margin-right: .5em; display:none;">minnst: <input name="role[{{ role.eventrole.id }}][min]" class="col-sm-6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>
 				<div>
