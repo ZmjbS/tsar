@@ -16,35 +16,35 @@ $(document).ready(function(){
 
 {% block content %}
 <div class="row">
-	<div class="col-sm-4">
+	<div class="col-lg-6 col-md-7 col-sm-7">
 		<section id="member-details">
 			<h2>{{ member.user.first_name }} {{ member.user.last_name }}</h2>
 			<div class="row">
-				<div class="col-sm-8">
-			<dl>
-				<dt>Nafn:</dt>
-				<dd>{{ member.user.first_name }} {{ member.user.last_name }}</dd>
-				<dt>Kennitala:</dt>
-				<dd>{{ member.member_id }}</dd>
-				<dt>Símanúmer:</dt>
-				{% for phone in member.phone_set.all %}
-				<dd><a href="tel:{{ phone.number }}">{{ phone.number }}</a></dd>
-				{% endfor %}
-				<dt>Tölvupóstfang</dt>
-				<dd><a href="mailto:{{ member.user.email }}">{{ member.user.email }}</a></dd>
-				<dt>Heimilisfang:</dt><dd>{{ member.address }}</dd>
-				<dt>Staða:</dt>
-				<dd>{{ member.position }}</dd>
-			</dl>
+				<div class="col-xs-6">
+					<dl>
+						<dt>Nafn:</dt>
+						<dd>{{ member.user.first_name }} {{ member.user.last_name }}</dd>
+						<dt>Kennitala:</dt>
+						<dd>{{ member.member_id }}</dd>
+						<dt>Símanúmer:</dt>
+						{% for phone in member.phone_set.all %}
+						<dd><a href="tel:{{ phone.number }}">{{ phone.number }}</a></dd>
+						{% endfor %}
+						<dt>Tölvupóstfang</dt>
+						<dd><a href="mailto:{{ member.user.email }}">{{ member.user.email }}</a></dd>
+						<dt>Heimilisfang:</dt><dd>{{ member.address }}</dd>
+						<dt>Staða:</dt>
+						<dd>{{ member.position }}</dd>
+					</dl>
 				</div>
-				<div class="col-sm-4">
-			<div id="profile-picture"><img src="/static/img/tsar_background.png" alt="Member profile picture" width="100px" /></div>
+				<div class="col-xs-6">
+			<div id="profile-picture"><img src="/static/img/tsar_background.png" alt="Member profile picture" class="img-responsive" /></div>
 				</div>
 			</div>
 		</section>
 	</div>
 
-	<div class="col-sm-4">
+	<div class="col-lg-3 col-md-5 col-sm-5">
 		<section id="member-groups">
 			<h2>Hópar
 				<input type="button" class="btn btn-default pull-right btn-sm" value="Sýsla" style="vertical-align: bottom;" onclick="$('#member-groups-edit').toggle('600');$(this).toggleClass('btn-primary btn-default');($(this).val()=='Lokið')?$(this).val('Sýsla'):$(this).val('Lokið');" />
@@ -86,7 +86,7 @@ $(document).ready(function(){
 		</section>
 	</div>
 
-	<div class="col-sm-4">
+	<div class="col-lg-3 col-md-11 col-sm-11">
 		<section id="member-events">
 			<!-- TODO: This must be modified to list events that the member actually attended. -->
 			<h2>Seinustu viðburðir</h2>
