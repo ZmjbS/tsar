@@ -48,30 +48,32 @@
 		<ul class="nav navbar-nav">
 			<li><a href="/vidburdur/">Viðburðir og útköll</a></li>
 			<!--<li><a href="/vidburdur/nyskraning/"><b class="fa fa-edit" style="vertical-align: 10%"></b></a></li>-->
-			<li><a href="/vidburdur/nyskraning/">Nýr viðburður</a></li>
 			<li><a href="/hopur/">Hópar og flokkar</a></li>
 			<li><a href="http://skjol.hssr.is/">Skjöl</a></li>
 			<!--<li><a kref="/haefnir/">Hæfni</a></li>-->
-			<li><a href="/checkin/">Mæting</a></li>
 		</ul>
 
 		<ul class="nav navbar-nav navbar-right">
-			<!--
-			<li><a href="/admin/">(admin)</a></li>
-			-->
-			<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-cog"></i></a>
-          <ul class="dropdown-menu">
-				 <li><a href="/utskra/"><i class="fa fa-fw fa-sign-out"></i>&nbsp;Útskrá</a></li>
-				 <li><a href="/admin/"><i class="fa fa-fw fa-sign-in"></i>&nbsp;Sýsla</a></li>
-          </ul>
-        </li>
-		</ul>
-		<p class="navbar-text navbar-right">Skráð inn sem <a href="/felagi/{{ user }}/" class="navbar-link">{{ user }}</a></p>
+			<li>
 		<form class="navbar-form navbar-right" role="search">
 			<div class="form-group">
 				<input type="text" class="form-control" placeholder="Leita">
 			</div>
 		</form>
+			</li>
+			<!--
+			<li><a href="/admin/">(admin)</a></li>
+			-->
+			<li><a href="/felagi/{{ user }}/">{{ user }}</a></li>
+			<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-cog"></i></a>
+				<ul class="dropdown-menu">
+					<li><a href="/vidburdur/nyskraning/"><i class="fa fa-fw fa-edit"></i>&nbsp;Nýr viðburður</a></li>
+					<li><a href="/checkin/"><i class="fa fa-fw fa-check-square-o"></i>&nbsp;Mæting</a></li>
+					<li><a href="/utskra/"><i class="fa fa-fw fa-sign-out"></i>&nbsp;Útskrá</a></li>
+					<li><a href="/admin/"><i class="fa fa-fw fa-sign-in"></i>&nbsp;Sýsla</a></li>
+				</ul>
+			</li>
+		</ul>
 	</div><!-- /.navbar-collapse -->
 </nav>
 
