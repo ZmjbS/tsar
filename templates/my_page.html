@@ -8,8 +8,14 @@
 <script type="text/javascript" src="/static/js/tsar.events.js"></script>
 <script>
 
-function getnews(sel, url, number=5) {
-	var newsdata = $.get("/news/", { url: url, num: number, }, function(data) {
+function getnews(sel, url, num) {
+	/* Takes three arguments:
+	 *   sel - the selector where the unordered list of items should be added
+	 *   url - the URL of the RSS stream
+	 *   num - the number of news items that should be returned (optional)
+	 */
+	num = typeof num !== 'undefined' ? num : 8;
+	var newsdata = $.get("/news/", { url: url, num: num, }, function(data) {
 		obj = JSON && JSON.parse(data) || $.parseJSON(data);
 		console.log( "success"+data);
 		console.log(obj);
