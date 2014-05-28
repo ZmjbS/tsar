@@ -4,45 +4,18 @@
 {% block head %}
 <style>
 .overflow { display: none; }
+.event_responder.inactive * { color: #ddd !important; }
+.invitedroles_number { color: #ddd; }
 </style>
 <script type="text/javascript" src="/static/js/tsar.events.js"></script>
 <script>
 
-function getnews(sel, url, num) {
-	/* Takes three arguments:
-	 *   sel - the selector where the unordered list of items should be added
-	 *   url - the URL of the RSS stream
-	 *   num - the number of news items that should be returned (optional)
-	 */
-	num = typeof num !== 'undefined' ? num : 8;
-	var newsdata = $.get("/news/", { url: url, num: num, }, function(data) {
-		obj = JSON && JSON.parse(data) || $.parseJSON(data);
-		console.log( "success"+data);
-		console.log(obj);
-		console.log( "success"+obj[0].title);
-		list = ""
-		for (count in obj) {
-			entry = obj[count]
-			console.log(entry.title)
-			list = list+'<li><a href="'+ entry.link +'">'+ entry.title +'</a> <time datetime="'+entry.published+'">'+ entry.published_parsed +'</time></li>';
-		}
-		$(sel).html('<ul>'+list+'</ul>');
-		})
-		.done(function() {
-			console.log( "second success" );
-		})
-		.fail(function() {
-			console.log( "error" );
-		})
-		.always(function(data) {
-			obj = JSON && JSON.parse(data) || $.parseJSON(data);
-			console.log( "finished" );
-		});
-		console.log('posted')
-}
-
 $(document).ready(function(){
+	$('.status-icon').addClass('fa fa-circle');
+	$('.status-icon.notinvited').toggleClass('fa-circle fa-circle-o');
    $('.event_responder').click(function(event) { event.stopPropagation(); respond_to_event(this, 'My page'); } );
+	$('.event_responder.attend-button').html('<button type="button" class="btn btn-default" style="padding: 0px 4px"><i class="fa fa-check" style="color: green"></i> Mæta');
+	$('.event_responder.absent-button').html('<button type="button" class="btn btn-default" style="padding: 0px 4px"><i class="fa fa-times" style="color: red"></i> Sleppa');
 
 	console.log('posting');
 	getnews('#hssr_news', 'http://hssr.is/?feed=rss2');
@@ -55,10 +28,11 @@ $(document).ready(function(){
 <div class="row">
 	<div class="col-md-6"><!-- 1 of 2 columns -->
 		<section id="vidburdir">
-			<button type="button" class="btn btn-default pull-right" onclick="$('.notinvited').toggle();$('.overflow').toggle();$(this).toggleClass('active');"><i class="fa fa-user"></i></button>
+			<button type="button" class="btn btn-default pull-right" onclick="$('.event-list-item.notinvited,.overflow').toggle();$(this).toggleClass('active');"><i class="fa fa-user"></i></button>
 			<h2>Næstu viðburðir</h2>
 			<ul id="events" class="events_list list-unstyled">
 {% for ed in events_dictionaries_list %}
+	{# Add each event in order, but mark those which the user is not invited to as such. To have a full list when the user filters only events to which she or he is invited to, we add sufficiently many such events, but mark those with “overflow”. #}
 				<li id="event-{{ ed.event.id }}" class="event-list-item{% if not ed.invitedroles_dictionaries_list %} notinvited{% else %}{%if forloop.counter > event_list_length %} overflow{% endif %}{% endif %}"
 	{% if ed.invitedroles_dictionaries_list %}
 			onclick="
@@ -79,74 +53,77 @@ $(document).ready(function(){
 				<span id="event_{{ ed.event.id }}_status_icon" 
 	{% if ed.invitedroles_dictionaries_list %}
 		{% if ed.positive_response %}
-					class="fa fa-circle status-icon attending-icon"
+					class="status-icon attending"
 		{% else %}
-			{% if ed.unanswered_response %}
-					class="fa fa-circle status-icon unclear-icon"
+			{% if ed.negative_response %}
+					class="status-icon absent"
 			{% else %}
-					class="fa fa-circle status-icon absent-icon"
+					class="status-icon unclear"
 			{% endif %}
 		{% endif %}
 	{% else %}
-					class="fa fa-circle-o status-icon notinvited-icon"
+					class="status-icon notinvited"
 	{% endif %}
 				></span>
 
 				<a href="/vidburdur/{{ ed.id }}/" onclick="event.stopPropagation()">{{ ed.event.title }}</a>
 				<time datetime='{{ed.event.date_time_begin|date:"Y-m-d"}}'>{{ ed.event.date_time_begin|naturaltime }}</time>
-				<span id="event_{{ ed.event.id }}_response_icons" class="response-icons"
 	{% if ed.invitedroles_dictionaries_list|length == 1 %}
-					data-eventrole="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}">
-
+				<span id="event_{{ ed.event.id }}_response_icons" class="response-icons" data-eventrole="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}">
+					<span id="event-eventrole-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}-attend_button" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}"
 		{% if ed.positive_response %}
-					<span id="unclea-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="unclear" class="event_responder fa fa-question-circle"></span>
-					<span id="absent-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="absent" class="event_responder fa fa-times-circle"></span>
+						data-action="none" class="event_responder inactive attend-button"
 		{% else %}
-			{% if ed.unanswered_response %}
-					<span id="attend-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="attend" class="event_responder fa fa-plus-circle"></span>
-					<span id="absent-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="absent" class="event_responder fa fa-times-circle"></span>
-			{% else %}
-					<span id="attend-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="attend" class="event_responder fa fa-plus-circle"></span>
-					<span id="unclea-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}" data-action="unclear" class="event_responder fa fa-question-circle"></span>
-			{% endif %}
+						data-action="attend" class="event_responder active attend-button"
 		{% endif %}
+						></span>
+					<span id="event-eventrole-{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}-absent_button" data-member_id="{{ user.id }}" data-eventrole_id="{{ ed.invitedroles_dictionaries_list.0.eventrole.id }}"
+		{% if ed.negative_response %}
+						data-action="none" class="event_responder inactive absent-button"
+		{% else %}
+						data-action="absent" class="event_responder active absent-button"
+		{% endif %}
+						></span>
 	{% else %}
-					>
+				<span id="event_{{ ed.event.id }}_response_icons" class="response-icons">
 		{% if ed.invitedroles_dictionaries_list|length > 1 %}
-						<span style="float: right; color: #ccc;">{{ ed.invitedroles_dictionaries_list|length }} hlutverk</span>
+					<span class="invitedroles_number">{{ ed.invitedroles_dictionaries_list|length }} hlutverk</span>
 		{% endif %}
 	{% endif %}
-					</span>
-					<ul id="event_{{ ed.event.id }}_roles_list" class="roles_list">
+				</span>
+				<ul id="event_{{ ed.event.id }}_roles_list" class="roles_list">
 	{% for ird in ed.invitedroles_dictionaries_list %}
-						<li id="eventrole_{{ird.eventrole.id }}" class="eventrole-list-item">
-							<span id="eventrole_{{ ird.eventrole.id }}_status_icon"
+					<li id="eventrole_{{ird.eventrole.id }}" class="eventrole-list-item">
+						<span id="eventrole_{{ ird.eventrole.id }}_status_icon"
 		{% if ird.response == 'Y' %}
-								data-status="attending" class="fa fa-circle status-icon" style="color: rgb(70, 136, 71); cursor: default; margin: 0;"
+							data-status="attending" class="status-icon attending"
 		{% else %}
 			{% if ird.response == 'N' %}
-								data-status="absent" class="fa fa-circle status-icon" style="color: rgb(185, 74, 72); cursor: default; margin: 0;"
+							data-status="absent" class="status-icon absent"
 			{% else %}
-								data-status="unclear" class="fa fa-circle status-icon" style="color: rgb(248, 148, 6); cursor: default; margin: 0;"
+							data-status="unclear" class="status-icon unclear"
 			{% endif %}
 		{% endif %}
-							></span>
+						></span>
 
 			{{ ird.eventrole.role }}
 
 							<span id="eventrole_{{ ird.eventrole.id }}_response_icons" data-eventrole="{{ ird.eventrole.id }}" class="response-icons">
+								<span id="eventrole-{{ ird.eventrole.id }}-attend_button" data-member_id="{{ user.id }}" data-eventrole_id="{{ ird.eventrole.id }}"
 		{% if ird.response == 'Y' %}
-					<span id="eventrole-unclea-{{ ird.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ird.eventrole.id }}" data-action="unclear" class="event_responder fa fa-question-circle"></span>
-					<span id="eventrole-absent-{{ ird.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ird.eventrole.id }}" data-action="absent"  class="event_responder fa fa-times-circle"></span>
+									data-action="none" class="event_responder inactive attend-button"
 		{% else %}
-			{% if ird.response == 'N' %}
-					<span id="eventrole-attend-{{ ird.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ird.eventrole.id }}" data-action="attend"  class="event_responder fa fa-plus-circle"></span>
-					<span id="eventrole-unclea-{{ ird.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ird.eventrole.id }}" data-action="unclear" class="event_responder fa fa-question-circle"></span>
-			{% else %}
-					<span id="eventrole-attend-{{ ird.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ird.eventrole.id }}" data-action="attend"  class="event_responder fa fa-plus-circle"></span>
-					<span id="eventrole-absent-{{ ird.eventrole.id }}" data-member_id="{{ user.id }}" data-eventrole_id="{{ ird.eventrole.id }}" data-action="absent"  class="event_responder fa fa-times-circle"></span>
-			{% endif %}
+									data-action="attend" class="event_responder active attend-button"
 		{% endif %}
+									></span>
+								<span id="eventrole-{{ ird.eventrole.id }}-absent_button" data-member_id="{{ user.id }}" data-eventrole_id="{{ ird.eventrole.id }}"
+		{% if ird.response == 'N' %}
+									data-action="none" class="event_responder inactive absent-button"
+		{% else %}
+									data-action="attend" class="event_responder active absent-button"
+		{% endif %}
+						></span>
+
 							</span>
 						</li>
 	{% endfor %}
