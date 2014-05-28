@@ -74,18 +74,22 @@ div#profile-picture {
 /* The icon indicating the response (attended, absent, unclear or uninvited). */
 
 .event-response-icon { text-align: center; margin-left: 3px; }
-.status-icon		{ cursor: pointer; }
-.attending-icon  { color: rgb(70, 136, 71); }
-.unclear-icon    { color: rgb(248, 148, 6); }
-.absent-icon     { color: rgb(185, 74, 72); }
-.notinvited-icon { color: #ddd; }
+
+.status-icon				{ cursor: pointer; }
+.status-icon.attending	{ color: rgb(70, 136, 71); cursor: default; margin: 0; }
+.status-icon.absent		{ color: rgb(185, 74, 72); cursor: default; margin: 0; }
+.status-icon.unclear		{ color: rgb(248, 148, 6); cursor: default; margin: 0; }
+.status-icon.notinvited	{ color: #ddd; }
 
 /* The box around the icons */
 .response-icons { position: absolute; right: 30px; }
 /* The individual responce icons */
 .event_responder { cursor: pointer; color: #ccc; margin: 0; margin-top: 2px; }
+/*
 .event_responder.fa-plus-circle:hover { color: rgb(70, 136, 71); }
 .event_responder.fa-times-circle:hover { color: rgb(185, 74, 72); }
+*/
+
 /*.event_responder.fa-question-circle:hover { color: rgb(248, 148, 6); } */
 .fa-question-circle { color: white; }
 .fa-check-circle-o{ color: rgb(70, 136, 71); }

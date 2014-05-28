@@ -19,6 +19,7 @@ def member_events_dictionaries_list(member, events_list):
 		invitedroles_dictionaries_list = []
 		positive_response = False
 		unanswered_response = False
+		negative_response = False
 
 		# Collect some data about each EventRole which the user is invited to.
 		for eventrole in event.invited_roles(member):
@@ -35,6 +36,8 @@ def member_events_dictionaries_list(member, events_list):
 				positive_response = True
 			elif response != 'N':
 				unanswered_response = True
+			else:
+				negative_response = True
 
 		# Now lets put all this in a dictionary and add it to the list:
 		events_dictionaries_list.append({
@@ -43,7 +46,8 @@ def member_events_dictionaries_list(member, events_list):
 			'invitedroles_dictionaries_list': invitedroles_dictionaries_list,
 			#'responded_roles': event.responded_roles(member),
 			'positive_response': positive_response,
-			'unanswered_response': unanswered_response,
+			'negative_response': negative_response,
+			#'unanswered_response': unanswered_response,
 			#'eventroles': eventroles_dictionaries_list,
 		})
 	return events_dictionaries_list

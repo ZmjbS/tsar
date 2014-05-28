@@ -46,7 +46,7 @@ function respond_to_event(button, pagetype) {
 	console.log('Page is: '+pagetype);
 	console.log('attribute: '+$(button).attr('id'))
 	console.log('action: '+action);
-	console.log('eventrole: '+eventrole);
+	console.log('eventrole ID: '+eventrole_id);
 	*/
 
 	// Submit the response via an AJAX POST:
@@ -137,22 +137,20 @@ function respond_to_event(button, pagetype) {
 				// Change the colour of the eventrole status icon -------------------------
 				// console.log('Change eventrole status icon colour');
 				if (action == 'attend') {
-					$('#eventrole_'+obj.eventrole_id+'_status_icon').css('color', 'rgb(70, 136, 71)');
+					$('#eventrole_'+obj.eventrole_id+'_status_icon').removeClass('absent unclear').addClass('attending');
 					$('#eventrole_'+obj.eventrole_id+'_status_icon').attr('data-status', 'attending');
 				} else {
-					$('#eventrole_'+obj.eventrole_id+'_status_icon').css('color', 'rgb(185, 74, 72)');
+					$('#eventrole_'+obj.eventrole_id+'_status_icon').removeClass('attending unclear').addClass('absent');
 					$('#eventrole_'+obj.eventrole_id+'_status_icon').attr('data-status', 'absent');
 				}
 
 				// Change the colour of the event status icon -----------------------------
 				// DEBUG: console.log('Change event status icon colour');
+				// Create a set of the eventrole li-objects
 				var eventrole_linodes = $('#eventrole_'+obj.eventrole_id).parent().children();
 				if (action == 'attend') {
-					$('#eventrole_'+obj.eventrole_id+'_status_icon').parents('.event-list-item').children('.status-icon').css('color', 'rgb(70, 136, 71)');
+					$('#eventrole_'+obj.eventrole_id+'_status_icon').parents('.event-list-item').children('.status-icon').removeClass('absent unclear').addClass('attending');
 				} else {
-					// Create a set of the eventrole li-objects
-					//var eventrole_linodes = $('#eventrole_'+obj.eventrole_id).parent().children();
-
 					// Check whether the user is absent from all eventroles.
 					// First, assume that this is true:
 					var absent_from_all = true
@@ -170,41 +168,39 @@ function respond_to_event(button, pagetype) {
 					// If the user is absent from all eventroles, turn the status-icon red
 					if ( absent_from_all )
 					{
-						$('#eventrole_'+obj.eventrole_id+'_status_icon').parents('.event-list-item').children('.status-icon').css('color', 'rgb(185, 74, 72)');
+						$('#eventrole_'+obj.eventrole_id+'_status_icon').parents('.event-list-item').children('.status-icon').removeClass('attending unclear').addClass('absent');
 					}
 				}
 
 				// Change the eventrole buttons -------------------------------------------
-				// DEBUG: console.log('Change eventrole buttons');
-				// Remove the old ones
-				$('#eventrole_'+obj.eventrole_id+'_response_icons').children().remove();
-				// Define the node to add
+				// Here we just change the data-action attribute but leave the buttons alone.
+				// DEBUG:
+				console.log('Change eventrole buttons');
 				if (action == 'attend') {
-					node='<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="eventrole-unclea-'+eventrole_id+'" data-eventrole_id="'+eventrole_id+'" data-action="unclear" class="fa fa-question-circle"></span>'
-						+ '<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="eventrole-absent-'+eventrole_id+'" data-eventrole_id="'+eventrole_id+'" data-action="absent"  class="event_responder fa fa-times-circle"></span>';
-				} else {
-					node='<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="eventrole-attend-'+eventrole_id+'" data-eventrole_id="'+eventrole_id+'" data-action="attend"  class="event_responder fa fa-plus-circle"></span>'
-						+ '<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="eventrole-unclea-'+eventrole_id+'" data-eventrole_id="'+eventrole_id+'" data-action="unclear" class="fa fa-question-circle"></span>';
-				}
-				// Add the new buttons
-				$('#eventrole_'+obj.eventrole_id+'_response_icons').append(node);
-
-				// Change the event buttons if there is just one eventrole ----------------
-				// DEBUG: console.log(eventrole_linodes);
-				if ( eventrole_linodes.length == 1 )
-				{
-					// Remove the old ones
-					$('#eventrole_'+obj.eventrole_id+'_response_icons').parents('.event-list-item').children('.response-icons').children().remove();
-					// Define the node to add
-					if (action == 'attend') {
-						node='<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="unclea-'+eventrole_id+'" data-eventrole_id="'+eventrole_id+'" data-action="unclear" class="fa fa-question-circle"></span>'
-							+ '<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="absent-'+eventrole_id+'" data-eventrole_id="'+eventrole_id+'" data-action="absent"  class="event_responder fa fa-times-circle"></span>';
-					} else {
-						node='<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="attend-'+eventrole_id+'" data-eventrole_id="'+eventrole_id+'" data-action="attend"  class="event_responder fa fa-plus-circle"></span>'
-							+ '<span onclick="event.stopPropagation(); respond_to_event(this, \'My page\');" id="unclea-'+eventrole_id+'" data-eventrole_id="'+eventrole_id+'" data-action="unclear" class="fa fa-question-circle"></span>';
+					/*
+					 * If we're attending, then change the attend button action to
+					 * 'none' and the absent button action to 'absent'.
+					 */
+					if ( eventrole_linodes.length == 1 )
+					{
+						// If there is only one eventrole, then we also have to change the event buttons.
+						$('#event-eventrole-'+eventrole_id+'-attend_button').data('action','none').removeClass('active').addClass('inactive');
+						$('#event-eventrole-'+eventrole_id+'-absent_button').data('action','absent').removeClass('inactive').addClass('active');
 					}
-					// Add the new buttons
-					$('#eventrole_'+obj.eventrole_id+'_response_icons').parents('.event-list-item').children('.response-icons').append(node);
+					$('#eventrole-'+eventrole_id+'-attend_button').data('action','none').removeClass('active').addClass('inactive');
+					$('#eventrole-'+eventrole_id+'-absent_button').data('action','absent').removeClass('inactive').addClass('active');
+				} else {
+					/*
+					 * Else we're absent. In that case we change the attend button
+					 * action to 'attend' and the absent button action to 'none'.
+					 */
+					if ( eventrole_linodes.length == 1 )
+					{
+						$('#event-eventrole-'+eventrole_id+'-attend_button').data('action','attend').removeClass('inactive').addClass('active');
+						$('#event-eventrole-'+eventrole_id+'-absent_button').data('action','none').removeClass('active').addClass('inactive');
+					}
+					$('#eventrole-'+eventrole_id+'-attend_button').data('action','attend').removeClass('inactive').addClass('active');
+					$('#eventrole-'+eventrole_id+'-absent_button').data('action','none').removeClass('active').addClass('inactive');
 				}
 
 				// ======================================================= End of "My page"
