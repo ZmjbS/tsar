@@ -16,6 +16,8 @@
 
 #id_title, #event_type, #id_date_time_begin, #id_date_time_end {width: 100% !important; }
 
+.chosen-container-multi { width: 100% !important; }
+
 div[id*='tag_type_id'] { width: 100% !important; }
 //[class*='event_type_id'] { display: none; }
 
@@ -331,12 +333,12 @@ function updateEnabledSelect(id) {
 {% for role in role_data %}
 			<div class="role_entry">
 				<div class="role_entry-title" style="float:left">{{ role.title }}</div>
-				<input type="hidden" name="role[{{ role.eventrole.id }}][id]" value="{{ role.eventrole.id }}" />
-				<div style="float:right"><i id="{{ role.eventrole.id }}" class="delete-role-entry fa fa-times-circle pull-right" style="cursor: pointer"></i></div>
-				<div style="float:right; margin-right: .5em; display:none;">mest:   <input name="role[{{ role.eventrole.id }}][max]" class="col-sm-6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>
-				<div style="float:right; margin-right: .5em; display:none;">minnst: <input name="role[{{ role.eventrole.id }}][min]" class="col-sm-6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>
+				<input type="hidden" name="role[{{ role.id }}][id]" value="{{ role.eventrole.id }}" />
+				<div style="float:right"><i id="{{ role.id }}" class="delete-role-entry fa fa-times-circle pull-right" style="cursor: pointer"></i></div>
+				<div style="float:right; margin-right: .5em; display:none;">mest:   <input name="role[{{ role.id }}][max]" class="col-sm-6 role-max" type="number" min="0" value="0" max="999" style="width:2em"/></div>
+				<div style="float:right; margin-right: .5em; display:none;">minnst: <input name="role[{{ role.id }}][min]" class="col-sm-6 role-min" type="number" min="0" value="0" max="999" style="width:2em"/></div>
 				<div>
-					<select name="role[{{ role.eventrole.id }}][participants][]" multiple data-placeholder="Veldu þáttakendur" class="select-participants">
+					<select name="role[{{ role.id }}][participants][]" multiple data-placeholder="Veldu þáttakendur" class="select-participants">
 						<optgroup label="Stöður" class="sorted">
 							<option value="a" {% if role.eventrole.is_open %}selected="selected"{% endif %}>Allir</option>
 	{% for position in positions %}
