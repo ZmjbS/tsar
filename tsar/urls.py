@@ -14,6 +14,7 @@ urlpatterns = patterns('',
 	url(r'^felagi/', include('members.urls')),
 	url(r'^vidburdur/', include('events.urls')),
 	url(r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'registration/login.html'}),
+	url(r'^utskra/$', 'django.contrib.auth.views.logout_then_login', {'login_url': '/'}),
 	url(r'^checkin/', include('checkin.urls')),
 	url(r'^checkin/$', include('checkin.urls')),
 
