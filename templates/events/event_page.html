@@ -376,7 +376,7 @@ function updateEnabledSelect(id) {
 
 			<div id="event_description-data">
 				<i class="fa fa-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_description"></i>
-				<h3>Lýsing</h3>
+				<h2>Lýsing</h2>
 				<div style="margin:0 .5em .5em .5em;">{{ event.description|textile }}</div>
 			</div><!-- /#event_description-data -->
 
@@ -385,7 +385,7 @@ function updateEnabledSelect(id) {
 					<input type="reset" value="Hætta við" class="btn-xs-6 btn-sm-2 btn btn-default toggle-form" data-form_id-prefix="event_description" onclick="$('#results').slideUp();" />
 					<input type="submit" value="Vista" class="btn-xs-6 btn-sm-2 btn btn-primary" data-form_id-prefix="event_description" />
 				</div>
-				<h3>Lýsing</h3>
+				<h2>Lýsing</h2>
 				<textarea class="col-sm-12" id="event_description-textarea" name="description">{{ event.description }}</textarea>
 			</div><!-- /#event_description-form -->
 		</section>
@@ -396,7 +396,7 @@ function updateEnabledSelect(id) {
 
 					<div id="event_tag-data">
 						<i class="fa fa-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_tag"></i>
-						<h3>Merki</h3>
+						<h2>Merki</h2>
 						<dl class="dl-horizontal" style="margin-top: 0">
 		  {% for tagtype in tagtypes %}
 							<div class="{% for eventtype in tagtype.event_type.all %}event_type_id-{{ eventtype.id }} {% endfor %}tagtype-container">
@@ -413,7 +413,7 @@ function updateEnabledSelect(id) {
 					</div><!-- /#event_tag-data -->
 
 					<div id="event_tag-form" style="display: none;">
-						<h3>Merki</h3>
+						<h2>Merki</h2>
 						<!--table style="width: 100%"-->
 						<dl class="dl-horizontal" style="margin-top: 0">
 								  {# Create a form for each TagType and mark it with the EventTypes it goes with. Then when the EventType is changed, we have to change the visibility of TagTypes that don't belong to both the new and old EventType #}
@@ -441,7 +441,7 @@ function updateEnabledSelect(id) {
 					<!--
 					<div id="event_location-data" style="clear:both;">
 						<i class="fa fa-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_location"></i>
-						<h3>Staðsetning</h3>
+						<h2>Staðsetning</h2>
 						<table style="margin-top: 0;">
 							<tr><td>N 65°01,039'	V 21°33,029'</td><td>Söfnunarsvæði slasaðra.</td></tr>
 							<tr><td>N 64°34,392'	V 21°39,291'</td><td>Upphafsstaður æfingar.</td></tr>
@@ -451,7 +451,7 @@ function updateEnabledSelect(id) {
 					<!-- /#event_location-data -->
 					<!--
 					<div id="event_location-form" style="clear: both; display: none;">
-						<h3>Staðsetning</h3>
+						<h2>Staðsetning</h2>
 						<div>
 								<span class="col-xs-3">Lengd</span>
 								<span class="col-xs-3">Breidd</span>

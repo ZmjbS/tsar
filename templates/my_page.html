@@ -14,8 +14,8 @@ $(document).ready(function(){
 	$('.status-icon').addClass('fa fa-circle');
 	$('.status-icon.notinvited').toggleClass('fa-circle fa-circle-o');
    $('.event_responder').click(function(event) { event.stopPropagation(); respond_to_event(this, 'My page'); } );
-	$('.event_responder.attend-button').html('<button type="button" class="btn btn-default" style="padding: 0px 4px"><i class="fa fa-check" style="color: green"></i> Mæta');
-	$('.event_responder.absent-button').html('<button type="button" class="btn btn-default" style="padding: 0px 4px"><i class="fa fa-times" style="color: red"></i> Sleppa');
+	$('.event_responder.attend-button').html('<button type="button" class="btn btn-default" style="padding: 0px 4px"><i class="fa fa-check" style="color: green"></i><!-- Mæta-->');
+	$('.event_responder.absent-button').html('<button type="button" class="btn btn-default" style="padding: 0px 4px"><i class="fa fa-times" style="color: red"></i><!-- Sleppa-->');
 
 	console.log('posting');
 	getnews('#hssr_news', 'http://hssr.is/?feed=rss2');
@@ -155,10 +155,10 @@ $(document).ready(function(){
 
 		<section>
   			<h2>Fréttir</h2>
-			<a href="http://www.hssr.is">HSSR</a>
+			<h3><a href="http://www.hssr.is">HSSR</a></h3>
 			<div id="hssr_news"><span style="color: gray; padding-left: 2em;">hleður...</span></div>
 
-			<a href="http://landsbjorg.is/">Landsbjörg</a>
+			<h3><a href="http://landsbjorg.is/">Landsbjörg</a></h3>
 			<div id="sl_news"><span style="color: gray; padding-left: 2em;">hleður...</span></div>
 			<ul>
 <!-- Skoða: http://justquick.github.com/django-native-tags/contrib/feeds.html -->

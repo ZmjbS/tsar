@@ -26,7 +26,7 @@ h2 {
 	font-size: 1.54em;
 }
 h3 {
-	font-size: 1.4em;
+	font-size: 1.22em;
 	margin-left: .5em;
 }
 date, time {	color: gray; font-size: smaller; }
@@ -38,7 +38,7 @@ section, .col-sm- {
 	margin-bottom: 1.5em;
 }
 div#profile-picture {
-	background-color: #eee;
+background-color: #eee;
 	border: 1px solid #ddd;
 	color: #ddd; }
 #event-dates-number-list { list-style: none }
