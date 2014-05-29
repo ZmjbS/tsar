@@ -49,13 +49,14 @@ class Member(models.Model):
 #		except:
 #			return ""
 
-	def phone(self):
-		# Return the first primary phone number
-		p = Phone.objects.filter(member=self, is_primary=True)
-		try:
-			return p[0]
-		except:
-			return ""
+#	TODO: This makes for excessive database calls. Solve some other way.
+#	def phone(self):
+#		# Return the first primary phone number
+#		p = Phone.objects.filter(member=self, is_primary=True)
+#		try:
+#			return p[0]
+#		except:
+#			return ""
 
 class Phone(models.Model):
 	member = models.ForeignKey(Member)

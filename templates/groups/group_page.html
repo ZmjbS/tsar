@@ -232,7 +232,9 @@ non_members[{{ member.id }}]='{{ member.name }}';
 				<td class="member_name"><a href="/felagi/{{ member.user.username }}">{{ member.name }}</a>
 		{% if member in managers %}<span class="fa fa-briefcase" style="margin-left:1em; color: gray;"></span>{% endif %}
 					<input type="hidden" name="members[]" value="{ 'member_id': {{ member.id }}, 'status': 'member' }" /></td>
-				<td class="member_phone"><a href="tel:{{ member.phone }}">{{ member.phone }}</a></td>
+				<td class="member_phone">
+					{% for phone in member.phone_set.all %}{% if phone.is_primary %}<a href="tel:{{ phone }}">{{ phone }}</a>{% endif %}{% endfor %}
+				</td>
 				<td class="member_email"><a href="mailto:{{ member.user.email }}">{{ member.user.email }}</a></td>
 				<td><input class="edit-interface-checkbox" type="checkbox" disabled /></td><!-- A -->
 				<td><input class="edit-interface-checkbox" type="checkbox" disabled /></td><!-- B -->
