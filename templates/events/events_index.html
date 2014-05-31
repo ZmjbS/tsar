@@ -19,7 +19,9 @@ $(document).ready(function() {
 					member_id: '{{ user.id }}'
         },
         error: function() {
-            alert('there was an error while fetching events!');
+            console.log('there was an error while fetching events!');
+				$('#alert').html('There was an error while fetching events.');
+
         },
     },
 	 eventRender: function(event, element) {
@@ -55,6 +57,15 @@ $(document).ready(function() {
 		header: {
 			right:  'today prev,next prevMonth,nextMonth',
 		},
+		/* Change the view based on window width.
+		windowResize: function(view) {
+			if ($(window).width() < 720){
+				$('#calendar').fullCalendar( 'changeView', 'basicDay' );
+			} else {
+				$('#calendar').fullCalendar( 'changeView', 'fiveWeeks' );
+			}
+		},
+		*/
 
     })
 
@@ -74,6 +85,7 @@ $(document).ready(function() {
 {% endblock %}
 
 {% block content %}
+<div id="alert"></div>
 
 <ul class="nav nav-pills">
 	<li class="active"><a href="#cal" data-toggle="tab">Dagatal</a></li>
