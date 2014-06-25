@@ -63,7 +63,8 @@ def my_page(request):
 	all_events_list = Event.objects.filter(date_time_begin__gte=now).order_by('date_time_begin')[:event_list_length]
 
 	# Retrieve a list of upcoming events for the currently logged in user and place them in a dictionary
-	my_events_list = Event.objects.filter(date_time_begin__gte=now).filter(Q(eventrole__invited_positions=request.user.member.position)|Q(eventrole__invited_groups__members=request.user.member)|Q(eventrole__invited_members=request.user.member)).distinct().order_by('date_time_begin')[:event_list_length]
+	my_events_list = Event.objects.filter(date_time_begin__gte=now).filter(Q(eventrole__invited_positions=request.user.member.position)|Q(eventrole__invited_groups__members=request.user.member)|Q(eventrole__invited_members=request.user.member)|Q(eventrole__is_open=True)).distinct().order_by('date_time_begin')[:event_list_length]
+	print my_events_list.count()
 
 	#tmpset = set(all_events_dictionaries_list)# my_events_dictionaries_list)
 	union_events_list = list(set(list(all_events_list) + list(my_events_list)))
