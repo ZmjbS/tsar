@@ -1,6 +1,7 @@
 Django>=1.4.5,<1.5
 Feedjack==0.9.16
 django-bootstrap-toolkit==2.8.0
+django-debug-toolbar==1.2.1
 django-evolution==0.6.8
 django-paintstore==0.2
 feedparser==5.1.3
