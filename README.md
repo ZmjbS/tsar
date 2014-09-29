@@ -25,7 +25,13 @@ You're now ready to generate the database (you want to use this opportunity to c
 ```bash
 python manage.py syncdb
 ```
-Log in, create a member for yourself and any other member that you want to be able to log into the development system. Then dump their data into a json fixture so that you can load that over the dummy members.
+Fire up the development server:
+```bash
+python manage.py runserver
+```
+and open a browser at http://127.0.0.1:8000/admin/ .  Log in and create a member for yourself and any other member that you want to be able to log into the development system. Begin by adding the first and last names for the Auth user object that you just created (this is used for displaying the member object). Then add a Members member and point it to the Auth member. Each member will need these objects (until we migrate to the new Django auth system).
+
+Then dump their data into a json fixture so that you can load that on top of the dummy members.
 ```bash
 python manage.py dumpdata auth.user members.member > fixtures/actual-members.json
 ```
@@ -42,8 +48,8 @@ python manage.py loaddata fixtures/showcase-groups.group.xml
 python manage.py loaddata fixtures/showcase-groups.membership.json
 ```
 
-Now you're ready to fire up the development server and play around. Run:
+I hope all went well because that's it. You're now ready to fire up the development server (if it's not still running) and play around. Run:
 ```bash
 python manage.py runserver
 ```
-and open a browser at http://127.0.0.1:8000/admin/ . Log in, create a member that points to the user you created when you sync-ed the database. Then point the browser to http://127.0.0.1:8000/ and off you go...
+Point the browser to http://127.0.0.1:8000/ and off you go...
