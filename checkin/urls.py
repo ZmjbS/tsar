@@ -4,4 +4,5 @@ from events.models import Event
 urlpatterns = patterns('',
 	url(r'^$', 'checkin.views.hello'),
 	url(r'^add$','checkin.views.event_checkin', name='checkin'),
+	url(r'^edit/$', 'checkin.views.hello'),
 )
