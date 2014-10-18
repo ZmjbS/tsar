@@ -1,6 +1,3 @@
-/* Layout */
-/* Calendar */
-
 /* Look */
 body {	background-image: url("/static/img/tsar_background-transparent-4.png");
 	background-color: white;
@@ -12,14 +9,13 @@ body {	background-image: url("/static/img/tsar_background-transparent-4.png");
 article { margin: 0 40px 0 0 !important; } /* Marked important to keep the Bootstrap .container keyword from centering it. */
 
 h1 {
+	color: black;
 	margin-top: 0 !important; /* Marked important to override Bootsrap. */
 	margin-bottom: 20px;
 	font-size: 2.57em;
 }
-h1, h2, h3 {
-	color: #383;
-}
 h2, h3 {
+	color: black;
 	margin-top: .3em;
 }
 h2 {
@@ -29,18 +25,22 @@ h3 {
 	font-size: 1.22em;
 	margin-left: .5em;
 }
+
+a { color: #0A6D5A; }
+
 date, time {	color: gray; font-size: smaller; }
-section, .col-sm- { 
+
+section { 
 	background-color: rgba(255,255,255,0.75);
 	border: thin solid #dde;
-	border-radius: .5em;
-	padding: .5em;
+	border-radius: .25em;
+	padding: .5em 1em;
 	margin-bottom: 1.5em;
 }
-div#profile-picture {
-background-color: #eee;
-	border: 1px solid #ddd;
-	color: #ddd; }
+
+ul { margin-left: -15px; }
+ul#events { margin-left: 0px; }
+
 #event-dates-number-list { list-style: none }
 
 /* Edit icons: The little icons for editing parts of events etc. */
@@ -50,6 +50,43 @@ background-color: #eee;
 /* Navigation bar */
 .selected { 
 }
+
+.nav { margin-bottom: 0em; }
+.navbar .nav { margin-bottom: 0em; }
+
+.navbar-default {
+	background-color: rgb(0,133,76);
+	border: none;
+	border-bottom: 3px solid #f9e249;
+	border-radius: 0px;
+	}
+
+.navbar-default a {
+	color: white;
+	text-shadow: 1px 0px rgb(105,173,79)
+	}
+
+.navbar-default .navbar-brand,
+.navbar-default .navbar-brand,
+.navbar-default .navbar-nav>li>a  { color: #fff; }
+.navbar-default .navbar-nav>li:hover a { color: #ebebeb; }
+.navbar-default .navbar-nav>li:hover { background-color: rgb(105,173,79); }
+.navbar-default .navbar-nav>.active>a,
+.navbar-default .navbar-nav>.active>a:hover,
+.navbar-default .navbar-nav>.active>a:focus {
+	background-color: rgb(174,218,157);
+	color: white;
+	text-shadow: 1px 1px rgb(105,173,79);
+	}
+
+.nav-pills>li.active>a {
+	color: #fff;
+	background-color: rgb(0,133,76);
+}
+
+.nav-pills>li.active>a:hover,
+.nav-pills>li.active>a:focus { background-color: #318a79; }
+
 
 /*****************************************
  * My Page events list
@@ -69,6 +106,7 @@ background-color: #eee;
 .role_entry-minmax  { display:none; font-size:smaller; color: gray; width: 3em; text-align: right; float: right; }
 
 .event-list-item { padding: 2px; overflow: hidden; white-space: nowrap; }
+.event-list-item:hover{ background-color: #ebebeb !important; }
 .eventrole-list-item { padding: 2px; }
 
 /* The icon indicating the response (attended, absent, unclear or uninvited). */
@@ -117,10 +155,77 @@ div.tagtype-container { height: 2.2em; }
  * Calendar
  *****************************************/
 
-.fc-event-title       {color: black;}
+.fc-event-title {color: black;}
 
-.fc-event-inner [class*="fa-"] {margin-left: 6px; margin-right: 3px; }
-.fc-event-inner {white-space: inherit;}
+.fc-event-inner {
+	white-space: inherit;
+	padding-left: 18px;
+	}
+.fc-event-inner [class*="fa-"] {
+	margin-left: -15px;
+	margin-right: 1px;
+	padding-top: 4px;
+	}
+/*a.fc-event-end { background-color: #ebebeb !important; }
+.fc-event-end { background-color: #f6f6f6 !important; }
+.fc-event-end { border: 1px solid #ebebeb !important; }*/
+.fc-event-end { border-colo: #ddd; }
+
+/* Event type colours */
+/* Æfing */
+.event_type-1 { background-color: #E3B887; border-color: #B47F41; }
+.event_type-1 .fc-event-inner { text-color: #5A3000; }
+/* Vinnufundur */
+.event_type-2 { background-color: #E3C987; border-color: #B49441; }
+.event_type-2 .fc-event-inner { text-color: #5A4100; }
+/* Útkall */
+.event_type-9 { background-color: #E39A87; border-color: #B45941; }
+.event_type-9 .fc-event-inner { text-color: #5A1300; }
+
+
+/* Skemmtun */
+.event_type-3 { background-color: #B3D0FF; }
+/* Fundur */
+.event_type-4 { background-color: #ddd; }
+/* Fjáröflun */
+.event_type-5 { background-color: #FFBDE7; }
+/* Ferð */
+.event_type-6 { background-color: green; }
+/* Námskeið */
+.event_type-7 { background-color: #FDB8FF; }
+/* Sérverkefni */
+.event_type-8 { background-color: blue; }
+
+.fc-today { background-color: #DFF0D8; }
+.fc-today .fc-day-number { color: #3C763D; }
+.fc-today .fc-day-content { border-top: 1px solid #D6E9C6; }
+
+.fc-sat, .fc-sun { background-color: #F6F0C7; }
+
+.notinvited-icon { color: #ffffff; }
+
+/*****************************************
+ * Profile
+ *****************************************/
+/* PROFILE */
+dt { margin-top: .5em; }
+
+/* ** Far right dropdown menu */
+.navbar-default .navbar-nav > .open > a,
+.navbar-default .navbar-nav > .open > a:hover,
+.navbar-default .navbar-nav > .open > a:focus {
+	background-color: rgb(105,173,79);}
+
+.navbar-right .dropdown-menu { background-color: rgb(105,173,79); }
+.navbar-right .dropdown-menu > li > a {
+	color: white;
+	text-shadow: 1px 1px #000;
+	}
+
+div#profile-picture {
+background-color: #eee;
+	border: 1px solid #ddd;
+	color: #ddd; }
 
 /****** Various *****/
 	/* Chosen tweak */
@@ -130,26 +235,6 @@ div.tagtype-container { height: 2.2em; }
     margin-bottom: -99999px;
     padding-bottom: 99999px;
 }
-
-/* Event type colours */
-/* Æfing */
-.event_type-1 { background-color: orange; }
-/* Vinnufundur */
-.event_type-2 { background-color: blue; }
-/* Skemmtun */
-.event_type-3 { background-color: green; }
-/* Fundur */
-.event_type-4 { background-color: gray; }
-/* Fjáröflun */
-.event_type-5 { background-color: blue; }
-/* Ferð */
-.event_type-6 { background-color: green; }
-/* Námskeið */
-.event_type-7 { background-color: purple; }
-/* Sérverkefni */
-.event_type-8 { background-color: blue; }
-/* Útkall */
-.event_type-9 { background-color: red; }
 
 /*
  * Not sure why this was needed/wanted, but it hid the role drop-down on the

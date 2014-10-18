@@ -394,8 +394,6 @@ def save_event(request):
 		data = json.loads(request.POST['data'])
 		pprint.pprint(data)
 
-		# Sanitise some of the data and return messages if it fails.
-
 		### TITLE ###
 		# The title must be non-zero and no longer than 64 characters (defined in events/models.py).
 		print 'Submitted data:'
@@ -698,10 +696,6 @@ def save_event(request):
 			try:
 				print 'trying'
 				tagslist=data['tag_type'][tagtype.id]
-				#if tagslist == None:
-				#	tagslist=[]
-				#else:
-				#	tagslist='hi'
 				print 'tried'
 			except:
 				print 'excepting'
