@@ -26,9 +26,9 @@ $(document).ready(function() {
     },
 	 eventRender: function(event, element) {
 		if (event.status != 'notinvited') {
-			$(element).children('.fc-event-inner').prepend('<span class="fa fa-circle status-icon '+event.status+'-icon"></span>');
+			$(element).children('.fc-event-inner').prepend('<span class="fa fa-circle status-icon '+event.status+'"></span>');
 		} else {
-			$(element).children('.fc-event-inner').prepend('<span class="fa fa-circle-o status-icon '+event.status+'-icon"></span>');
+			$(element).children('.fc-event-inner').prepend('<span class="fa fa-circle-o status-icon '+event.status+'"></span>');
 		}
 	 	console.log(event.status);
     },
