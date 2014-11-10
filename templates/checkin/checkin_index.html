@@ -6,6 +6,7 @@
 .overflow { display: none; }
 .h5 { color: liturinn; background-color: bakgrunnurinn; }
 .fill {height: 100%;}
+.container-fluid {}
 </style>
 <script>
 $(document).ready(function(){
@@ -14,119 +15,62 @@ $(document).ready(function(){
 </script>
 {% endblock %}
 
-{% block page_title %}<h1>Innskráning í húsi</h1>{% endblock %}
+{% block page_title %}<h1>Mæting</h1>{% endblock %}
 
 {% block content %}
-
+<style>
+.container-fluid {}
+</style>
 {% load app_tags %}
 
-<div class="container fill">
+<div class="container-fluid fill">
 	<div class="row" id="1">
 	{% for event in events_list %}
-		{% if forloop.counter < 5 %}	
+		{% if forloop.counter < 9 %}	
 			<div class="col-lg-3">
 				<section id="vidburdir">
-				<h2 class="list-group-item-heading">{{event.title}}</h2>
+				<h2 class="list-group-item-heading" style="display:inline;">{{event.title}}</h2>
+				<a href="/checkin/edit/{{ event.id }}">
+				<span id="edit_{{event.id}}"  data-eventid="{{event.id}}"  data-action="edit" class="edit-icon fa fa-lg fa-edit" style="text-align:right;"></span>
+				</a>
 				<ul id="checkin0" class="events_list list-unstyled">
 				{% for event_role in event.eventrole_set.all %}		
 					<div style="border-bottom: 1px solid #eee;">{{event_role.role.title}}<br></div>
 						<ul class="events_list list-unstyled">
 						{% for member_response in event_role.memberresponse_set.all %}
+						{% for member_attendance in member_response_attendance%}
+						{% if member_response.event_role_id == member_attendance.event_role_id and member_response.member_id == member_attendance.member_id%}
 						{% if member_response.response == 'Y' %}
-            			<li>
-            				
-            				{% if member_attendance|attending:3 == "N" %}
-            				{{ member_attendance|attending:3 }}
-            				<span id="event_attend-{{event.id}}_{{ member_response.member.id }}_status_icon" class="fa fa-circle status-icon attending-icon"></span>
+            			<li data-toggle="tooltip" data-placement="right" title="INN: {{member_attendance.time_checkin|time:'H:i:s'}} ÚT: {{member_attendance.time_checkout|time:'H:i:s'}}">
+            				{% if member_attendance.attendance %}
+            					{% if member_attendance.attendance and member_attendance.time_checkout != null %}
+            					<span id="event_attend-{{event.id}}_{{ member_response.member.id }}_status_icon" class="fa fa-lg fa-check-square status-icon " style="color:red"></span>
+            					{% elif member_attendance.time_checkout == null %}
+            					<span id="event_attend-{{event.id}}_{{ member_response.member.id }}_status_icon" class="fa fa-lg fa-check-square status-icon " style="color:green"></span>
+            					{% endif %}
             				{% else %}
-            				<span id="event_attend-{{event.id}}_{{ member_response.member.id }}_status_icon" class="fa fa-circle status-icon unclear-icon"></span>
+            				<span id="event_attend-{{event.id}}_{{ member_response.member.id }}_status_icon" class="fa fa-lg fa-check-square status-icon "></span>
             				{% endif %}
-            			{{ member_response.member }}{{ event_role.title }}
+            			{{ member_response.member }}
             			<span class="response-icons">
-						<span id="attend-{{event.id}}_{{ member_response.member.id }}" data-member="{{ member_response.member.id }}" data-eventid="{{event.id}}" data-roleid="{{event_role.role.id}}" data-action="attend" data-eventroleid="{{event_role.id}}" class="respond-icon fa fa-plus-circle"></span>
+            				{% if member_attendance.attendance and member_attendance.time_checkout == null %}
+            					<span id="attend-{{event.id}}_{{ member_response.member.id }}" data-member="{{ member_response.member.id }}" data-eventid="{{event.id}}" data-roleid="{{event_role.role.id}}" data-action="checkout" data-eventroleid="{{event_role.id}}" class="respond-icon fa fa-lg fa-sign-out" ></span>
+							{% elif member_attendance.attendance and member_attendance.time_checkout != null%}
+							
+							{% else %}
+							<span id="attend-{{event.id}}_{{ member_response.member.id }}" data-member="{{ member_response.member.id }}" data-eventid="{{event.id}}" data-roleid="{{event_role.role.id}}" data-action="attend" data-eventroleid="{{event_role.id}}" class="respond-icon fa fa-lg fa-sign-in"></span>
+							{% endif %}
 						</span>
+
 						</li>{% endif %}
+						{% endif %}
+						{% endfor %}
 						{% endfor %}
                			</ul>
-
 				{% endfor %}
 				</ul>
 				</section>
-			</div>
-		{% elif forloop.counter == 5 %}
-	</div>
-	<div class="row" id="2">
-		<div class="col-lg-3" height:400px>
-				<section id="vidburdir">
-				<h2 class="list-group-item-heading">{{event.title}}</h2>
-				<ul id="checkin0" class="events_list list-unstyled">
-				{% for event_role in event.eventrole_set.all %}		
-					<div style="border-bottom: 1px solid #eee;">{{event_role.role.title}}<br></div>
-						<ul class="events_list list-unstyled">
-         				{% for member_response in event_role.memberresponse_set.all %}
-            			{% if member_response.response == 'Y' %}
-            			<li>
-            			<span id="event_attend-{{event.id}}_{{ member_response.member.id }}_status_icon" class="fa fa-circle status-icon unclear-icon"></span>
-            			{{ member_response.member }}{{ event_role.title }}
-            			<span class="response-icons">
-						<span id="attend-{{event.id}}_{{ member_response.member.id }}" data-member="{{ member_response.member.id }}" data-eventid="{{event.id}}" data-roleid="{{event_role.role.id}}" data-action="attend" data-eventroleid="{{event_role.id}}" class="respond-icon fa fa-plus-circle"></span>
-						</span>
-            			</li>{% endif %}
-         				{% endfor %}
-               			</ul>
-               		</div>
-				{% endfor %}
-				</ul>
-				</section>
-		</div>
-			
-		{% elif forloop.counter > 4 and forloop.counter < 8 %}
-			<div class="col-lg-3">
-				<section id="vidburdir">
-				<h2 class="list-group-item-heading">{{event.title}}</h2>
-				<ul id="checkin0" class="events_list list-unstyled">
-				{% for event_role in event.eventrole_set.all %}		
-					<div style="border-bottom: 1px solid #eee;">{{event_role.role.title}}<br></div>
-						<ul class="events_list list-unstyled">
-         				{% for member_response in event_role.memberresponse_set.all %}
-            			{% if member_response.response == 'Y' %}
-            			<li>
-            			<span id="event_attend-{{event.id}}_{{ member_response.member.id }}_status_icon" class="fa fa-circle status-icon unclear-icon"></span>
-            			{{ member_response.member }}{{ event_role.title }}
-            			<span class="response-icons">
-						<span id="attend-{{event.id}}_{{ member_response.member.id }}" data-member="{{ member_response.member.id }}" data-eventid="{{event.id}}" data-roleid="{{event_role.role.id}}" data-action="attend" data-eventroleid="{{event_role.id}}" class="respond-icon fa fa-plus-circle"></span>
-						</span>
-            			</li>{% endif %}
-         				{% endfor %}
-               			</ul>
-				{% endfor %}
-				</ul>
-				</section>
-			</div>
-		{% elif forloop.counter == 8 %}
-			<div class="col-lg-3">
-				<section id="vidburdir">
-				<h2 class="list-group-item-heading">{{event.title}}</h2>
-				<ul id="checkin0" class="events_list list-unstyled">
-				{% for event_role in event.eventrole_set.all %}		
-					<div style="border-bottom: 1px solid #eee;">{{event_role.role.title}}<br></div>
-						<ul class="events_list list-unstyled">
-         				{% for member_response in event_role.memberresponse_set.all %}
-            			{% if member_response.response == 'Y' %}
-            			<li>
-            			<span id="event_attend-{{event.id}}_{{ member_response.member.id }}_status_icon" class="fa fa-circle status-icon unclear-icon"></span>
-            			{{ member_response.member }}{{ event_role.title }}
-            			<span class="response-icons">
-						<span id="attend-{{event.id}}_{{ member_response.member.id }}" data-member="{{ member_response.member.id }}" data-eventid="{{event.id}}" data-roleid="{{event_role.role.id}}" data-action="attend" data-eventroleid="{{event_role.id}}" class="respond-icon fa fa-plus-circle"></span>
-						</span>
-            			</li>{% endif %}
-         				{% endfor %}
-               			</ul>
-				{% endfor %}
-				</ul>
-				</section>
-			</div>
-		</div>
+			</div>		
 		{% endif %}
 	{% endfor %}
 </div>

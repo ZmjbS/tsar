@@ -41,6 +41,19 @@ function checkin(button, pagetype) {
 			case "Checkin":
 				if (action == 'attend') {
 					$('#event_'+$(button).attr('id')+'_status_icon').css('color', 'rgb(70, 136, 71)');
+					$('#event_'+$(button).attr('id')+'_status_icon').removeClass('fa-circle');
+					$('#event_'+$(button).attr('id')+'_status_icon').addClass('fa-check-square');
+
+					//$('#testaa').show();
+					$('#e_'+$(button).attr('id')).show();
+					$(button).data("action", "checkout");
+					$('#'+$(button).attr('id')).removeClass('fa-sign-in');
+					$('#'+$(button).attr('id')).addClass('fa-sign-out');
+				};
+
+				if (action == 'checkout') {
+					$('#'+$(button).attr('id')).hide();
+					$('#event_'+$(button).attr('id')+'_status_icon').css('color', 'red');
 				};
 			break;
 		}
