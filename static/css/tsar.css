@@ -196,11 +196,25 @@ div.tagtype-container { height: 2.2em; }
 /* Sérverkefni */
 .event_type-8 { background-color: blue; }
 
+/*Útkall - Rauður
+
+Æfing - Rauður
+Vinnufundur - Fjólublár
+Fundur - Blár
+
+Fjáröflun - Sægrænn
+Sérverkefni - Sægrænn
+
+Ferð - Grænn
+Skemmtun - Grænn
+
+Námskeið - Appelsínugulur
+*/
+
+.fc-sat, .fc-sun { background-color: #F6F0C7; }
 .fc-today { background-color: #DFF0D8; }
 .fc-today .fc-day-number { color: #3C763D; }
 .fc-today .fc-day-content { border-top: 1px solid #D6E9C6; }
-
-.fc-sat, .fc-sun { background-color: #F6F0C7; }
 
 .notinvited-icon { color: #ffffff; }
 
