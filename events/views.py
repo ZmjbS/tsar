@@ -7,6 +7,9 @@ from events.models import Role, EventType, Event, EventRole, EventCreation, Even
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
+from django.contrib import messages
+from django.core.mail import send_mail
+from django.conf import settings
 
 from django.utils import timezone
 
@@ -645,9 +648,18 @@ def save_event(request):
 						print '++ Group {} is not invited: Create GroupInvitation!'.format(group)
 						gi = GroupInvitation(event_role=eventrole, group=group)
 						print '++ GroupInvitation created: '.format(gi)
+
 						try:
 							gi.clean_fields()
 							gi.save()
+							for member in Member.objects.select_related('user').filter(group=group):
+								subject = eventrole.event.title+' - '+eventrole.role.title
+								titlerole = eventrole.role.title
+								message = 'Vinsamlegast farðu inn á innri.spori.is og tikynntu hvort þú munir koma eða ekki.'
+								from_email = settings.EMAIL_HOST_USER
+								to_list = [member.user.email,settings.EMAIL_HOST_USER]
+								send_mail(subject,message,from_email,to_list,fail_silently=True)
+								print 'Mail sent to' +member.user.first_name
 							print '++ GroupInvitation saved'
 						except:
 							print 'ERROR: Could not save GroupInvitation {}'.format(gi)
@@ -664,6 +676,15 @@ def save_event(request):
 						try:
 							mi.clean_fields()
 							mi.save()
+							print member.user.email
+							subject = eventrole.event.title+' - '+eventrole.role.title
+							print eventrole.role.title
+							titlerole = eventrole.role.title
+							message = 'Vinsamlegast farðu inn á innri.spori.is og tikynntu hvort þú munir koma eða ekki.'
+							print message
+							from_email = settings.EMAIL_HOST_USER
+							to_list = [member.user.email,settings.EMAIL_HOST_USER]
+							send_mail(subject,message,from_email,to_list,fail_silently=True)
 							print '++ MemberInvitation saved'
 						except:
 							print 'ERROR: Could not save MemberInvitation {}'.format(mi)

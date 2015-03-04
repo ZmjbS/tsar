@@ -27,13 +27,13 @@ $(document).ready(function(){
 	<div class="row" id="1">
 	{% for event in events_list %}
 		{% if forloop.counter < 9 %}	
-			<div class="col-lg-3">
+			<div class="col-lg-3 col-md-6">
 				<section id="vidburdir">
 				<h2 class="list-group-item-heading" style="display:inline;">{{event.title}}</h2>
 				<a href="/checkin/edit/{{ event.id }}">
 				<span id="edit_{{event.id}}"  data-eventid="{{event.id}}"  data-action="edit" class="edit-icon fa fa-lg fa-edit" style="text-align:right;"></span>
 				</a>
-				<ul id="checkin0" class="events_list list-unstyled">
+				<ul id="checkin" class="events_list list-unstyled">
 				{% for event_role in event.eventrole_set.all %}		
 					<div style="border-bottom: 1px solid #eee;">{{event_role.role.title}}<br></div>
 						<ul class="events_list list-unstyled">
@@ -41,7 +41,7 @@ $(document).ready(function(){
 						{% for member_attendance in member_response_attendance%}
 						{% if member_response.event_role_id == member_attendance.event_role_id and member_response.member_id == member_attendance.member_id%}
 						{% if member_response.response == 'Y' %}
-            			<li data-toggle="tooltip" data-placement="right" title="INN: {{member_attendance.time_checkin|time:'H:i:s'}} ÚT: {{member_attendance.time_checkout|time:'H:i:s'}}">
+            			<li id="event_attend-{{event.id}}_{{ member_response.member.id }}_tooltip"data-toggle="tooltip" data-placement="right" title="INN: {{member_attendance.time_checkin|time:'H:i:s'}} &#013; ÚT: {{member_attendance.time_checkout|time:'H:i:s'}}">
             				{% if member_attendance.attendance %}
             					{% if member_attendance.attendance and member_attendance.time_checkout != null %}
             					<span id="event_attend-{{event.id}}_{{ member_response.member.id }}_status_icon" class="fa fa-lg fa-check-square status-icon " style="color:red"></span>

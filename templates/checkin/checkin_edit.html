@@ -1,0 +1,213 @@
+{% extends "tsar.html" %}
+{% load app_tags %}
+
+{% block head %}
+
+<script type="text/javascript" src="/static/js/development-bundle/ui/jquery-ui-1.8.21.custom.js"></script>
+<script type="text/javascript" src="/static/js/development-bundle/ui/minified/jquery.ui.datepicker.min.js"></script>
+<script type="text/javascript" src="/static/js/development-bundle/ui/ui.datepicker-is.js"></script>
+<script type="text/javascript" src="/static/js/jquery-ui-timepicker-addon.js"></script>
+<link type="text/css" rel="stylesheet" href="/static/js/css/ui-lightness/jquery-ui-1.8.21.custom.css" />
+<script type="text/javascript" src="/static/js/chosen.jquery.min.js"></script>
+<link type="text/css" rel="stylesheet" href="/static/css/chosen.css" />
+<script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
+<style>
+	/* css for timepicker */
+	//.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+	//.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+	//.ui-timepicker-div dl { text-align: left; }
+	//.ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
+	//.ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }
+	//.ui-timepicker-div td { font-size: 90%; }
+	//.ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
+</style>
+<style>
+.events_list { list-style: none; margin-left: 0.3em; }
+.overflow { display: none; }
+.h5 { color: liturinn; background-color: bakgrunnurinn; }
+.fill {height: 100%;}
+.container-fluid {}
+</style>
+<script>
+$(document).ready(function(){
+
+   	$('.datetimepicker').datetimepicker({
+   		onClose: function(selectedDateTime){
+   			var str = this.id;
+   			var hidden = str + "_h";
+   			$(document.getElementById(hidden)).attr('data-changed', 'true');
+   			$(document.getElementById(hidden)).attr('value', selectedDateTime);
+   		}
+   	});
+
+
+}); // End ready
+$('.role-dropdown-item').live('click',(function(){
+		role_id = "1";
+		role_title = "22";
+		$(this).remove();
+	node=		'<div>'
+		+			'<select name="role1][participants][]" data-placeholder="Veldu þátttakanda" class="select-participants" onchange="select_onchange(this)">'
+		+				'{% for member in members %}'
+		+					'<option value="{{ member.id }}">{{ member }}</option>'
+		+				'{% endfor %}'
+		+			'</select>'
+		+		'</div>' 
+		$('#selector').append(node).children(':last').hide().fadeIn({ duration: 400, queue: false });
+		$('.select-participants').chosen();
+	}));
+
+// enable checkbox and datetime fields for additional input
+function select_onchange(selector) {
+	document.getElementById("attended").disabled = false;
+	document.getElementById("attended").checked = true;
+	checkbox_onchange(document.getElementById("attended"));
+	document.getElementById("checkin").disabled = false;
+	document.getElementById("checkout").disabled = false;
+	$(document.getElementById("attended")).attr('data-member', selector.value);
+	$(document.getElementById("checkin")).attr('data-member', selector.value);
+	$(document.getElementById("checkout")).attr('data-member', selector.value);
+	$(document.getElementById("attended_h")).attr('data-member', selector.value);
+	$(document.getElementById("checkin_h")).attr('data-member', selector.value);
+	$(document.getElementById("checkout_h")).attr('data-member', selector.value);
+}
+
+function checkbox_onchange(checkbox) {
+	//	Checkin time set to now for members who do not have attendance registered.
+	var str = checkbox.id;
+	var nstr = str.replace("attended", "checkin");
+	var hidden = str + "_h";
+	var h_checkin = str.replace("attended", "checkin");
+	var h_checkout = str.replace("attended", "checkout");
+	document.getElementById(h_checkin).disabled = false;
+	document.getElementById(h_checkout).disabled = false;
+	$(document.getElementById(hidden)).attr('data-changed', 'true');
+	//	Set datetime now if the checkbox is checked.
+	if (document.getElementById(nstr).value == ""){	
+		var currentdate = new Date();
+		var datetime =	currentdate.getFullYear() + "-"
+				+ ('0'+(currentdate.getMonth()+1)).slice(-2) + "-" 
+				+ ('0'+currentdate.getDate()).slice(-2) + " " 
+                + ('0'+currentdate.getHours()).slice(-2) + ":"  
+                + ('0'+currentdate.getMinutes()).slice(-2) 
+		document.getElementById(nstr).value = datetime;
+		document.getElementById(nstr+"_h").value = datetime;
+		$(document.getElementById(nstr+"_h")).attr('data-changed', 'true');
+		$(document.getElementById(hidden)).attr('value', 'true');
+	}
+	//	Set datetime to null if the checkbox is unchecked.
+	else {
+		document.getElementById(nstr).value = "";
+	}
+}
+function submit_form(event_id){
+	inputs = $("input");
+	var array = [];
+	var arr = [];
+
+	// Get all the changed elements and add them to an array
+	for (index = 0; index < inputs.length; ++index) {
+		if(inputs[index].id.indexOf('check') >= 0){
+			if(inputs[index].getAttribute("data-changed") == "true"){
+				id = (inputs[index].id).replace("_h", "");
+				item = $("#"+id);
+				member = item.data("member");
+				role_id = item.data("roleid");
+				value = inputs[index].getAttribute("value");
+				console.log(value);
+				//arr = [id,member,role_id,value];
+				arr = {id: id,member: member,role_id: role_id,value: value};
+				console.log(arr);
+				
+				array.push(arr);
+			}
+		}
+	}
+	//console.log(array);
+
+	//Time to post some shit!
+	var node='init';
+	var jsonText = JSON.stringify(array);
+	//console.log(jsonText)
+	var posting = $.post("/checkin/edit/checkin", {'data': jsonText, 'event_id': event_id,});
+	var csrftoken = $.cookie('csrftoken');
+	console.log(csrftoken);
+	posting.done(function(data, node) {
+		obj = JSON && JSON.parse(data) || $.parseJSON(data);
+	console.log('Redirecting...')
+	window.location = "../../";
+	});
+}
+function cancel(){
+	window.location = "../../";
+}
+</script>
+{% endblock %}
+
+{% block page_title %}<h1>{{event.title}}</h1>{% endblock %}
+
+{% block content %}
+<style>
+.container-fluid {}
+</style>
+{% load app_tags %}
+<div class="container-fluid fill">
+	<div class="row" id="1">
+		<div class="col-lg-6">
+			<section id="invited">
+			{% for event_role in roledata %}
+				<h3>{{event_role.title}}</h3>
+				<table id="group_members_list" class="table-hover table-condensed table tablesorter">
+					<thead>
+						<tr>
+							<th>Nafn</th>
+							<th>Mætt/ur</th>
+							<th>Mætti</th>
+							<th>Fór</th>
+							<th style="width:1.1em;"></th>
+							</thead>
+					<tbody>
+				{% for member in event_role.invited_members %}
+						<tr>
+							<td class="member_name"><a href="/felagi/{{member.user.username }}">{{member}}{{member.id}}</a></td>
+							{% with member_id=member.id|stringformat:'d'|add:"t" eventrole=event_role.eventrole.id|stringformat:'d'|add:"t" %}{% with key=member_id|add:" "|add:eventrole %}
+							{% if attendances|get_item:key != None %}{%with attendance=attendances|get_item:key %}
+							<td><input id="{{member.id}}_{{event_role.eventrole.id}}_attended" class="edit-interface-checkbox" type="checkbox" checked />
+								<input id="{{member.id}}_{{event_role.eventrole.id}}_attended_h" type="hidden" data-value="" data-member="{{member.id}}" data-roleid="{{event_role.eventrole.id}}"/></td>
+							<td><input id="{{member.id}}_{{event_role.eventrole.id}}_checkin" class="edit-interface-datetime datetimepicker" type="datetime" value="{{attendance.time_checkin|date:"Y-m-d H:i"}}" data-member="{{member.id}}" data-roleid="{{event_role.eventrole.id}}"/>
+								<input id="{{member.id}}_{{event_role.eventrole.id}}_checkin_h" type="hidden" class="edit-interface-datetime" type="datetime" value="" data-member="{{member.id}}" data-roleid="{{event_role.eventrole.id}}" /></td>
+							<td><input id="{{member.id}}_{{event_role.eventrole.id}}_checkout" class="edit-interface-datetime datetimepicker" type="datetime" value="{{attendance.time_checkout|date:"Y-m-d H:i"}}" data-member="{{member.id}}" data-roleid="{{event_role.eventrole.id}}"/>
+							<input id="{{member.id}}_{{event_role.eventrole.id}}_checkout_h" type="hidden" class="edit-interface-datetime" type="datetime" value="" data-member="{{member.id}}" data-roleid="{{event_role.eventrole.id}}"/></td>
+							{%endwith%}
+							{% else%}
+							<td><input id="{{member.id}}_{{event_role.eventrole.id}}_attended" class="edit-interface-checkbox" type="checkbox" onchange="checkbox_onchange(this)"/>
+							<input id="{{member.id}}_{{event_role.eventrole.id}}_attended_h" type="hidden" data-changed="false" data-value="" data-member="{{member.id}}" data-roleid="{{event_role.eventrole.id}}"/></td>
+							<td><input id="{{member.id}}_{{event_role.eventrole.id}}_checkin" class="edit-interface-text datetimepicker" type="datetime" disabled data-member="{{member.id}}" data-roleid="{{event_role.eventrole.id}}"/>
+							<input id="{{member.id}}_{{event_role.eventrole.id}}_checkin_h" type="hidden" class="edit-interface-datetime" type="datetime" value="" data-member="{{member.id}}" data-roleid="{{event_role.eventrole.id}}"/></td>
+							<td><input id="{{member.id}}_{{event_role.eventrole.id}}_checkout" class="edit-interface-text datetimepicker" type="datetime" disabled data-member="{{member.id}}" data-roleid="{{event_role.eventrole.id}}"/>
+							<input id="{{member.id}}_{{event_role.eventrole.id}}_checkout_h" type="hidden" class="edit-interface-datetime" type="datetime" value="" data-member="{{member.id}}" data-roleid="{{event_role.eventrole.id}}"/></td>
+							{% endif %}
+							
+						{%endwith%}{%endwith%}
+						</tr>
+				{% endfor %}
+						<tr>
+							<td id="selector"><input id="select" class="edit-interface-text role-dropdown-item" type="text" /></td>
+							<td><input id="attended" class="edit-interface-checkbox" type="checkbox" disabled onchange="checkbox_onchange(this)"
+								data-member="" data-roleid="{{event_role.id}}">
+								<input id="attended_h" type="hidden" data-changed="false" data-value="" data-member="" data-roleid="{{event_role.eventrole.id}}"/></td>
+							<td><input id="checkin" class="edit-interface-text datetimepicker" type="datetime" disabled data-member="" data-roleid="{{event_role.eventrole.id}}"/>
+								<input id="checkin_h" type="hidden" class="edit-interface-datetime" type="datetime" value="" data-member="" data-roleid="{{event_role.eventrole.id}}"/></td>
+							<td><input id="checkout" class="edit-interface-text datetimepicker" type="datetime" disabled data-member="" data-roleid="{{event_role.eventrole.id}}"/>
+								<input id="checkout_h" type="hidden" class="edit-interface-datetime" type="datetime" value="" data-member="" data-roleid="{{event_role.eventrole.id}}"/></td>
+						</tr>
+					</tbody>
+				</table>
+			{% endfor %}
+			<button type="submit" class="btn btn-primary" onclick="submit_form({{event.id}})">Vista</button>
+			<button type="button" class="btn btn-danger" onclick="cancel()">Hætta við</button>
+			</section>
+		</div>
+	</div>
+</div>
+{% endblock %}
