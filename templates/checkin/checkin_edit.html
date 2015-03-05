@@ -43,33 +43,38 @@ $(document).ready(function(){
 
 }); // End ready
 $('.role-dropdown-item').live('click',(function(){
-		role_id = "1";
-		role_title = "22";
+
+		//First find the id of the selector
+		var str = this.id;
+		//Remove the old input field
 		$(this).remove();
 	node=		'<div>'
-		+			'<select name="role1][participants][]" data-placeholder="Veldu þátttakanda" class="select-participants" onchange="select_onchange(this)">'
+		+			'<select id="'+str+'" name="role1][participants][]" data-placeholder="Veldu þátttakanda" class="select-participants" onchange="select_onchange(this)">'
 		+				'{% for member in members %}'
 		+					'<option value="{{ member.id }}">{{ member }}</option>'
 		+				'{% endfor %}'
 		+			'</select>'
 		+		'</div>' 
-		$('#selector').append(node).children(':last').hide().fadeIn({ duration: 400, queue: false });
+		//Find the correct location for the new node and place it there.
+		var element = document.getElementById(str);
+		$(element).append(node).children(':last').hide().fadeIn({ duration: 400, queue: false });
 		$('.select-participants').chosen();
 	}));
 
 // enable checkbox and datetime fields for additional input
 function select_onchange(selector) {
-	document.getElementById("attended").disabled = false;
-	document.getElementById("attended").checked = true;
-	checkbox_onchange(document.getElementById("attended"));
-	document.getElementById("checkin").disabled = false;
-	document.getElementById("checkout").disabled = false;
-	$(document.getElementById("attended")).attr('data-member', selector.value);
-	$(document.getElementById("checkin")).attr('data-member', selector.value);
-	$(document.getElementById("checkout")).attr('data-member', selector.value);
-	$(document.getElementById("attended_h")).attr('data-member', selector.value);
-	$(document.getElementById("checkin_h")).attr('data-member', selector.value);
-	$(document.getElementById("checkout_h")).attr('data-member', selector.value);
+	var str = selector.id.substring(7);
+	document.getElementById(str+"_attended").disabled = false;
+	document.getElementById(str+"_attended").checked = true;
+	checkbox_onchange(document.getElementById(str+"_attended"));
+	document.getElementById(str+"_checkin").disabled = false;
+	document.getElementById(str+"_checkout").disabled = false;
+	$(document.getElementById(str+"_attended")).attr('data-member', selector.value);
+	$(document.getElementById(str+"_checkin")).attr('data-member', selector.value);
+	$(document.getElementById(str+"_checkout")).attr('data-member', selector.value);
+	$(document.getElementById(str+"_attended_h")).attr('data-member', selector.value);
+	$(document.getElementById(str+"_checkin_h")).attr('data-member', selector.value);
+	$(document.getElementById(str+"_checkout_h")).attr('data-member', selector.value);
 }
 
 function checkbox_onchange(checkbox) {
@@ -169,7 +174,7 @@ function cancel(){
 					<tbody>
 				{% for member in event_role.invited_members %}
 						<tr>
-							<td class="member_name"><a href="/felagi/{{member.user.username }}">{{member}}{{member.id}}</a></td>
+							<td class="member_name"><a href="/felagi/{{member.user.username }}">{{member}}</a></td>
 							{% with member_id=member.id|stringformat:'d'|add:"t" eventrole=event_role.eventrole.id|stringformat:'d'|add:"t" %}{% with key=member_id|add:" "|add:eventrole %}
 							{% if attendances|get_item:key != None %}{%with attendance=attendances|get_item:key %}
 							<td><input id="{{member.id}}_{{event_role.eventrole.id}}_attended" class="edit-interface-checkbox" type="checkbox" checked />
@@ -192,14 +197,14 @@ function cancel(){
 						</tr>
 				{% endfor %}
 						<tr>
-							<td id="selector"><input id="select" class="edit-interface-text role-dropdown-item" type="text" /></td>
-							<td><input id="attended" class="edit-interface-checkbox" type="checkbox" disabled onchange="checkbox_onchange(this)"
+							<td id="select_{{event_role.eventrole.id}}"><input id="select_{{event_role.eventrole.id}}" class="edit-interface-text role-dropdown-item" type="text" /></td>
+							<td><input id="{{event_role.eventrole.id}}_attended" class="edit-interface-checkbox" type="checkbox" disabled onchange="checkbox_onchange(this)"
 								data-member="" data-roleid="{{event_role.id}}">
-								<input id="attended_h" type="hidden" data-changed="false" data-value="" data-member="" data-roleid="{{event_role.eventrole.id}}"/></td>
-							<td><input id="checkin" class="edit-interface-text datetimepicker" type="datetime" disabled data-member="" data-roleid="{{event_role.eventrole.id}}"/>
-								<input id="checkin_h" type="hidden" class="edit-interface-datetime" type="datetime" value="" data-member="" data-roleid="{{event_role.eventrole.id}}"/></td>
-							<td><input id="checkout" class="edit-interface-text datetimepicker" type="datetime" disabled data-member="" data-roleid="{{event_role.eventrole.id}}"/>
-								<input id="checkout_h" type="hidden" class="edit-interface-datetime" type="datetime" value="" data-member="" data-roleid="{{event_role.eventrole.id}}"/></td>
+								<input id="{{event_role.eventrole.id}}_attended_h" type="hidden" data-changed="false" data-value="" data-member="" data-roleid="{{event_role.eventrole.id}}"/></td>
+							<td><input id="{{event_role.eventrole.id}}_checkin" class="edit-interface-text datetimepicker" type="datetime" disabled data-member="" data-roleid="{{event_role.eventrole.id}}"/>
+								<input id="{{event_role.eventrole.id}}_checkin_h" type="hidden" class="edit-interface-datetime" type="datetime" value="" data-member="" data-roleid="{{event_role.eventrole.id}}"/></td>
+							<td><input id="{{event_role.eventrole.id}}_checkout" class="edit-interface-text datetimepicker" type="datetime" disabled data-member="" data-roleid="{{event_role.eventrole.id}}"/>
+								<input id="{{event_role.eventrole.id}}_checkout_h" type="hidden" class="edit-interface-datetime" type="datetime" value="" data-member="" data-roleid="{{event_role.eventrole.id}}"/></td>
 						</tr>
 					</tbody>
 				</table>
