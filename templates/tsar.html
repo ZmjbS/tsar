@@ -1,31 +1,32 @@
+{% load staticfiles %}
 <!DOCTYPE html>
 <html lang="is">
 <head>
 	<meta charset="utf-8" />
 <!-- Reset for HTML5 -->
-<!--	<link type="text/css" rel="stylesheet" href="/static/css/html-5-reset.css" />-->
+<!--	<link type="text/css" rel="stylesheet" href="{% static "css/html-5-reset.css" %}" />-->
 <!-- jQuery -->
-<script type="text/javascript" src="/static/js/jquery.min.js"></script>
+<script type="text/javascript" src="{% static "js/jquery.min.js" %}"></script>
 <!--
 	<script src="http://code.jquery.com/jquery-1.9.0.js"></script>
 	<script src="http://code.jquery.com/jquery-migrate-1.2.1.js"></script>
 -->
 
-	<script type="text/javascript" src="/static/js/jquery.autosize-min.js"></script>
+	<script type="text/javascript" src="{% static "js/jquery.autosize-min.js" %}"></script>
 <!-- serializeJSON is used to gather form data and put it on JSON form for a post request. -->
-	<script type="text/javascript" src="/static/js/jquery.serializeJSON.min.js"></script>
+	<script type="text/javascript" src="{% static "js/jquery.serializeJSON.min.js" %}"></script>
 <!-- Bootstrap -->
-	<link type="text/css" rel="stylesheet" href="/static/css/bootstrap.min.css" />
-	<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+	<link type="text/css" rel="stylesheet" href="{% static "css/bootstrap.min.css" %}" />
+	<script type="text/javascript" src="{% static "js/bootstrap.min.js" %}"></script>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Font Awesome is awesome. Provides a bunch of icons as font characters. Supercedes the Bootstrap icons. -->
-	<link type="text/css" rel="stylesheet" href="/static/css/font-awesome.min.css">
+	<link type="text/css" rel="stylesheet" href="{% static "css/font-awesome.min.css" %}">
 <!-- Add per-template options. -->
 	{% block head %}{% endblock %}
 <!-- Override styles with TSAR specific styling and add TSAR scripts -->
-	<link type="text/css" rel="stylesheet" href="/static/css/tsar.css"  />
-	<script type="text/javascript" src="/static/js/tsar.js"></script>
-	<link rel="icon" type="image/png" href="/static/img/hssr-favicon-16px.png" />
+	<link type="text/css" rel="stylesheet" href="{% static "css/tsar.css" %}"  />
+	<script type="text/javascript" src="{% static "js/tsar.js" %}"></script>
+	<link rel="icon" type="image/png" href="{% static "img/hssr-favicon-16px.png" %}" />
 
 	<title>{% block title %}Innra svæði HSSR{% endblock %}</title>
 
@@ -91,11 +92,11 @@
 <div style="float:right;">
 	<a href="http://validator.w3.org/check/referer"><img
 		width="80" height="15"
-		src="/static/img/valid-html5-raunvis.png"
+		src="{% static "img/valid-html5-raunvis.png" %}"
 		alt="Valid HTML 5!" /></a>
 	<a href="http://jigsaw.w3.org/css-validator/"><img
 		width="80" height="15"
-		src="/static/img/valid-css2.1-raunvis.png" 
+		src="{% static "img/valid-css2.1-raunvis.png" %}" 
 		alt="Valid CSS!" /></a>
 </div>
 

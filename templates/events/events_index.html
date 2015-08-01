@@ -1,10 +1,12 @@
 {% extends "tsar.html" %}
+{% load staticfiles %}
+
 {% block page_title %}{% endblock %}
 
 {% block head %}
-<link rel='stylesheet' type='text/css' href='/static/css/fullcalendar.css' />
-<!--<script type='text/javascript' src='/static/js/fullcalendar.min.js'></script>-->
-<script type='text/javascript' src='/static/js/fullcalendar.mod.js'></script>
+<link rel='stylesheet' type='text/css' href='{% static "css/fullcalendar.css" %}' />
+<!--<script type='text/javascript' src='{% static "js/fullcalendar.min.js" %}'></script>-->
+<script type='text/javascript' src='{% static "js/fullcalendar.mod.js" %}'></script>
 <script type='text/javascript'>
 $(document).ready(function() {
 

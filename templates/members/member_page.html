@@ -1,8 +1,9 @@
 {% extends "tsar.html" %}
+{% load staticfiles %}
 
 {% block head %}
-	<script type="text/javascript" src="/static/js/chosen.jquery.min.js"></script>
-	<link type="text/css" rel="stylesheet" href="/static/css/chosen.css" />
+	<script type="text/javascript" src="{% static "js/chosen.jquery.min.js" %}"></script>
+	<link type="text/css" rel="stylesheet" href="{% static "css/chosen.css" %}" />
 <style type="text/css">
 .edit-interface { display: none; }
 </style>
@@ -38,7 +39,7 @@ $(document).ready(function(){
 					</dl>
 				</div>
 				<div class="col-xs-6">
-			<div id="profile-picture"><img src="/static/img/hssr-merki.png" alt="Member profile picture" class="img-responsive" /></div>
+			<div id="profile-picture"><img src="{% static "img/hssr-merki.png" %}" alt="Member profile picture" class="img-responsive" /></div>
 				</div>
 			</div>
 		</section>

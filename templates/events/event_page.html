@@ -1,4 +1,5 @@
 {% extends "tsar.html" %}
+{% load staticfiles %}
 
 {% block head %}
 <style>
@@ -21,13 +22,13 @@ div[id*='tag_type_id'] { width: 100% !important; }
 //[class*='event_type_id'] { display: none; }
 
 </style>
-<script type="text/javascript" src="/static/js/tsar.events.js"></script>
+<script type="text/javascript" src="{% static "js/tsar.events.js" %}"></script>
 <!-- jQuery tinysort -->
-	<script type="text/javascript" src="/static/js/jquery.tinysort.min.js"></script>
-	<script type="text/javascript" src="/static/js/jquery.tinysort.charorder.min.js"></script>
-<script type="text/javascript" src="/static/js/chosen.jquery.min.js"></script>
-<link type="text/css" rel="stylesheet" href="/static/css/chosen.css" />
-<script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
+	<script type="text/javascript" src="{% static "js/jquery.tinysort.min.js" %}"></script>
+	<script type="text/javascript" src="{% static "js/jquery.tinysort.charorder.min.js" %}"></script>
+<script type="text/javascript" src="{% static "js/chosen.jquery.min.js" %}"></script>
+<link type="text/css" rel="stylesheet" href="{% static "css/chosen.css" %}" />
+<script type="text/javascript" src="{% static "js/jquery.cookie.js" %}"></script>
 <script type="text/javascript">
 
 console.log('reading document!!');
@@ -480,7 +481,7 @@ function updateEnabledSelect(id) {
 
 					<!--
 				<div id="event_location-map" class="col-md-6">
-					<img src="/static/img/hengill-husmuli.png" alt="kort" style="width:100%;"/>
+					<img src="{% static "img/hengill-husmuli.png" %}" alt="kort" style="width:100%;"/>
 				</div>
 					-->
 					<!-- /#event_location-map -->

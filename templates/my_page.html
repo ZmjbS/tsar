@@ -1,4 +1,5 @@
 {% extends "tsar.html" %}
+{% load staticfiles %}
 {% load humanize %}
 
 {% block head %}
@@ -7,7 +8,7 @@
 .event_responder.inactive * { color: #ddd !important; }
 .invitedroles_number { color: #ddd; }
 </style>
-<script type="text/javascript" src="/static/js/tsar.events.js"></script>
+<script type="text/javascript" src="{% static "js/tsar.events.js" %}"></script>
 <script>
 
 $(document).ready(function(){

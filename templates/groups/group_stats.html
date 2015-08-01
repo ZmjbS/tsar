@@ -1,19 +1,20 @@
 {% extends "tsar.html" %}
+{% load staticfiles %}
 {% load humanize %}
 
 {% block head %}
-	<!--<script type="text/javascript" src="/static/js/development-bundle/ui/jquery-ui-1.8.21.custom.js"></script>-->
-	<script type="text/javascript" src="/static/js/chosen.jquery.min.js"></script>
-	<link type="text/css" rel="stylesheet" href="/static/css/chosen.css" />
+	<!--<script type="text/javascript" src="{% static "js/development-bundle/ui/jquery-ui-1.8.21.custom.js" %}"></script>-->
+	<script type="text/javascript" src="{% static "js/chosen.jquery.min.js" %}"></script>
+	<link type="text/css" rel="stylesheet" href="{% static "css/chosen.css" %}" />
 <!-- Added for proper sorting: -->
-	<script type="text/javascript" src="/static/js/sugar-1.3.9-custom.min.js"></script>
+	<script type="text/javascript" src="{% static "js/sugar-1.3.9-custom.min.js" %}"></script>
 <!-- Added for charting: -->
 	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <!-- jQuery tablesorter -->
-	<script type="text/javascript" src="/static/js/jquery.tablesorter.min.js"></script>
-	<script type="text/javascript" src="/static/js/jquery.tablesorter.parser-input-select.js"></script>
-	<script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
-	<script type="text/javascript" src="/static/js/tsar.groups.js"></script>
+	<script type="text/javascript" src="{% static "js/jquery.tablesorter.min.js" %}"></script>
+	<script type="text/javascript" src="{% static "js/jquery.tablesorter.parser-input-select.js" %}"></script>
+	<script type="text/javascript" src="{% static "js/jquery.cookie.js" %}"></script>
+	<script type="text/javascript" src="{% static "js/tsar.groups.js" %}"></script>
 <style>
 //.vent_title {
 //	width: 4em;

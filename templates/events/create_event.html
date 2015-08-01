@@ -1,15 +1,16 @@
 {% extends "tsar.html" %}
+{% load staticfiles %}
 
 {% block head %}
-<script type="text/javascript" src="/static/js/development-bundle/ui/jquery-ui-1.8.21.custom.js"></script>
-<script type="text/javascript" src="/static/js/development-bundle/ui/minified/jquery.ui.datepicker.min.js"></script>
-<script type="text/javascript" src="/static/js/development-bundle/ui/ui.datepicker-is.js"></script>
-<script type="text/javascript" src="/static/js/jquery-ui-timepicker-addon.js"></script>
-<link type="text/css" rel="stylesheet" href="/static/js/css/ui-lightness/jquery-ui-1.8.21.custom.css" />
-<script type="text/javascript" src="/static/js/chosen.jquery.min.js"></script>
-<link type="text/css" rel="stylesheet" href="/static/css/chosen.css" />
-<script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
-<script type="text/javascript" src="/static/js/tsar.events.js"></script>
+<script type="text/javascript" src="{% static "js/development-bundle/ui/jquery-ui-1.8.21.custom.js" %}"></script>
+<script type="text/javascript" src="{% static "js/development-bundle/ui/minified/jquery.ui.datepicker.min.js" %}"></script>
+<script type="text/javascript" src="{% static "js/development-bundle/ui/ui.datepicker-is.js" %}"></script>
+<script type="text/javascript" src="{% static "js/jquery-ui-timepicker-addon.js" %}"></script>
+<link type="text/css" rel="stylesheet" href="{% static "js/css/ui-lightness/jquery-ui-1.8.21.custom.css" %}" />
+<script type="text/javascript" src="{% static "js/chosen.jquery.min.js" %}"></script>
+<link type="text/css" rel="stylesheet" href="{% static "css/chosen.css" %}" />
+<script type="text/javascript" src="{% static "js/jquery.cookie.js" %}"></script>
+<script type="text/javascript" src="{% static "js/tsar.events.js" %}"></script>
 <style>
 	/* css for timepicker */
 	//.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
@@ -271,7 +272,7 @@ $(document).ready(function(){
 			<h2 id="event-geo-header">Staðsetning</h2>
 			<div id="stadsetning-content" style="display:none">
 		
-				<div style="float:right;"><img src="/static/img/hengill-husmuli.png" width="200" height="200" alt="Kort af svæðinu." /></div>
+				<div style="float:right;"><img src="{% static "img/hengill-husmuli.png" %}" width="200" height="200" alt="Kort af svæðinu." /></div>
 				<table>
 					<tr><th>Lengd</th><th>Breidd</th><th colspan="2">Lýsing</th></tr>
 	<!--
