@@ -1,5 +1,4 @@
 {% extends "tsar.html" %}
-{% load markup %}
 
 {% block head %}
 <style>
@@ -377,7 +376,7 @@ function updateEnabledSelect(id) {
 			<div id="event_description-data">
 				<i class="fa fa-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_description"></i>
 				<h2>Lýsing</h2>
-				<div style="margin:0 .5em .5em .5em;">{{ event.description|textile }}</div>
+				<div style="margin:0 .5em .5em .5em;">{{ event.description.rendered }}</div>
 			</div><!-- /#event_description-data -->
 
 			<div id="event_description-form" style="display: none;">
