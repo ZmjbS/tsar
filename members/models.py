@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from django.contrib.auth.models import *
-from django.contrib.localflavor.is_.forms import ISIdNumberField, ISPhoneNumberField
+#from django.contrib.localflavor.is_.forms import ISIdNumberField, ISPhoneNumberField
 
 class Position(models.Model):
 	# Members can have various positions such as on-call, in training, etc.
