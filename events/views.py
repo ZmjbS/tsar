@@ -16,7 +16,7 @@ from django.utils import timezone
 from datetime import datetime
 from dateutil import parser
 
-import simplejson as json
+import json
 from django.core.serializers.json import DjangoJSONEncoder
 #import json
 
@@ -26,25 +26,25 @@ from django.core.context_processors import csrf
 def calendar_events_list(member_id, start, end):
 	# Get all events between the two dates.
 
-	#print 'Retrieve events between {} and {}'.format(start, end)
-	#print member_id
+	#print('Retrieve events between {} and {}'.format(start, end))
+	#print(member_id)
 	member = Member.objects.get(id=member_id)
-	#print member
+	#print(member)
 
 	import calendar
 
 	calendar_begins = datetime.fromtimestamp(int(start))
 	calendar_ends = datetime.fromtimestamp(int(end))
-	print 'The calendar runs from {} to {}'.format(calendar_begins, calendar_ends)
+	print('The calendar runs from {} to {}'.format(calendar_begins, calendar_ends))
 
 	events = Event.objects.filter(date_time_end__gt=calendar_begins).filter(date_time_begin__lt=calendar_ends)
 	events_list = []
 	for event in events:
 		eventtype = event.event_type.title
-#		print eventtype
+#		print(eventtype)
 
 		# Finall indicate the member's response status to each event.
-#		print event
+#		print(event)
 		try:
 			if MemberResponse.objects.get(event_role__event=event, member=member, response='Y'):
 				status='attending'
@@ -57,7 +57,7 @@ def calendar_events_list(member_id, start, end):
 					status = 'unclear'
 				else:
 					status = 'notinvited'
-#		print status
+#		print(status)
 
 		events_list.append({
 			'title': event.title,
@@ -72,7 +72,7 @@ def calendar_events_list(member_id, start, end):
 #	import pprint
 #	pprint.pprint(events_list)
 	return HttpResponse(json.dumps(events_list), mimetype='application/javascript')
-#	print 'FINISHED'
+#	print('FINISHED')
 
 def list_events(request):
 	if request.is_ajax():
@@ -105,40 +105,40 @@ def event_response(request):
 	# If the member_id is missing, we use the currently logged on member.
 	# TODO: Perhaps it's better to always pass the member_id on with the other two from the view...
 
-	print 'in event_response'
+	print('in event_response')
 	# Ensure we're getting an AJAX POST.
 	if not request.is_ajax():
-		print 'not AJAX'
+		print('not AJAX')
 		return False
 
-	print 'check member'
+	print('check member')
 	# Check whether we've been handed a member_id:
 	try:
 		member_id = request.POST['member_id']
 		cm_responding = False
-		print 'member_id sent through post: {}'.format(member_id)
+		print('member_id sent through post: {}'.format(member_id))
 	except:
 		member_id = request.user.member.id
 		cm_responding = True
-		print 'member_id set to current member'
+		print('member_id set to current member')
 
 	# Get the eventrole_id and action:
-	print 'get eventrole_id'
-	print request.POST
+	print('get eventrole_id')
+	print(request.POST)
 	try:
 		eventrole_id = request.POST['eventrole_id']
 	except:
-		print 'no eventrole_id'
+		print('no eventrole_id')
 		return HttpResponse(json.dumps({ 'type': 'error', 'message': 'The POST data is missing the eventrole_id.'}))
-	print 'eventrole_id: {}'.format(eventrole_id)
+	print('eventrole_id: {}'.format(eventrole_id))
 	action = request.POST['action']
 	if action == 'attend':
 		act = 'Y'
 	elif action == 'absent':
 		act = 'N'
 
-	print 'action: {} or {}'.format(action,act)
-	print 'eventrole.id: {}'.format(eventrole_id)
+	print('action: {} or {}'.format(action,act))
+	print('eventrole.id: {}'.format(eventrole_id))
 
 	# Get the relevant objects:
 	member = Member.objects.get(id=member_id)
@@ -148,28 +148,28 @@ def event_response(request):
 	# See if there already exists a member response:
 	try:
 		mr = MemberResponse.objects.get(event_role=event_role, member=member)
-		print '>> MemberResponse {} found'.format(mr)
+		print('>> MemberResponse {} found'.format(mr))
 		mr.response=act
 		mr.time_responded=timezone.now()
 	# Otherwise create a new one:
 	except:
 		mr = MemberResponse(event_role=event_role, member=member, response=act)
-		print '>> No MemberResponse found. Creating a new one: {}'.format(mr)
+		print('>> No MemberResponse found. Creating a new one: {}'.format(mr))
 
 	# Clean and save:
 	try:
 		mr.clean_fields()
 		mr.save()
-		print '>> SAVED'
+		print('>> SAVED')
 	except:
-		print '>> FAILED'
+		print('>> FAILED')
 		return HttpResponse('Failed: could not save member response')
 
-	##print 'Hér kemur JSON útgáfan:'
+	##print('Hér kemur JSON útgáfan:')
 	##data = json.loads(request.POST['data'])
 	##pprint.pprint(data)
 
-	print mr.time_responded
+	print(mr.time_responded)
 	data = {
 		'user_id': member.user.id,
 		'user_name': member.__unicode__(),
@@ -181,10 +181,10 @@ def event_response(request):
 		'action': action,
 		'time_responded': mr.time_responded,
 	}
-	print 'Data: {}'.format(data)
+	print('Data: {}'.format(data))
 	jsondata = json.dumps(data, cls=DjangoJSONEncoder)
-	print 'JSON: ',jsondata
-	print 'XXXXX responding'
+	print('JSON: ',jsondata)
+	print('XXXXX responding')
 	#return HttpResponse(json.dumps(data))##, mimetype='application/javascript')
 	return HttpResponse(jsondata)
 
@@ -192,7 +192,7 @@ from django.contrib.auth.decorators import login_required
 @login_required
 def display_event(request, pk):
 
-	print 'beginning def'
+	print('beginning def')
 	event = get_object_or_404(Event.objects.select_related('eventtype', 'eventrole_set', 'tags'), id=pk)
 	cm = request.user.member
 	# Compile a list of members who are invited.
@@ -217,7 +217,7 @@ def display_event(request, pk):
 	total_unclear   = set()
 
 	for eventrole in EventRole.objects.select_related('memberresponse_set','invited_positions','invited_groups','invited_members').filter(event=event):#'memberresponse_set','invited_positions','invited_groups','invited_members').filter(event=event):
-	#	print 'On EventRole {}:'.format(eventrole)
+	#	print('On EventRole {}:'.format(eventrole))
 		attending = []
 		absent = []
 		unclear = []
@@ -227,15 +227,15 @@ def display_event(request, pk):
 		# First populate those attending or absent from existing responses.
 		#for memberresponse in eventrole.memberresponse_set.all().prefetch_related('event_role'):
 		for memberresponse in MemberResponse.objects.filter(event_role=eventrole).select_related('event_role','member__user__id'):
-#			print '> memberresponse: {}'.format(memberresponse)
+#			print('> memberresponse: {}'.format(memberresponse))
 			if memberresponse.response == 'Y':
 				attending.append(memberresponse.member)
 				attending_responses.append(memberresponse)
 			if memberresponse.response == 'N':
 				absent.append(memberresponse.member)
 				absent_responses.append(memberresponse)
-#		print '> Attending members {}:'.format(attending)
-#		print '> Absent members: {}'.format(absent)
+#		print('> Attending members {}:'.format(attending))
+#		print('> Absent members: {}'.format(absent))
 
 		# Run through those who are invited but whose status is still unclear.
 		if eventrole.is_open:
@@ -245,28 +245,28 @@ def display_event(request, pk):
 					unclear.append(member)
 		else:
 		# If it isn't an open event, check invited members:
-#			print '>> Members invited through positions'
+#			print('>> Members invited through positions')
 			for member in Member.objects.select_related('user').filter(position__eventrole=eventrole):#filter(group__groupinvitation__event_role__event=event):
-#				print '>>   {}'.format(member.user.username)
+#				print('>>   {}'.format(member.user.username))
 				if member not in unclear and member not in attending and member not in absent:
 					unclear.append(member)
-#					print '++   {}'.format(member)
-#			print '>> Members invited through groups'
+#					print('++   {}'.format(member))
+#			print('>> Members invited through groups')
 			for member in Member.objects.select_related('user').filter(group__groupinvitation__event_role=eventrole):#filter(group__groupinvitation__event_role__event=event):
-#				print '>>   {}'.format(member.user.username)
+#				print('>>   {}'.format(member.user.username))
 				if member not in unclear and member not in attending and member not in absent:
 					unclear.append(member)
-#					print '++   {}'.format(member)
-#			print '>> Members invited directly'
+#					print('++   {}'.format(member))
+#			print('>> Members invited directly')
 			for member in Member.objects.select_related('user').filter(memberinvitation__event_role=eventrole):#filter(memberinvitation__event_role__event=event):
-#				print '>>   {}'.format(member)
+#				print('>>   {}'.format(member))
 				if member not in unclear and member not in attending and member not in absent:
 					unclear.append(member)
-#					print '++   {}'.format(member)
+#					print('++   {}'.format(member))
 
 		# Add these to the total:
 		total_attending.update(attending)
-#		print 'Total attending: {}'.format(total_attending)
+#		print('Total attending: {}'.format(total_attending))
 		total_absent.update(absent)
 		total_unclear.update(unclear)
 
@@ -303,12 +303,12 @@ def display_event(request, pk):
 
 	# Pass possible roles and event types so that we can edit the event.
 	event_types = EventType.objects.all()
-	#print 'EVNTTYPES: {}'.format(event_types)
+	#print('EVNTTYPES: {}'.format(event_types))
 	#for etype in event_types:
-		#print etype.title
-		#print etype.pk
+		#print(etype.title)
+		#print(etype.pk)
 	event_roles = Role.objects.all()
-	#print 'EVENTROLES: {}'.format(event_roles)
+	#print('EVENTROLES: {}'.format(event_roles))
 
 # TODO: Currently members can sign up for multiple roles. This is probably a good thing as members may be both a driver and participant and we want to log each role.
 #	# Now let's make sure that a member who is attending a role doesn't get invited
@@ -344,7 +344,7 @@ def display_event(request, pk):
 	for member in Member.objects.select_related(depth=0).all():
 		members.append(member)
 
-	print 'returning data to view'
+	print('returning data to view')
 
 	return render_to_response('events/event_page.html', {
 		'user': request.user,
@@ -385,36 +385,36 @@ def display_event_form(request):
 
 #TODO: Do we need to remove orphaned invitations once an EventRole has been removed?
 def save_event(request):
-	print 'Saving event'
+	print('Saving event')
 	if not request.is_ajax():
 		return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Hello, world. Not an AJAX request.'}))
 	else:
-		print 'Is AJAX'
+		print('Is AJAX')
 		import pprint
-		print 'Hér kemur hrátt data:'
+		print('Hér kemur hrátt data:')
 		pprint.pprint(request.POST['data'])
-		print 'Hér kemur JSON útgáfan:'
+		print('Hér kemur JSON útgáfan:')
 		data = json.loads(request.POST['data'])
 		pprint.pprint(data)
 
 		### TITLE ###
 		# The title must be non-zero and no longer than 64 characters (defined in events/models.py).
-		print 'Submitted data:'
+		print('Submitted data:')
 		t = data['title']
 		if t == "":
 			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Title missing.', }))
 		elif len(t) > 64:
 			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'The title is currently '+str(len(t))+' characters long but the maximum is 64.', }))
 		import sys
-		print sys.stdout.encoding
-		print type(t)
-		print '--title: {}'.format(t.encode('UTF-8'))
+		print(sys.stdout.encoding)
+		print(type(t))
+		print('--title: {}'.format(t.encode('UTF-8')))
 
 		### DESCRIPTION ###
 		# There are no restrictions on the description field other than being cleaned. It may be blank and arbitrarily long.
 		d = data['description']
 		# The dates must be supplied and the beginning must precede the end.
-		print '--description: {}'.format(d.encode('UTF-8'))
+		print('--description: {}'.format(d.encode('UTF-8')))
 
 		### DATES ###
 		if data['date_time_begin'] == "":
@@ -423,7 +423,7 @@ def save_event(request):
 			dtb = timezone.make_aware(parser.parse(data['date_time_begin']),timezone.get_default_timezone())
 		except:
 			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Beginning date-time is not a valid datetime.', }))
-		print '--begins: {}'.format(dtb)
+		print('--begins: {}'.format(dtb))
 		if data['date_time_end'] == "":
 			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'End date missing.', }))
 		try:
@@ -432,29 +432,29 @@ def save_event(request):
 			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'End date-time is not a valid datetime', }))
 		if dte <= dtb:
 			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'The event start time must precede the end.', }))
-		print '--ends: {}'.format(dte)
+		print('--ends: {}'.format(dte))
 
 		### TYPE ###
 		# The event-type must be supplied.
 		et_id = data['event_type']
-		print '--type ID: {}'.format(et_id)
+		print('--type ID: {}'.format(et_id))
 		if et_id== "":
 			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'No event type supplied.', }))
 
 		### EVENT ID ###
-		print 'All the data has been submitted. Checking whether event_id has been supplied.'
+		print('All the data has been submitted. Checking whether event_id has been supplied.')
 		try:
 			event_id = data['event_id']
-			print 'event_id: {}'.format(event_id)
+			print('event_id: {}'.format(event_id))
 		except:
 			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'No event_id submitted.', }))
 		if event_id == '':
 			# If no event id has been supplied, we'll create a new event.
-			print 'Creating event...'
+			print('Creating event...')
 			event = Event(title=t, description=d, date_time_begin=dtb, date_time_end=dte, event_type_id=et_id)
 		else:
 			# else we update the existing one.
-			print 'Updating event...'
+			print('Updating event...')
 			event = Event.objects.get(pk=event_id)
 			event.title = t
 			event.description = d
@@ -466,9 +466,9 @@ def save_event(request):
 		try:
 			event.clean_fields()
 			event.save()
-			print 'The event is: ------'
+			print('The event is: ------')
 			pprint.pprint(vars(event))
-			print '--------------------'
+			print('--------------------')
 		except:
 			return HttpResponse (json.dumps({ 'type': 'error', 'message': 'Could not save event.'}))
 
@@ -476,13 +476,13 @@ def save_event(request):
 		# Flow:
 		# For each role:
 		for role in Role.objects.all():
-			print 'Role ID %s' % role.id
-			print 'Role is %s' % role
+			print('Role ID %s' % role.id)
+			print('Role is %s' % role)
 			try:
 				participants_exist = data['role'][role.id]['participants']
 			except:
 				participants_exist = False
-			#print participants_exist
+			#print(participants_exist)
 			if participants_exist:
 				# If we want eventroles, check whether these need to be created and otherwise update them.
 
@@ -498,14 +498,14 @@ def save_event(request):
 				# characters 'p', 'g' and 'm', respectively.
 
 				wantedparticipantIDs = data['role'][role.id]['participants']
-				print 'Wanted participantsID: {}'.format(wantedparticipantIDs)
+				print('Wanted participantsID: {}'.format(wantedparticipantIDs))
 
 				wantedpositions = [Position.objects.get(pk=int(positionid[1:])) for positionid in wantedparticipantIDs if positionid[0]=='p']
-				print 'We want event role {} with positions {}'.format(role, wantedpositions)
+				print('We want event role {} with positions {}'.format(role, wantedpositions))
 				wantedgroups = [Group.objects.get(pk=int(groupid[1:])) for groupid in wantedparticipantIDs if groupid[0]=='g']
-				print 'We want event role {} with groups {}'.format(role, wantedgroups)
+				print('We want event role {} with groups {}'.format(role, wantedgroups))
 				wantedmembers= [Member.objects.get(pk=int(memberid[1:])) for memberid in wantedparticipantIDs if memberid[0]=='m']
-				print 'We want event role {} with members {}'.format(role, wantedmembers)
+				print('We want event role {} with members {}'.format(role, wantedmembers))
 
 				# Check whether the event is open.
 				is_open = ('a' in wantedparticipantIDs)
@@ -519,26 +519,26 @@ def save_event(request):
 				try: # check whether the EventRole already exists
 					# 1. Get the EventRole, stored in eventrole.
 					eventrole = EventRole.objects.get(event_id=event.id,role_id=role.id)
-					print 'EventRole "{}" already exists.'.format(eventrole)
+					print('EventRole "{}" already exists.'.format(eventrole))
 				except:
 					# Since there is no existing EventRole, we need to:
 					#  1. Create an EventRole, and save it as eventrole.
 					# and that's it! Adding participants is done below for both
 					# existing and recently created EventRoles.
 					try:
-						print 'event_id: {}'.format(event.id)
-						print 'role_id: {}'.format(role.id)
+						print('event_id: {}'.format(event.id))
+						print('role_id: {}'.format(role.id))
 						# TODO: Later feature...
 						#eventrole = EventRole(event_id=event.id,role_id=role.id,minimum=int(data['role'][role.id]['min']), maximum=int(data['role'][role.id]['max']))
 						eventrole = EventRole(event_id=event.id,role_id=role.id,is_open=is_open)
-						print 'No EventRole exists, creating {}.'.format(eventrole)
+						print('No EventRole exists, creating {}.'.format(eventrole))
 					except:
-						print 'Could not create eventrole.'
+						print('Could not create eventrole.')
 						return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not create eventrole.' }))
 					try:
 						eventrole.clean_fields()
 						eventrole.save()
-						print 'eventrole saved: {}.'.format(eventrole)
+						print('eventrole saved: {}.'.format(eventrole))
 					except:
 						return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not save eventrole.' }))
 
@@ -546,56 +546,56 @@ def save_event(request):
 				currentpositions = eventrole.invited_positions.all()
 				currentgroups = eventrole.invited_groups.all()
 				currentmembers= eventrole.invited_members.all()
-				print 'currentpositions: {}'.format(currentpositions)
-				print 'currentgroups: {}'.format(currentgroups)
-				print 'currentmembers: {}'.format(currentmembers)
-				print 'EventRole already has these invitations:'
+				print('currentpositions: {}'.format(currentpositions))
+				print('currentgroups: {}'.format(currentgroups))
+				print('currentmembers: {}'.format(currentmembers))
+				print('EventRole already has these invitations:')
 				for position in currentpositions:
-					print '>>{} ({})'.format(position, position.id)
+					print('>>{} ({})'.format(position, position.id))
 					if position not in wantedpositions:
-						print '-- ID is {}: We don\'t want {}.'.format(group.id,group)
+						print('-- ID is {}: We don\'t want {}.'.format(group.id,group))
 						try:
-							#print 'DEBUG: {}'.format(eventrole.invited_positions)
+							#print('DEBUG: {}'.format(eventrole.invited_positions))
 							pi = PositionInvitation.objects.get(event_role=eventrole,position=position)
 							pi.delete()
 						except:
-							print 'Could not remove position {} from {}'.format(group,currentgroups)
+							print('Could not remove position {} from {}'.format(group,currentgroups))
 							return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not remove position '+str(position)+' from '+currentpositions+'.' }))
 					else:
-						print '++ ID is {}: We keep position {}.'.format(position.id,position)
+						print('++ ID is {}: We keep position {}.'.format(position.id,position))
 				for group in currentgroups:
-					print '>>{} ({})'.format(group, group.id)
+					print('>>{} ({})'.format(group, group.id))
 					if group not in wantedgroups:
-						print '-- ID is {}: We don\'t want {}.'.format(group.id,group)
+						print('-- ID is {}: We don\'t want {}.'.format(group.id,group))
 						try:
-							#print 'DEBUG: {}'.format(eventrole.invited_groups)
+							#print('DEBUG: {}'.format(eventrole.invited_groups))
 							gi = GroupInvitation.objects.get(event_role=eventrole,group=group)
 							gi.delete()
 						except:
-							print 'Could not remove group {} from {}'.format(group,currentgroups)
+							print('Could not remove group {} from {}'.format(group,currentgroups))
 							return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not remove group '+str(group)+' from '+currentgroups+'.' }))
 					else:
-						print '++ ID is {}: We keep group {}.'.format(group.id,group)
+						print('++ ID is {}: We keep group {}.'.format(group.id,group))
 				for member in currentmembers:
-					print '>>{} ({})'.format(member, member.id)
+					print('>>{} ({})'.format(member, member.id))
 					if member not in wantedmembers:
-						print '-- ID is {}: We don\'t want {}.'.format(member.id,member)
+						print('-- ID is {}: We don\'t want {}.'.format(member.id,member))
 						try:
-							#print 'DEBUG: {}'.format(eventrole.invited_members)
+							#print('DEBUG: {}'.format(eventrole.invited_members))
 							mi = MemberInvitation.objects.get(event_role=eventrole,member=member)
 							mi.delete()
 						except:
-							print 'Could not remove member {} from {}'.format(member,currentmembers)
+							print('Could not remove member {} from {}'.format(member,currentmembers))
 							return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not remove member '+str(member)+' from '+currentmembers+'.' }))
 					else:
-						print '++ ID is {}: We keep member {}.'.format(member.id,member)
+						print('++ ID is {}: We keep member {}.'.format(member.id,member))
 
 				# Finally set whether the EventRole is open to all members:
 				eventrole.is_open = is_open
 				try:
 					eventrole.clean_fields()
 					eventrole.save()
-					print 'eventrole saved: {}.'.format(eventrole)
+					print('eventrole saved: {}.'.format(eventrole))
 				except:
 					return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not update whether the EventRole is open numbers.' }))
 
@@ -607,7 +607,7 @@ def save_event(request):
 				#	try:
 				#		eventrole.clean_fields()
 				#		eventrole.save()
-				#		print 'eventrole saved: {}.'.format(eventrole)
+				#		print('eventrole saved: {}.'.format(eventrole))
 				#	except:
 				#		return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not update eventrole max/min numbers.' }))
 
@@ -620,34 +620,34 @@ def save_event(request):
 				#     create a {Position,Group,Member}Invitation and attach it to the EventRole
 
 				# For each participant
-				print 'Adding invitations:'
-				print 'Wanted positions: {}'.format(wantedpositions)
-				print 'Wanted groups: {}'.format(wantedgroups)
-				print 'Wanted members: {}'.format(wantedmembers)
+				print('Adding invitations:')
+				print('Wanted positions: {}'.format(wantedpositions))
+				print('Wanted groups: {}'.format(wantedgroups))
+				print('Wanted members: {}'.format(wantedmembers))
 				for position in wantedpositions:
-					print '>>{} ({})'.format(position, position.id)
+					print('>>{} ({})'.format(position, position.id))
 					if position not in currentpositions:
-						print '++ Position {} is not invited: Create PositionInvitation!'.format(position)
-						print eventrole
-						print position
+						print('++ Position {} is not invited: Create PositionInvitation!'.format(position))
+						print(eventrole)
+						print(position)
 						pi = PositionInvitation(event_role=eventrole, position=position)
-						print '++ PositionInvitation created: '.format(pi)
+						print('++ PositionInvitation created: '.format(pi))
 						try:
 							pi.clean_fields()
 							pi.save()
-							print '++ PositionInvitation saved'
+							print('++ PositionInvitation saved')
 						except:
-							print 'ERROR: Could not save PositionInvitation {}'.format(pi)
+							print('ERROR: Could not save PositionInvitation {}'.format(pi))
 							return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not save PositionInvitation '+pi+'.' }))
 					else:
-						print '.. Position {} already invited: nothing to do. :-)'.format(position)
-				print 'Positions done!'
+						print('.. Position {} already invited: nothing to do. :-)'.format(position))
+				print('Positions done!')
 				for group in wantedgroups:
-					print '>>{} ({})'.format(group, group.id)
+					print('>>{} ({})'.format(group, group.id))
 					if group not in currentgroups:
-						print '++ Group {} is not invited: Create GroupInvitation!'.format(group)
+						print('++ Group {} is not invited: Create GroupInvitation!'.format(group))
 						gi = GroupInvitation(event_role=eventrole, group=group)
-						print '++ GroupInvitation created: '.format(gi)
+						print('++ GroupInvitation created: '.format(gi))
 
 						try:
 							gi.clean_fields()
@@ -659,48 +659,48 @@ def save_event(request):
 								from_email = settings.EMAIL_HOST_USER
 								to_list = [member.user.email,settings.EMAIL_HOST_USER]
 								send_mail(subject,message,from_email,to_list,fail_silently=True)
-								print 'Mail sent to' +member.user.first_name
-							print '++ GroupInvitation saved'
+								print('Mail sent to' +member.user.first_name)
+							print('++ GroupInvitation saved')
 						except:
-							print 'ERROR: Could not save GroupInvitation {}'.format(gi)
+							print('ERROR: Could not save GroupInvitation {}'.format(gi))
 							return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not save GroupInvitation '+gi+'.' }))
 					else:
-						print '.. Group {} already invited: nothing to do. :-)'.format(group)
-				print 'Groups done!'
+						print('.. Group {} already invited: nothing to do. :-)'.format(group))
+				print('Groups done!')
 				for member in wantedmembers:
-					print '>>{} ({})'.format(member, member.id)
+					print('>>{} ({})'.format(member, member.id))
 					if member not in currentmembers:
-						print '++ Member {} is not invited: Create MemberInvitation!'.format(member)
+						print('++ Member {} is not invited: Create MemberInvitation!'.format(member))
 						mi = MemberInvitation(event_role=eventrole, member=member)
-						print '++ MemberInvitation created: '.format(mi)
+						print('++ MemberInvitation created: '.format(mi))
 						try:
 							mi.clean_fields()
 							mi.save()
-							print member.user.email
+							print(member.user.email)
 							subject = eventrole.event.title+' - '+eventrole.role.title
-							print eventrole.role.title
+							print(eventrole.role.title)
 							titlerole = eventrole.role.title
 							message = 'Vinsamlegast farðu inn á innri.spori.is og tikynntu hvort þú munir koma eða ekki.'
-							print message
+							print(message)
 							from_email = settings.EMAIL_HOST_USER
 							to_list = [member.user.email,settings.EMAIL_HOST_USER]
 							send_mail(subject,message,from_email,to_list,fail_silently=True)
-							print '++ MemberInvitation saved'
+							print('++ MemberInvitation saved')
 						except:
-							print 'ERROR: Could not save MemberInvitation {}'.format(mi)
+							print('ERROR: Could not save MemberInvitation {}'.format(mi))
 							return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not save MemberInvitation '+mi+'.' }))
 					else:
-						print '.. Member {} already invited: nothing to do. :-)'.format(member)
-				print 'All done!'
+						print('.. Member {} already invited: nothing to do. :-)'.format(member))
+				print('All done!')
 			else: #if we don't want the role:
-				print 'No role wanted.'
+				print('No role wanted.')
 				try: # check if the role exists and must be removed
 					eventrole = EventRole.objects.get(event__id=event.id,role__id=role.id)
-					print 'Removing eventrole: %s' % eventrole
+					print('Removing eventrole: %s' % eventrole)
 					eventrole.delete()
 				except: # No role wanted. No role exists. All good.
-					print 'No role exists. All good.'
-			print ' ..... '
+					print('No role exists. All good.')
+			print(' ..... ')
 
 		# for current tags:
 		#	if tag not in submitted data:
@@ -709,74 +709,74 @@ def save_event(request):
 		#	for submitted tags:
 		#		if tag not currently saved:
 		#			create eventtag(event=event,tag=tag)
-		print 'Do tags.'
-		print TagType.objects.all()
+		print('Do tags.')
+		print(TagType.objects.all())
 
-		print 'Iterate over eventtags'
+		print('Iterate over eventtags')
 		for tag in event.tags.all():
 			try:
-				print 'trying'
+				print('trying')
 				tagslist=data['tag_type'][tagtype.id]
-				print 'tried'
+				print('tried')
 			except:
-				print 'excepting'
+				print('excepting')
 				tagslist=[]
-				print 'excepted'
-			print 'tagslist: '+str(tagslist)
+				print('excepted')
+			print('tagslist: '+str(tagslist))
 			if str(tag.id) not in tagslist:
-				print 'tag id '+str(tag.id)+' is not in '+str(data['tag_type'][tag.tag_type.id])
-				print 'delete eventtag(event=event,tag='+str(tag)+')'
+				print('tag id '+str(tag.id)+' is not in '+str(data['tag_type'][tag.tag_type.id]))
+				print('delete eventtag(event=event,tag='+str(tag)+')')
 				try:
 					et=EventTag.objects.get(event=event,tag=tag)
 				except:
-					print 'Could not get EventTag.'
+					print('Could not get EventTag.')
 					return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not get EventTag.' }))
 				try:
 					et.delete()
 				except:
-					print 'Could not delete EventTag.'
+					print('Could not delete EventTag.')
 					return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not delete EventTag '+et+'.' }))
 			else:
-				print 'tag id '+str(tag.id)+' is in '+str(data['tag_type'][tag.tag_type.id])
-				print 'Do nothing...'
-		print 'Iterate over tagtypes'
+				print('tag id '+str(tag.id)+' is in '+str(data['tag_type'][tag.tag_type.id]))
+				print('Do nothing...')
+		print('Iterate over tagtypes')
 		for tagtype in TagType.objects.all():
 			if event.event_type in tagtype.event_type.all():
-				print tagtype
-				print tagtype.id
+				print(tagtype)
+				print(tagtype.id)
 				try:
-					print 'I am trying'
+					print('I am trying')
 					tagslist=data['tag_type'][tagtype.id]
-					print tagslist
+					print(tagslist)
 					if tagslist == None:
 						tagslist=[]
-					print 'I tried'
+					print('I tried')
 				except:
-					print 'I am excepting'
+					print('I am excepting')
 					tagslist=[]
-					print 'I have excepted'
-				print 'tagslist: '+str(tagslist)
+					print('I have excepted')
+				print('tagslist: '+str(tagslist))
 				for tag_id in tagslist:
 					tag=Tag.objects.get(pk=tag_id)
-					print tag
+					print(tag)
 					if tag not in event.tags.all():
-						print 'tag '+str(tag)+' is not in '+str(event.tags.all())
-						print 'create eventtag(event=event,tag='+str(tag)+')'
+						print('tag '+str(tag)+' is not in '+str(event.tags.all()))
+						print('create eventtag(event=event,tag='+str(tag)+')')
 						try:
 							et=EventTag(event=event,tag=tag)
 						except:
-							print 'Could not create EventTag.'
+							print('Could not create EventTag.')
 							return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not create EventTag.' }))
 						try:
 							et.clean_fields()
 							et.save()
 						except:
-							print 'Could not save EventTag.'
+							print('Could not save EventTag.')
 							return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not save EventTag '+et+'.' }))
 					else:
-						print 'tag '+str(tag)+' is already in '+str(event.tags.all())
-						print 'Nothing to do...'
+						print('tag '+str(tag)+' is already in '+str(event.tags.all()))
+						print('Nothing to do...')
 			else:
-				print 'tagtype '+str(tagtype)+' is not valid for this event'
+				print('tagtype '+str(tagtype)+' is not valid for this event')
 
 		return HttpResponse(json.dumps({ 'type': 'success', 'event_id': event.id }))

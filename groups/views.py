@@ -43,21 +43,21 @@ def group_page(request, slug):
 		'user': request.user,
 	})
 
-import simplejson as json
+import json
 def save_group(request):
 	if not request.is_ajax():
 		return False
 	else:
-		# print request.POST
+		# print(request.POST)
 		data = json.loads(request.POST['data'])
-		#print data['members']
+		#print(data['members'])
 		#members = ast.literal_eval(data['members'][1])
-		#print type(members)
-		#print members['member_id']
+		#print(type(members))
+		#print(members['member_id'])
 		# Check whether the group exists:
 		try:
 			group = get_object_or_404(Group, id=data['group_id'])
-			print group
+			print(group)
 		except:
 			return HttpResponse('no such group')
 
@@ -67,28 +67,28 @@ def save_group(request):
 			members = ast.literal_eval(datum)
 			member_id = members['member_id']
 			group_status = members['status']
-			print '>> Member {}: {}'.format(member_id,group_status)
+			print('>> Member {}: {}'.format(member_id,group_status))
 			if group_status != None or group_status != 'member':
 				# Check whether the member exists:
 				try:
-					print 'Finding member {}'.format(member_id)
+					print('Finding member {}'.format(member_id))
 					member = get_object_or_404(Member, id=member_id)
-					print 'member {} found'.format(member)
+					print('member {} found'.format(member))
 				except:
-					print 'member not found'
+					print('member not found')
 					return HttpResponse('no such member')
 
 				# If we need to add the member...
 				if group_status == 'add-member':
-					print '>>> Add member!'
+					print('>>> Add member!')
 					try:
 						membership = get_object_or_404(Membership, member=member, group=group)
 						return HttpResponse('member already exists')
 					except:
-						print '>> Create membership object!'
+						print('>> Create membership object!')
 						membership = Membership(member=member, group=group)
 					try:
-						print '>> Clean and save membership object!'
+						print('>> Clean and save membership object!')
 						membership.clean()
 						membership.save()
 					except:
@@ -96,20 +96,20 @@ def save_group(request):
 
 				# If we need to remove the member...
 				elif group_status == 'remove-member':
-					print '>>> Remove member!'
+					print('>>> Remove member!')
 					try:
 						membership = get_object_or_404(Membership, member=member, group=group)
 					except:
-						print '>> No membership to remove. We\'re done!'
+						print('>> No membership to remove. We\'re done!')
 					try:
 						membership.delete()
 					except:
 						return HttpResponse('unable to delete membership')
 				elif group_status == 'member':
-					print 'already a member...'
+					print('already a member...')
 				else:
-					print 'unknown group_status:'
-					print group_status
+					print('unknown group_status:')
+					print(group_status)
 		# All is done. Return a successful response to the template. :-)
 		return HttpResponse(json.dumps({ 'type': 'success' }))
 
@@ -145,7 +145,7 @@ def group_stats(request, slug):
 				attendences += 1
 		members_list.append({'member': member, 'attendences': attendences})
 
-	print gm 
+	print(gm )
 	import pprint
 	pprint.pprint(events_list)
 

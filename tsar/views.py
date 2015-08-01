@@ -64,7 +64,7 @@ def my_page(request):
 
 	# Retrieve a list of upcoming events for the currently logged in user and place them in a dictionary
 	my_events_list = Event.objects.filter(date_time_begin__gte=now).filter(Q(eventrole__invited_positions=request.user.member.position)|Q(eventrole__invited_groups__members=request.user.member)|Q(eventrole__invited_members=request.user.member)|Q(eventrole__is_open=True)).distinct().order_by('date_time_begin')[:event_list_length]
-	print my_events_list.count()
+	print(my_events_list.count())
 
 	#tmpset = set(all_events_dictionaries_list)# my_events_dictionaries_list)
 	union_events_list = list(set(list(all_events_list) + list(my_events_list)))
@@ -81,10 +81,10 @@ def my_page(request):
 	})
 
 def news(request):
-	print 'doing the news'
+	print('doing the news')
 	import feedparser
 	import locale
-	import simplejson as json
+	import json
 
 	entries = feedparser.parse(request.GET['url']).entries[0:int(request.GET['num'])]
 	locale.setlocale(locale.LC_TIME, 'is_IS.UTF-8')
@@ -92,11 +92,12 @@ def news(request):
 		entry['published'] = date.fromtimestamp(mktime(entry.published_parsed)).isoformat()
 		entry['published_parsed'] = date.fromtimestamp(mktime(entry.published_parsed)).strftime('%d. %B %Y.')
 
-	dthandler = lambda obj: (
-		obj.isoformat()
-		if isinstance(obj, datetime.datetime)
-		or isinstance(obj, datetime.date)
-		else None)
+	#dthandler = lambda obj: (
+	#	obj.isoformat()
+	#	if isinstance(obj, datetime.datetime)
+	#	or isinstance(obj, datetime.date)
+	#	else None)
+	#dthandler = lambda obj: (obj.toJSON())
 
 	response = json.dumps(entries, default=dthandler)
 	return HttpResponse(response, mimetype='application/javascript')
