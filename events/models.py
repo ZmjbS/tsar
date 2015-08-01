@@ -8,7 +8,9 @@ from django import forms
 from django.forms import ModelForm
 from django.forms.extras.widgets import SelectDateWidget
 from django.forms.widgets import SplitDateTimeWidget
-from paintstore.fields import ColorPickerField
+from markupfield.fields import MarkupField
+#from paintstore.fields import ColorPickerField
+from colorful.fields import RGBColorField
 
 class Role(models.Model):
 	# Roles for participants in an event. (e.g. driver, organiser, instructor,
@@ -28,7 +30,8 @@ class EventType(models.Model):
 
 	title = models.CharField(max_length=64)
 	description = models.TextField(blank=True)
-	color = ColorPickerField(default="#ffffff")
+	#color = ColorPickerField(default="#ffffff")
+	color = RGBColorField()
 
 	def __unicode__(self):
 		return self.title
@@ -70,7 +73,8 @@ class Event(models.Model):
 	# techniques employed or something similar that will aid in analysing events.
 
 	title = models.CharField(max_length=64)
-	description = models.TextField(blank=True)
+	#description = models.TextField(blank=True)
+	description = MarkupField(blank=True,default_markup_type='markdown')
 	date_time_begin = models.DateTimeField()
 	date_time_end = models.DateTimeField()
 	event_type = models.ForeignKey(EventType)
@@ -241,7 +245,7 @@ class MemberAttendance(models.Model):
 	time_checkout = models.DateTimeField(blank=True, null=True)
 
 	def get_attending(self, idnumber):
-		print idnumber
+		print(idnumber)
 		#attend = self.objects.exists(member_id = ids)
 		return idnumber
 
@@ -251,6 +255,7 @@ class MemberAttendance(models.Model):
 class EventCreation(ModelForm):
 	class Meta:
 		model = Event
+		fields = '__all__'
 	title = forms.CharField(max_length=64,label='Titill:',initial='Titill', widget=forms.TextInput(attrs={'placeholder': 'Titill viðburðar'}))
 	date_time_begin = forms.DateTimeField(input_formats={'%m/%d/%Y %H:%M'},label='Hefst:', widget=forms.TextInput(attrs={'placeholder': 'Upphaf'}))
 	date_time_end   = forms.DateTimeField(input_formats={'%m/%d/%Y %H:%M'},label='Lýkur:', widget=forms.TextInput(attrs={'placeholder': 'Lok'}))
@@ -267,6 +272,7 @@ class EventCreation(ModelForm):
 class EventRoleForm(ModelForm):
 	class Meta:
 		model = EventRole
+		fields = '__all__'
 	invited_groups = forms.ModelMultipleChoiceField(queryset=Group.objects.all())
 	invited_members= forms.ModelMultipleChoiceField(queryset=Member.objects.all())
 	minimum = forms.CharField(label='Fjöldi:')
