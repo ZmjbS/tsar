@@ -39,12 +39,8 @@ INSTALLED_APPS = (
     'groups',
     'events',
     'checkin',
-    # Supporting applications
-    #'south',
-    #'django_evolution',
+    # Third-party applications
     'django.contrib.humanize',
-    #'django.contrib.markup',
-    #'paintstore',
     'colorful',
     #'debug_toolbar',
 )
