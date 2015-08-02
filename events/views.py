@@ -194,7 +194,7 @@ def display_event(request, pk):
 
 	print('beginning def')
 	#event = get_object_or_404(Event.objects.select_related('eventtype', 'eventrole_set', 'tags'), id=pk)
-	event = get_object_or_404(Event.objects.prefetch_related('eventtype', 'eventrole_set', 'tags'), id=pk)
+	event = get_object_or_404(Event.objects.prefetch_related('event_type', 'eventrole_set', 'tags'), id=pk)
 	#event = get_object_or_404(Event.objects.select_related('event_type'), id=pk)
 	cm = request.user.member
 	# Compile a list of members who are invited.
