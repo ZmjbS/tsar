@@ -92,12 +92,12 @@ def news(request):
 		entry['published'] = date.fromtimestamp(mktime(entry.published_parsed)).isoformat()
 		entry['published_parsed'] = date.fromtimestamp(mktime(entry.published_parsed)).strftime('%d. %B %Y.')
 
-	#dthandler = lambda obj: (
-	#	obj.isoformat()
-	#	if isinstance(obj, datetime.datetime)
-	#	or isinstance(obj, datetime.date)
-	#	else None)
+	dthandler = lambda obj: (
+		obj.isoformat()
+		if isinstance(obj, datetime.datetime)
+		or isinstance(obj, datetime.date)
+		else None)
 	#dthandler = lambda obj: (obj.toJSON())
 
 	response = json.dumps(entries, default=dthandler)
-	return HttpResponse(response, mimetype='application/javascript')
+	return HttpResponse(response, content_type='application/javascript')
