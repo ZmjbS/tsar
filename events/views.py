@@ -459,11 +459,6 @@ def save_event(request):
 			# If no event id has been supplied, we'll create a new event.
 			print('Creating event...')
 			event = Event(title=t, description=d, date_time_begin=dtb, date_time_end=dte, event_type_id=et_id)
-			#event = Event(title=t, description='hi', date_time_begin=dtb, date_time_end=dte, event_type_id=et_id)
-			print(type(d))
-			print(d)
-			print(event.description)
-			#event.save()
 		else:
 			# else we update the existing one.
 			print('Updating event...')
@@ -480,11 +475,15 @@ def save_event(request):
 			event.clean_fields()
 			print('Fields clean')
 			print(event.title)
+
 			print(event.description)
+			print(event.description.raw)
+			print(event.description.rendered)
+
 			print(event.date_time_begin)
 			print(event.date_time_end)
 			print(event.event_type_id)
-			#event.save()
+			event.save()
 			print('The event is: ------')
 			pprint.pprint(vars(event))
 			print('--------------------')
