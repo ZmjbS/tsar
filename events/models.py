@@ -74,7 +74,9 @@ class Event(models.Model):
 
 	title = models.CharField(max_length=64)
 	#description = models.TextField(blank=True)
-	description = MarkupField(blank=True,default_markup_type='markdown')
+	#description = MarkupField(blank=True,default_markup_type='markdown')
+	description = MarkupField(markup_type='markdown')
+	#description = MarkupField(blank=True, markup_type='markdown')
 	date_time_begin = models.DateTimeField()
 	date_time_end = models.DateTimeField()
 	event_type = models.ForeignKey(EventType)
