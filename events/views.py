@@ -193,7 +193,9 @@ from django.contrib.auth.decorators import login_required
 def display_event(request, pk):
 
 	print('beginning def')
-	event = get_object_or_404(Event.objects.select_related('eventtype', 'eventrole_set', 'tags'), id=pk)
+	#event = get_object_or_404(Event.objects.select_related('eventtype', 'eventrole_set', 'tags'), id=pk)
+	event = get_object_or_404(Event.objects.prefetch_related('eventtype', 'eventrole_set', 'tags'), id=pk)
+	#event = get_object_or_404(Event.objects.select_related('event_type'), id=pk)
 	cm = request.user.member
 	# Compile a list of members who are invited.
 	# Workflow:
@@ -216,7 +218,9 @@ def display_event(request, pk):
 	total_absent    = set()
 	total_unclear   = set()
 
-	for eventrole in EventRole.objects.select_related('memberresponse_set','invited_positions','invited_groups','invited_members').filter(event=event):#'memberresponse_set','invited_positions','invited_groups','invited_members').filter(event=event):
+	#for eventrole in EventRole.objects.select_related('memberresponse_set','invited_positions','invited_groups','invited_members').filter(event=event):#'memberresponse_set','invited_positions','invited_groups','invited_members').filter(event=event):
+	for eventrole in EventRole.objects.prefetch_related('memberresponse_set','invited_positions','invited_groups','invited_members').filter(event=event):#'memberresponse_set','invited_positions','invited_groups','invited_members').filter(event=event):
+	#for eventrole in EventRole.objects.filter(event=event):
 	#	print('On EventRole {}:'.format(eventrole))
 		attending = []
 		absent = []
@@ -281,7 +285,7 @@ def display_event(request, pk):
 
 		# Compile lists of invited positions, groups and members so that the template can mark those as selected.
 		# TODO: can this be integrated to the code above?
-		invited_positions = eventrole.invited_positions.select_related(depth=0).all()
+		invited_positions = eventrole.invited_positions.select_related('position').all()
 		invited_groups = eventrole.invited_groups.all()
 		invited_members = eventrole.invited_members.all()
 
@@ -335,13 +339,13 @@ def display_event(request, pk):
 
 	# Generate position, group and member lists for the selection.
 	positions = []
-	for position in Position.objects.select_related(depth=0).all():
+	for position in Position.objects.select_related().all():
 		positions.append(position)
 	groups = []
-	for group in Group.objects.select_related(depth=0).all():
+	for group in Group.objects.select_related().all():
 		groups.append(group)
 	members = []
-	for member in Member.objects.select_related(depth=0).all():
+	for member in Member.objects.select_related().all():
 		members.append(member)
 
 	print('returning data to view')
