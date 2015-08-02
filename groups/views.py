@@ -22,7 +22,7 @@ def group_page(request, slug):
 	g = get_object_or_404(Group, slug=slug)
 	#import pprint
 	#pprint.pprint(g.members.all())
-	managers = [ membership.member for membership in Membership.objects.select_related(depth=0).filter(group=g).filter(is_manager=True) ]
+	managers = [ membership.member for membership in Membership.objects.select_related().filter(group=g).filter(is_manager=True) ]
 
 	# Construct lists of group members and other members. Note that other
 	# members can have more than one membership so we have to remove redundant
