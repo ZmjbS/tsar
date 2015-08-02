@@ -377,7 +377,7 @@ function updateEnabledSelect(id) {
 			<div id="event_description-data">
 				<i class="fa fa-edit pull-right form-edit-icon toggle-form" data-form_id-prefix="event_description"></i>
 				<h2>Lýsing</h2>
-				<div style="margin:0 .5em .5em .5em;">{{ event.description.rendered }}</div>
+				<div style="margin:0 .5em .5em .5em;">{{ event.description.rendered|safe }}</div>
 			</div><!-- /#event_description-data -->
 
 			<div id="event_description-form" style="display: none;">
@@ -386,7 +386,7 @@ function updateEnabledSelect(id) {
 					<input type="submit" value="Vista" class="btn-xs-6 btn-sm-2 btn btn-primary" data-form_id-prefix="event_description" />
 				</div>
 				<h2>Lýsing</h2>
-				<textarea class="col-sm-12" id="event_description-textarea" name="description">{{ event.description }}</textarea>
+				<textarea class="col-sm-12" id="event_description-textarea" name="description">{{ event.description.raw }}</textarea>
 			</div><!-- /#event_description-form -->
 		</section>
 
