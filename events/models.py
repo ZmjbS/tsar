@@ -80,7 +80,7 @@ class Event(models.Model):
 	date_time_begin = models.DateTimeField()
 	date_time_end = models.DateTimeField()
 	event_type = models.ForeignKey(EventType)
-	tags = models.ManyToManyField(Tag, through='EventTag', related_name='tag_events', blank=True, null=True)
+	tags = models.ManyToManyField(Tag, through='EventTag', related_name='tag_events', blank=True)
 
 	def invited_roles(self, member):
 		# Returns a list of roles a member is invited to.
@@ -148,11 +148,11 @@ class EventRole(models.Model):
 
 	event = models.ForeignKey(Event)
 	role = models.ForeignKey(Role)
-	invited_groups = models.ManyToManyField(Group, through='GroupInvitation', blank=True, null=True)
-	invited_members = models.ManyToManyField(Member, through='MemberInvitation', related_name='eventrole_invitations', blank=True, null=True)
-	invited_positions = models.ManyToManyField(Position, through='PositionInvitation', blank=True, null=True)
+	invited_groups = models.ManyToManyField(Group, through='GroupInvitation', blank=True)
+	invited_members = models.ManyToManyField(Member, through='MemberInvitation', related_name='eventrole_invitations', blank=True)
+	invited_positions = models.ManyToManyField(Position, through='PositionInvitation', blank=True)
 	is_open = models.BooleanField(default=False)
-	responses = models.ManyToManyField(Member, through='MemberResponse', related_name='eventrole_responses', blank=True, null=True)
+	responses = models.ManyToManyField(Member, through='MemberResponse', related_name='eventrole_responses', blank=True)
 	minimum = models.SmallIntegerField(default=0)
 	maximum = models.SmallIntegerField(default=0)
 	is_hidden = models.BooleanField(default=False)
