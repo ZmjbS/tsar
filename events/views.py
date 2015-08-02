@@ -38,6 +38,7 @@ def calendar_events_list(member_id, start, end):
 	print('The calendar runs from {} to {}'.format(calendar_begins, calendar_ends))
 
 	events = Event.objects.filter(date_time_end__gt=calendar_begins).filter(date_time_begin__lt=calendar_ends)
+	print("events", events)
 	events_list = []
 	for event in events:
 		eventtype = event.event_type.title
@@ -71,13 +72,14 @@ def calendar_events_list(member_id, start, end):
 		})
 #	import pprint
 #	pprint.pprint(events_list)
-	return HttpResponse(json.dumps(events_list), mimetype='application/javascript')
+	return HttpResponse(json.dumps(events_list), content_type='application/javascript')
 #	print('FINISHED')
 
 def list_events(request):
 	if request.is_ajax():
-		# Prepare events for calendar
-		return calendar_events_list(request.GET['member_id'], request.GET['start'], request.GET['end'])
+            print('list_events request is AJAX.')
+            # Prepare events for calendar
+            return calendar_events_list(request.GET['member_id'], request.GET['start'], request.GET['end'])
 
 	# Otherwise it's just a normal request for the events page.
 	now = timezone.now()
@@ -285,7 +287,7 @@ def display_event(request, pk):
 
 		# Compile lists of invited positions, groups and members so that the template can mark those as selected.
 		# TODO: can this be integrated to the code above?
-		invited_positions = eventrole.invited_positions.select_related('position').all()
+		invited_positions = eventrole.invited_positions.select_related().all()
 		invited_groups = eventrole.invited_groups.all()
 		invited_members = eventrole.invited_members.all()
 
@@ -452,10 +454,16 @@ def save_event(request):
 			print('event_id: {}'.format(event_id))
 		except:
 			return HttpResponse(json.dumps({ 'type': 'error', 'message': 'No event_id submitted.', }))
+
 		if event_id == '':
 			# If no event id has been supplied, we'll create a new event.
 			print('Creating event...')
 			event = Event(title=t, description=d, date_time_begin=dtb, date_time_end=dte, event_type_id=et_id)
+			#event = Event(title=t, description='hi', date_time_begin=dtb, date_time_end=dte, event_type_id=et_id)
+			print(type(d))
+			print(d)
+			print(event.description)
+			#event.save()
 		else:
 			# else we update the existing one.
 			print('Updating event...')
@@ -468,8 +476,15 @@ def save_event(request):
 
 		# Now save the event
 		try:
+			print('Save the event')
 			event.clean_fields()
-			event.save()
+			print('Fields clean')
+			print(event.title)
+			print(event.description)
+			print(event.date_time_begin)
+			print(event.date_time_end)
+			print(event.event_type_id)
+			#event.save()
 			print('The event is: ------')
 			pprint.pprint(vars(event))
 			print('--------------------')
@@ -659,11 +674,11 @@ def save_event(request):
 							for member in Member.objects.select_related('user').filter(group=group):
 								subject = eventrole.event.title+' - '+eventrole.role.title
 								titlerole = eventrole.role.title
-								message = 'Vinsamlegast farðu inn á innri.spori.is og tikynntu hvort þú munir koma eða ekki.'
-								from_email = settings.EMAIL_HOST_USER
-								to_list = [member.user.email,settings.EMAIL_HOST_USER]
-								send_mail(subject,message,from_email,to_list,fail_silently=True)
-								print('Mail sent to' +member.user.first_name)
+								#message = 'Vinsamlegast farðu inn á innri.spori.is og tikynntu hvort þú munir koma eða ekki.'
+								#from_email = settings.EMAIL_HOST_USER
+								#to_list = [member.user.email,settings.EMAIL_HOST_USER]
+								#send_mail(subject,message,from_email,to_list,fail_silently=True)
+								#print('Mail sent to' +member.user.first_name)
 							print('++ GroupInvitation saved')
 						except:
 							print('ERROR: Could not save GroupInvitation {}'.format(gi))
@@ -684,12 +699,12 @@ def save_event(request):
 							subject = eventrole.event.title+' - '+eventrole.role.title
 							print(eventrole.role.title)
 							titlerole = eventrole.role.title
-							message = 'Vinsamlegast farðu inn á innri.spori.is og tikynntu hvort þú munir koma eða ekki.'
-							print(message)
-							from_email = settings.EMAIL_HOST_USER
-							to_list = [member.user.email,settings.EMAIL_HOST_USER]
-							send_mail(subject,message,from_email,to_list,fail_silently=True)
-							print('++ MemberInvitation saved')
+							#message = 'Vinsamlegast farðu inn á innri.spori.is og tikynntu hvort þú munir koma eða ekki.'
+							#print(message)
+							#from_email = settings.EMAIL_HOST_USER
+							#to_list = [member.user.email,settings.EMAIL_HOST_USER]
+							#send_mail(subject,message,from_email,to_list,fail_silently=True)
+							#print('++ MemberInvitation saved')
 						except:
 							print('ERROR: Could not save MemberInvitation {}'.format(mi))
 							return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Could not save MemberInvitation '+mi+'.' }))
