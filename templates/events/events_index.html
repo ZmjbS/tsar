@@ -5,6 +5,11 @@
 
 {% block head %}
 <link rel='stylesheet' type='text/css' href='{% static "css/fullcalendar.css" %}' />
+<style>
+{% for eventtype in event_types %}
+	.event_type-{{ eventtype.pk }} { background-color: {{ eventtype.color }}; }
+{% endfor %}
+</style>
 <!--<script type='text/javascript' src='{% static "js/fullcalendar.min.js" %}'></script>-->
 <script type='text/javascript' src='{% static "js/fullcalendar.mod.js" %}'></script>
 <script type='text/javascript'>

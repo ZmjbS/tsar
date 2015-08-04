@@ -171,45 +171,6 @@ div.tagtype-container { height: 2.2em; }
 .fc-event-end { border: 1px solid #ebebeb !important; }*/
 .fc-event-end { border-colo: #ddd; }
 
-/* Event type colours */
-/* Æfing */
-.event_type-1 { background-color: #E3B887; border-color: #B47F41; }
-.event_type-1 .fc-event-inner { text-color: #5A3000; }
-/* Vinnufundur */
-.event_type-2 { background-color: #E3C987; border-color: #B49441; }
-.event_type-2 .fc-event-inner { text-color: #5A4100; }
-/* Útkall */
-.event_type-9 { background-color: #E39A87; border-color: #B45941; }
-.event_type-9 .fc-event-inner { text-color: #5A1300; }
-
-
-/* Skemmtun */
-.event_type-3 { background-color: #B3D0FF; }
-/* Fundur */
-.event_type-4 { background-color: #ddd; }
-/* Fjáröflun */
-.event_type-5 { background-color: #FFBDE7; }
-/* Ferð */
-.event_type-6 { background-color: green; }
-/* Námskeið */
-.event_type-7 { background-color: #FDB8FF; }
-/* Sérverkefni */
-.event_type-8 { background-color: blue; }
-
-/*Útkall - Rauður
-
-Æfing - Rauður
-Vinnufundur - Fjólublár
-Fundur - Blár
-
-Fjáröflun - Sægrænn
-Sérverkefni - Sægrænn
-
-Ferð - Grænn
-Skemmtun - Grænn
-
-Námskeið - Appelsínugulur
-*/
 
 .fc-sat, .fc-sun { background-color: #F6F0C7; }
 .fc-today { background-color: #DFF0D8; }
