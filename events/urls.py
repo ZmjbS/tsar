@@ -17,4 +17,5 @@ urlpatterns = patterns('events.views',
 	#	),
 	url(r'^nyskraning/$', 'display_event_form', name='events'),
 	url(r'^nyskraning/vista$', 'save_event', name='events'),
+	url(r'^nyskraning/quicksave$', 'quick_save', name='events'),
 )

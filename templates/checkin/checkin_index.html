@@ -1,22 +1,222 @@
 {% extends "tsar.html" %}
 
 {% block head %}
+<script type="text/javascript" src="/static/js/development-bundle/ui/jquery-ui-1.8.21.custom.js"></script>
+<script type="text/javascript" src="/static/js/development-bundle/ui/minified/jquery.ui.datepicker.min.js"></script>
+<script type="text/javascript" src="/static/js/development-bundle/ui/ui.datepicker-is.js"></script>
+<script type="text/javascript" src="/static/js/jquery-ui-timepicker-addon.js"></script>
+<link type="text/css" rel="stylesheet" href="/static/js/css/ui-lightness/jquery-ui-1.8.21.custom.css" />
+<script type="text/javascript" src="/static/js/chosen.jquery.min.js"></script>
+<link type="text/css" rel="stylesheet" href="/static/css/chosen.css" />
+<script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
+<!--<script type="text/javascript" src="/static/js/tsar.events.js"></script> -->
 <style>
+.label {font: normal 6px courier !important;}
 .events_list { list-style: none; margin-left: 0.3em; }
 .overflow { display: none; }
 .h5 { color: liturinn; background-color: bakgrunnurinn; }
 .fill {height: 100%;}
 .container-fluid {}
+	/* css for timepicker */
+	//.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+	//.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+	//.ui-timepicker-div dl { text-align: left; }
+	//.ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
+	//.ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }
+    //.ui-timepicker-div td { font-size: 12px; }
+	//.ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
+.required { border-color: rgb(233, 175, 102);outline: 0px none;box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(233, 175, 102, 0.6); }
 </style>
 <script>
 $(document).ready(function(){
    $('.respond-icon').click(function(event) { event.stopPropagation(); checkin(this, 'Checkin'); } );
+   $("[data-toggle=popover]").popover({
+    html: true, 
+	content: function() {
+          return $('#popover-content').html();
+        }
+
+	});
+	$('#id_date_time_begin').css('margin-bottom','5px');
+	$('#id_date_time_begin, #id_date_time_end').css('font-size','.4em');
+	$('#id_title, #id_date_time_begin, #id_date_time_end').css('height','auto');
+	$('#id_date_time_begin, #id_date_time_end').css('width','auto');
+	$('#id_title, #event_type, #id_date_time_begin, #id_date_time_end, #id_description').addClass('form-control');
+	$('#event_header *').css('padding-right', '5px');
+	$('#event_header *').css('padding-left', '5px');
+	$('#add_dates_btn').parent().css('padding-right', '15px');
+	$('#add_dates_btn').css('font-size','2.27em');
+	$('#add_dates_btn').css('height','auto');
+
+	$('#id_title, #id_date_time_begin, #id_date_time_end').addClass('required');
+	$('#id_title, #id_date_time_begin, #id_date_time_end').live('blur', function(element) {
+		console.log($(this).val());
+		if ($(this).val() == "") {
+			$(this).addClass('required');
+		} else {
+			$(this).removeClass('required');
+		}
+	});
+
+	startDateTextBox = $('#id_date_time_begin')
+	endDateTextBox = $('#id_date_time_end')
+
+	$('#id_date_time_begin').datetimepicker({
+		onClose: function (selectedDateTime){
+			var select_dt = new Date(selectedDateTime);
+			var original_end = endDateTextBox.val();
+			var testEndDate = endDateTextBox.datetimepicker('getDate');
+			endDateTextBox.datetimepicker('option', 'minDate', startDateTextBox.datetimepicker('getDate') );
+	
+  	      if (original_end != '') {
+  	          if(testEndDate < select_dt){
+  	              endDateTextBox.val(selectedDateTime);
+  	          }else{
+  	              endDateTextBox.val(original_end);
+  	          }
+  	      }else{
+  	          endDateTextBox.val(selectedDateTime);
+  	      }
+		}
+
+	});
+	$('#id_date_time_end').datetimepicker({
+		onClose: function (selectedDateTime){
+			var select_dt = new Date(selectedDateTime);
+			var original_start = startDateTextBox.val();
+			var testStartDate = startDateTextBox.datetimepicker('getDate');
+			startDateTextBox.datetimepicker('option', 'maxDate', endDateTextBox.datetimepicker('getDate') );
+
+			if (original_start != '') {
+				if(testStartDate > select_dt){
+					startDateTextBox.val(selectedDateTime);
+				}else{
+					startDateTextBox.val(original_start);
+				}
+			}else{
+				startDateTextBox.val(selectedDateTime);
+			}
+		}
+	});
+
+	$('.select-participants').chosen({width: "95%"});
+
+	/*var csrftoken = $.cookie('csrftoken');
+	console.log('CSRF (on page):'+csrftoken);*/
+
+	$('#quick_save').on('submit',function(event) {
+		event.preventDefault();
+		var title = $("#id_title").val();
+		console.log("Form submitted");
+		quick_save_event();
+
+		//var node='init';
+		//json = JSON.stringify(title);
+		//csrf = $.cookie('csrftoken');
+		//console.log("woot1");
+		//var posting = $.post("/vidburdur/nyskraning/quicksave", {'data': json});
+	});
 });
+/*function submit_form(){
+
+	var title = $("#id_title").val();
+	console.log(title);
+	var node='init';
+	json = JSON.stringify(title);
+	csrf = $.cookie('csrftoken');
+	console.log("woot1");
+	var posting = $.post("/vidburdur/nyskraning/quicksave", {'csrfmiddlewaretoken': csrf, 'data': json});
+
+} */
+function quick_save_event(){
+	console.log("quicksave is working")
+	console.log($('#id_title').val())
+	var posting = $.post("/vidburdur/nyskraning/quicksave", {'data': $('#id_title').val()});
+	//var posting = $.post("/vidburdur/nyskraning/vista", {'csrfmiddlewaretoken': csrf, 'data': json});
+		/*$.ajax({
+		url: "../vidburdur/nyskraning/quicksave",
+		type: "POST",
+		data: {the_post : $("#id_title").val() },
+
+		success: function(json) {
+			console.log(json);
+			console.log("Success");
+		},
+		error: function (xhr,errmsg,err) {
+			console.log("Error");
+		}
+	});*/
+}
+
+function cancel(){
+}
 </script>
 {% endblock %}
 
-{% block page_title %}<h1>Mæting</h1>{% endblock %}
-
+{% block page_title %}<h1>Mæting
+<style>
+.form-control {width:350px;}
+.popover {max-width:400px;}
+</style>
+    <button type="button" class="btn btn-default btn-lg" id="quickcreation" data-toggle="modal" data-target="#myModal">
+  		<span class="fa fa-lg fa-list-alt" aria-hidden="true"></span> Flýtiskráning
+	</button>
+	<!-- Modal -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  		<div class="modal-dialog">
+    		<div class="modal-content">
+      			<div class="modal-header">
+        			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        			<h4 class="modal-title" id="myModalLabel">Flýtiskráning</h4>
+      			</div>
+    	  		<div class="modal-body">
+    	  			<form  method="post" id="quick_save">
+    	  			{% csrf_token %}
+	    	  			<div class="container-fluid">
+	        				<div class="row">
+	        					<div class="col-md-4"><h4>Titill</h4></div>
+	        				</div>
+	        				<div class="row">
+	        					<div class="col-md-4">{{ form.title }}</div>
+	        				</div>
+	        				<div class="row">
+	        					<div class="col-md-4"><h4>Lýsing</h4></div>
+	        				</div>
+	        				<div class="row">
+	        					<div class="col-md-4">{{ form.description }}</div>
+	        				</div>        				
+	        				<div class="row">
+	        					<div class="col-md-4"><h4>Tími</h4></div>
+	        				</div>
+	        				<div class="row">
+	        					<div class="col-md-4">{{ form.date_time_begin }}</div>
+	        					<div class="col-md-4">{{ form.date_time_end }}</div>
+	        				</div>
+	        				<div class="row">
+	        					<div class="col-md-4"><h4>Þátttakendur</h4></div>
+	        				</div>
+	        				<div class="row">
+	        					<div class="col-md-8">
+	        						<select id="id_select" name="temp" multiple data-placeholder="Veldu þáttakendur" class="select-participants">
+	        							<optgroup label="Meðlimir">
+	        								{% for member in members %}
+												<option value="m{{ member.id }}">{{ member }}</option>
+											{% endfor %}
+										</optgroup>'
+	        						</select>
+	        					</div>
+	        				</div>
+	      				</div>
+	      				<div class="modal-footer">
+	        				<button type="button" class="btn btn-default" data-dismiss="modal" onclick="cancel()">Hætta við</button>
+	        				<button type="submit" id="create-event-button" class="btn btn-primary">Vista</button>
+	      				</div>
+      				</form>
+      			</div>
+    		</div>
+  		</div>
+	</div>
+</h1>{% endblock %}
 {% block content %}
 <style>
 .container-fluid {}

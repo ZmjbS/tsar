@@ -2,11 +2,10 @@
 from django.http import HttpResponse
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404, render_to_response
-from events.models import Event, EventRole, MemberResponse, MemberAttendance, MemberInvitation, GroupInvitation, Member
+from events.models import Event, EventRole, EventQuickCreation, MemberResponse, MemberAttendance, MemberInvitation, GroupInvitation, Member
 from members.models import Member, Position
 from datetime import datetime, timedelta
 from django.utils import formats
-#import simplejson as json
 import json
 from django.views.decorators.csrf import csrf_exempt
 
@@ -16,6 +15,8 @@ def checkin(request):
 	role_list = EventRole.objects.filter(event_id__in = [event.id for event in events_list])
 	member_response = MemberResponse.objects.filter(event_role_id__in = [role.id for role in role_list])
 	member_attendance = MemberAttendance.objects.filter(event_role_id__in = [role.id for role in role_list])
+	form = EventQuickCreation(request.POST)
+	members = Member.objects.select_related().all()
 
 	listinn = []
 	for response in member_response:
@@ -31,7 +32,7 @@ def checkin(request):
 			'time_checkout' : time_checkout,
 			})
 
-	return render_to_response('checkin/checkin_index.html', { 'events_list': events_list, 'role_list': role_list, 'member_responses': member_response, 'member_attendance': member_attendance, 'member_response_attendance': listinn})
+	return render_to_response('checkin/checkin_index.html', { 'events_list': events_list, 'role_list': role_list, 'member_responses': member_response, 'member_attendance': member_attendance, 'member_response_attendance': listinn, 'form': form, 'members': members})
 
 def edit_event(request,event_id):
 	event_description = Event.objects.get(id= event_id)
@@ -94,7 +95,7 @@ def getTimeCheckout(attendance_list, event_role_id, member_id):
 
 @csrf_exempt
 def event_checkin(request):
-	print('Checkin in progress')
+	print 'Checkin in progress'
 	if request.is_ajax():
 	#Start with gather the information from the request.
 		action = request.POST['action']
@@ -104,27 +105,27 @@ def event_checkin(request):
 		event_role_id = request.POST['event_role_id']
 
 		event_role = get_object_or_404(EventRole, id=event_role_id)
-		print(event_role)
+		print event_role
 		#member = User.objects.get(id=2)
-		#print(member)
+		#print member
 
 		if action == 'attend':
 			act = 'Y'
 			try:
 				ma = MemberAttendance.objects.get(event_role_id=event_role_id, member_id=member_id)
-				print('>> MemberAttendance {} found'.format(ma))
+				print '>> MemberAttendance {} found'.format(ma)
 				ma.response=act
 			except Exception as e:
 				ma = MemberAttendance(event_role_id=event_role_id, member_id=member_id, attendance=act,time_checkin = datetime.now())
-				print('>> No MemberAttendance found. Creating a new one: {}'.format(ma))
-				print(e)
+				print '>> No MemberAttendance found. Creating a new one: {}'.format(ma)
+				print e
 				try:
 					ma.clean_fields()
 					ma.save()
-					print('>> SAVED')
+					print '>> SAVED'
 				except Exception as e:
-					print('>> FAILED')
-					print(e)
+					print '>> FAILED'
+					print e
 					return HttpResponse('Failed: could not save member response')
 		elif action == 'checkout':
 			try:
@@ -132,26 +133,26 @@ def event_checkin(request):
 				ma.time_checkout= datetime.now()
 				ma.save()
 			except Exception as e:
-				print(act)
+				print act
 		
 		attendance = MemberAttendance.objects.get(event_role_id=event_role_id, member_id=member_id)
 		time_checkin = attendance.time_checkin
 		time_checkout = attendance.time_checkout
-		print(time_checkin)
-		print(time_checkout)
+		print time_checkin
+		print time_checkout
 
 		# Tooltip for times configured
 		if time_checkout != None:
 			tooltip = "INN: "+str(formats.date_format(time_checkin, 'TIME_FORMAT'))+"\n  ÚT: "+str(formats.date_format(time_checkout, 'TIME_FORMAT'))
 		else :
 			tooltip = "INN: "+str(formats.date_format(time_checkin, 'TIME_FORMAT'))
-		print(tooltip)
+		print tooltip
 
-		#print(time_inn)
+		#print time_inn
 
 		
 
-	#print(event_role)
+	#print event_role
 	data = {
 		'action_r': action,
 		'tooltip': tooltip
@@ -161,42 +162,49 @@ def event_checkin(request):
 
 @csrf_exempt
 def checkin_edit(request):
-	print('Checkin in progress')
+	print 'Checkin in progress'
 	if request.is_ajax():
-		print('Request is AJAX')
+		print 'Request is AJAX'
 		data = request.POST['data']
 		event_id = request.POST['event_id']
 		new_data = json.loads(data)
 		# Lets find out if the member already has an attendance logged
 		for row in new_data:
-			print(row[u'role_id'])
-			print(row[u'member'])
+			print row[u'role_id']
+			print row[u'member']
 			try:
 				ma = MemberAttendance.objects.get(event_role_id=row[u'role_id'], member_id=row[u'member'])
-				print(row[u'id'])
+				print row[u'id']
 				if "checkin" in row[u'id']:
 					if row[u'value'] == "":
-						print('Value is empty')
+						print 'Value is empty'
 						ma.delete()
-						print('DELETED')
+						print 'DELETED'
 					else:
-						print('Time to save this checkin time'+row[u'value'])
+						print 'Time to save this checkin time'+row[u'value']
 						ma.time_checkin= row[u'value']
 						ma.save()
 				elif "checkout" in row[u'id']:
 					if row[u'value'] == "":
-						print('Value is empty')
+						print 'Value is empty'
 						ma.time_checkout = None
 						ma.save()
 					else:
-						print('Time to save this checkout time'+row[u'value'])
+						print 'Time to save this checkout time'+row[u'value']
 						ma.time_checkout= row[u'value']
 						ma.save()
 			except Exception as e:
-				print('>> No MemberAttendance found. Creating a new one: {}')
+				print '>> No MemberAttendance found. Creating a new one: {}'
 				ma = MemberAttendance(event_role_id=row[u'role_id'], member_id=row[u'member'], attendance="Y",time_checkin = datetime.now())
-				mr = MemberResponse(event_role_id=row[u'role_id'], member_id=row[u'member'], response="Y",time_responded = datetime.now())
-				mi = MemberInvitation(event_role_id=row[u'role_id'], member_id=row[u'member'])
+				try: 
+					mr = MemberResponse.objects.get(event_role_id=row[u'role_id'], member_id=row[u'member'])
+				except Exception as e:
+					mr = MemberResponse(event_role_id=row[u'role_id'], member_id=row[u'member'], response="Y",time_responded = datetime.now())
+				try: 
+					mi = MemberInvitation.objects.get(event_role_id=row[u'role_id'], member_id=row[u'member'])
+				except Exception as e:
+					mi = MemberInvitation(event_role_id=row[u'role_id'], member_id=row[u'member'])
+				
 				ma.clean_fields()
 				mr.clean_fields()
 				mi.clean_fields()
@@ -205,12 +213,12 @@ def checkin_edit(request):
 				mi.save()
 		
 	else:
-		print('Request is not AJAX')
+		print 'Request is not AJAX'
 
 
 	datab = {
 		'action': data
 		}
 	#jsondata = json.dumps(datab)
-	print('After if')
+	print 'After if'
 	return HttpResponse(json.dumps(data))
