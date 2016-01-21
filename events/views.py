@@ -398,18 +398,7 @@ def display_event_form(request):
 
 def quick_save(request):
 	print('quick saving')
-	if not request.is_ajax()
-		print('Is NOT AJAX')
-		return HttpResponse(json.dumps({"nothing to see" : "This isnt happening"}),
-			content_type = "application/jason",context_instance=RequestContext(request)
-			)
-		
-	else
-		print('Is AJAX')
 
-		return HttpResponse(json.dumps({ 'type': 'error', 'message': 'End date-time is not a valid datetime', }),
-			content_type="application/json",context_instance=RequestContext(request)
-			)
 
 	#if not request.is_ajax():
 		#return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Hello, world. Not an AJAX request.'}))
