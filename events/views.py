@@ -21,7 +21,8 @@ from django.core.serializers.json import DjangoJSONEncoder
 #import json
 
 from django.views.decorators.csrf import csrf_exempt
-from django.core.context_processors import csrf
+#from django.core.context_processors import csrf
+from django.template.context_processors import csrf
 
 def calendar_events_list(member_id, start, end):
 	# Get all events between the two dates.
@@ -394,6 +395,35 @@ def display_event_form(request):
 			  })
 
 #TODO: Do we need to remove orphaned invitations once an EventRole has been removed?
+
+def quick_save(request):
+	print('quick saving')
+	if not request.is_ajax()
+		print('Is NOT AJAX')
+		return HttpResponse(json.dumps({"nothing to see" : "This isnt happening"}),
+			content_type = "application/jason",context_instance=RequestContext(request)
+			)
+		
+	else
+		print('Is AJAX')
+
+		return HttpResponse(json.dumps({ 'type': 'error', 'message': 'End date-time is not a valid datetime', }),
+			content_type="application/json",context_instance=RequestContext(request)
+			)
+
+	#if not request.is_ajax():
+		#return HttpResponse(json.dumps({ 'type': 'error', 'message': 'Hello, world. Not an AJAX request.'}))
+	#else:
+		#print('Is AJAX')
+		#import pprint
+		#print('Hér kemur hrátt data:')
+		#pprint.pprint(request.POST['data'])
+		#print('Hér kemur JSON útgáfan:')
+		#data = json.loads(request.POST['data'])
+		#pprint.pprint(data)
+	return HttpResponse('Failed: could not save member response')
+
+@csrf_exempt
 def save_event(request):
 	print('Saving event')
 	if not request.is_ajax():
