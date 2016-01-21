@@ -18,7 +18,6 @@ from dateutil import parser
 
 import json
 from django.core.serializers.json import DjangoJSONEncoder
-#import json
 
 from django.views.decorators.csrf import csrf_exempt
 from django.core.context_processors import csrf
