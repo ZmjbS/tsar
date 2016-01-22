@@ -161,7 +161,7 @@ def event_checkin(request):
 
 @csrf_exempt
 def checkin_edit(request):
-	print('Checkin in progress')
+	print('Checkin in progress!')
 	if request.is_ajax():
 		print('Request is AJAX')
 		data = request.POST['data']
