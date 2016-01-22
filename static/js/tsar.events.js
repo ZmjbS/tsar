@@ -211,7 +211,7 @@ function respond_to_event(button, pagetype) {
 	}); // posting.done()
 
    return false;
-};                         l
+};
 
 /* Add functions that apply to elements on the page */
 $(document).ready(function(){
