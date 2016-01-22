@@ -1,0 +1,4 @@
+**/*.pyc
+**/*.sw?
+**/migrations
+db.sqlite3
