@@ -2,11 +2,10 @@
 from django.http import HttpResponse
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404, render_to_response
-from events.models import Event, EventRole, MemberResponse, MemberAttendance, MemberInvitation, GroupInvitation, Member
+from events.models import Event, EventRole, EventQuickCreation, MemberResponse, MemberAttendance, MemberInvitation, GroupInvitation, Member
 from members.models import Member, Position
 from datetime import datetime, timedelta
 from django.utils import formats
-#import simplejson as json
 import json
 from django.views.decorators.csrf import csrf_exempt
 
@@ -16,6 +15,8 @@ def checkin(request):
 	role_list = EventRole.objects.filter(event_id__in = [event.id for event in events_list])
 	member_response = MemberResponse.objects.filter(event_role_id__in = [role.id for role in role_list])
 	member_attendance = MemberAttendance.objects.filter(event_role_id__in = [role.id for role in role_list])
+	form = EventQuickCreation(request.POST)
+	members = Member.objects.select_related().all()
 
 	listinn = []
 	for response in member_response:
@@ -31,7 +32,7 @@ def checkin(request):
 			'time_checkout' : time_checkout,
 			})
 
-	return render_to_response('checkin/checkin_index.html', { 'events_list': events_list, 'role_list': role_list, 'member_responses': member_response, 'member_attendance': member_attendance, 'member_response_attendance': listinn})
+	return render_to_response('checkin/checkin_index.html', { 'events_list': events_list, 'role_list': role_list, 'member_responses': member_response, 'member_attendance': member_attendance, 'member_response_attendance': listinn, 'form': form, 'members': members})
 
 def edit_event(request,event_id):
 	event_description = Event.objects.get(id= event_id)
@@ -195,8 +196,15 @@ def checkin_edit(request):
 			except Exception as e:
 				print('>> No MemberAttendance found. Creating a new one: {}')
 				ma = MemberAttendance(event_role_id=row[u'role_id'], member_id=row[u'member'], attendance="Y",time_checkin = datetime.now())
-				mr = MemberResponse(event_role_id=row[u'role_id'], member_id=row[u'member'], response="Y",time_responded = datetime.now())
-				mi = MemberInvitation(event_role_id=row[u'role_id'], member_id=row[u'member'])
+				try: 
+					mr = MemberResponse.objects.get(event_role_id=row[u'role_id'], member_id=row[u'member'])
+				except Exception as e:
+					mr = MemberResponse(event_role_id=row[u'role_id'], member_id=row[u'member'], response="Y",time_responded = datetime.now())
+				try: 
+					mi = MemberInvitation.objects.get(event_role_id=row[u'role_id'], member_id=row[u'member'])
+				except Exception as e:
+					mi = MemberInvitation(event_role_id=row[u'role_id'], member_id=row[u'member'])
+				
 				ma.clean_fields()
 				mr.clean_fields()
 				mi.clean_fields()

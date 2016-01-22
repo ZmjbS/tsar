@@ -165,7 +165,7 @@ $(document).ready(function(){
 {% block page_title %}{% endblock %}
 
 {% block content %}
-<form id="event-creator" action="." method="post">
+<form id="event-creator" action="." method="post">{% csrf_token %}
 
 	<input type="hidden" name="event_id" id="event_id" value="{{ event.pk }}" />
 	
