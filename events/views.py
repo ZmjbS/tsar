@@ -99,10 +99,7 @@ def list_events(request):
 		'event_types': event_types,
 	})
 
-@csrf_exempt
 def event_response(request):
-	c = {}
-	c.update(csrf(request))
 	# Receives data with information about which MemberResposne must be modified
 	# or created. For this we need:
 	#	. the member_id
@@ -411,7 +408,6 @@ def quick_save(request):
 		#pprint.pprint(data)
 	return HttpResponse('Failed: could not save member response')
 
-@csrf_exempt
 def save_event(request):
 	print('Saving event')
 	if not request.is_ajax():
