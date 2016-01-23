@@ -49,10 +49,6 @@ function respond_to_event(button, pagetype) {
 	console.log('eventrole ID: '+eventrole_id);
 	*/
 
-/*
-	var csrftoken = Cookies.get('csrftoken');
-	*/
-
 	/* Cross Site Request Forgery protection 
 	 * Get the CSRF token from the csrftoken cookie and prepare the AJAX post
 	 * request by setting the X-CSRFToken header.

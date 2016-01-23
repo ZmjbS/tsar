@@ -36,14 +36,6 @@ console.log('reading document!!');
 $(document).ready(function(){
 		console.log('document read!!');
 
-	/*
-		Place the CSRF token in a js variable so that the form handler
-		can send it to the view.
-	*/
-	//var csrftoken = $.cookie('csrftoken');
-	/* DEBUG
-	console.log('CSRF (on page):'+csrftoken);
-	*/
 		/* Sort the member, group and position lists. */
 	$('.sorted>*').tsort({charOrder:'a[á]dðe[é]i[í]o[ó]u[ú]y[ý]zþæö'});
 

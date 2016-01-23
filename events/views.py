@@ -19,10 +19,6 @@ from dateutil import parser
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 
-from django.views.decorators.csrf import csrf_exempt
-#from django.core.context_processors import csrf
-from django.template.context_processors import csrf
-
 def calendar_events_list(member_id, start, end):
 	# Get all events between the two dates.
 
