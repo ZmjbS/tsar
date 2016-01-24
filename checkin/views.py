@@ -49,8 +49,8 @@ def edit_event(request,event_id):
 
 
 	roledata=[]
-	event = get_object_or_404(Event.objects.select_related('eventtype', 'eventrole_set', 'tags'), id=event_id)
-	for eventrole in EventRole.objects.select_related('memberresponse_set','invited_positions','invited_groups','invited_members').filter(event=event):
+	event = get_object_or_404(Event.objects.select_related('event_type').prefetch_related('eventrole_set','tags'), id=event_id)
+	for eventrole in EventRole.objects.prefetch_related('memberresponse_set','invited_positions','invited_groups','invited_members').filter(event=event):
 		memberss=[]
 		for memberresponse in MemberResponse.objects.filter(event_role=eventrole).select_related('event_role','member__user__id'):
 			memberss.append(memberresponse.member)
