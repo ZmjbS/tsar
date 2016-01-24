@@ -15,6 +15,6 @@ def get_item(dictionary, key):
 
 	if dictionary.filter(member_id=member, event_role_id=event_role).exists():
 		result = dictionary.filter(member_id=member, event_role_id=event_role).values().get()
-   	else:
-   		result = None
-   	return result
+	else:
+		result = None
+	return result
