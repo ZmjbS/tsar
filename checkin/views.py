@@ -42,7 +42,7 @@ def edit_event(request,event_id):
 	attendances = MemberAttendance.objects.filter(event_role_id__in = [role.id for role in eventrole_list])
 
 	members = []
-	for member in Member.objects.select_related(depth=0).all():
+	for member in Member.objects.select_related().all():
 		members.append(member)
 	#Good idea to sort the list of members by name:
 	members.sort(key=lambda member: (member.user.first_name, member.user.last_name))
