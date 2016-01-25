@@ -2,3 +2,4 @@
 **/*.sw?
 **/migrations
 db.sqlite3
+fixtures/develop-*
