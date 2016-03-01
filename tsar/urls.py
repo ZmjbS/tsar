@@ -18,6 +18,12 @@ urlpatterns = patterns('',
 	url(r'^checkin/', include('checkin.urls')),
 	url(r'^checkin/$', include('checkin.urls')),
 
+	#urls for password reset
+	url(r'^user/password/reset/$', 'django.contrib.auth.views.password_reset', {'post_reset_redirect' : '/user/password/reset/done/'}, name="password_reset"),
+    url(r'^user/password/reset/done/$', 'django.contrib.auth.views.password_reset_done'),
+    url(r'^user/password/reset/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$', 'django.contrib.auth.views.password_reset_confirm', {'post_reset_redirect' : '/user/password/done/'}),
+    url(r'^user/password/done/$', 'django.contrib.auth.views.password_reset_complete'),
+
 	# Uncomment the admin/doc line below to enable admin documentation:
 	# url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
