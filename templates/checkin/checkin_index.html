@@ -28,9 +28,11 @@
 .required { border-color: rgb(233, 175, 102);outline: 0px none;box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(233, 175, 102, 0.6); }
 </style>
 <script>
+
 $(document).ready(function(){
-   $('.respond-icon').click(function(event) { event.stopPropagation(); checkin(this, 'Checkin'); } );
-   $("[data-toggle=popover]").popover({
+	setTimeout("location.reload(true);",30000);
+   	$('.respond-icon').click(function(event) { event.stopPropagation(); checkin(this, 'Checkin'); } );
+   	$("[data-toggle=popover]").popover({
     html: true, 
 	content: function() {
           return $('#popover-content').html();
@@ -150,6 +152,7 @@ function quick_save_event(){
 
 function cancel(){
 }
+
 </script>
 {% endblock %}
 
