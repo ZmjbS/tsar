@@ -15,6 +15,8 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+LOGIN_REDIRECT_URL = ('../..')
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
@@ -148,11 +150,11 @@ MARKUP_FIELD_TYPES = (
 ## Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
 #MEDIA_URL = ''
 
-#EMAIL_USE_TLS = True
-#EMAIL_HOST = 'smtp.gmail.com'
-#EMAIL_HOST_USER = 'email'
-#EMAIL_HOST_PASSWORD = 'password'
-#EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'email'
+EMAIL_HOST_PASSWORD = 'password'
+EMAIL_PORT = 587
 
 ## Absolute path to the directory static files should be collected to.
 ## Don't put anything in this directory yourself; store your static files
